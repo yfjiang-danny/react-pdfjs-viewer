@@ -1,0 +1,36 @@
+{
+  "React FC": {
+    "description": "React Function Component",
+    "scope": "typescriptreact",
+    "prefix": "rfc",
+    "body": [
+      "import React from \"react\";",
+      "",
+      "interface $1Props {",
+      "",
+      "}",
+      "",
+      "const $1: React.FunctionComponent<$1Props> = (props) => {",
+      "  return <>$1 Component</>",
+      "}",
+      "",
+      "export default $1;"
+    ]
+  },
+  "Pure FC": {
+    "description": "Pure Function Component",
+    "scope": "typescriptreact",
+    "prefix": "pfc",
+    "body": [
+      "import React from \"react\";",
+      "",
+      "interface $1Props {",
+      "",
+      "}",
+      "",
+      "export default function $1(props: $1Props) {",
+      "  return <>$1 Component</>",
+      "}"
+    ]
+  }
+}

@@ -1,24 +1,16 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import { Viewer } from "./viewer";
+import PDFWorker from "./viewer/worker";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <PDFWorker
+        workerDir={"https://unpkg.com/pdfjs-dist@2.8.335/build/pdf.worker.js"}
+      >
+        <Viewer pdfURI={`${process.env.PUBLIC_URL}/test.pdf`} />
+      </PDFWorker>
     </div>
   );
 }
