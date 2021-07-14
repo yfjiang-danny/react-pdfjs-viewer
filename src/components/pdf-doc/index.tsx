@@ -13,7 +13,7 @@ const PDFDoc: React.FunctionComponent<PDFDocProps> = (props) => {
   return (
     <>
       {range(0, doc.numPages - 1).map((index) => {
-        return <PDFPage page={index + 1} doc={doc} />;
+        return <PDFPage key={index} page={index + 1} doc={doc} />;
       })}
     </>
   );

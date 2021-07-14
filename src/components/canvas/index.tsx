@@ -1,19 +1,21 @@
 import { PDFPageProxy } from "pdfjs-dist/types/display/api";
 import React, { useLayoutEffect } from "react";
+import PDFViewerContainer from "../../containers/container";
 
 interface PDFCanvasProps {
   pageDoc: PDFPageProxy;
-  scale?: number;
 }
 
 const PDFCanvas: React.FunctionComponent<PDFCanvasProps> = (props) => {
-  const { pageDoc, scale } = props;
+  const { pageDoc } = props;
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
+  const { currentScale } = PDFViewerContainer.useContainer();
+
   useLayoutEffect(() => {
     if (canvasRef.current) {
-      var viewport = pageDoc.getViewport({ scale: scale || 1 });
+      var viewport = pageDoc.getViewport({ scale: currentScale });
 
       var context = canvasRef.current.getContext("2d");
 
@@ -27,7 +29,7 @@ const PDFCanvas: React.FunctionComponent<PDFCanvasProps> = (props) => {
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageDoc]);
+  }, [pageDoc, currentScale]);
 
   return (
     <div>
