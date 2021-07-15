@@ -1,4 +1,5 @@
 import React from "react";
+import "./index.css"
 
 interface ToolbarProps {
   zoom?: boolean;
@@ -7,7 +8,7 @@ interface ToolbarProps {
 }
 
 const Toolbar: React.FunctionComponent<ToolbarProps> = (props) => {
-  return <>Toolbar Component</>;
+  return <div className="toolbar" >Toolbar Component</div>;
 };
 
 export default Toolbar;

@@ -2,6 +2,7 @@ import * as PDFLib from "pdfjs-dist/legacy/build/pdf";
 import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
 import React, { ReactNode, useEffect, useState } from "react";
 import PDFDoc from "../components/pdf-doc";
+import Toolbar from "../components/toolbar";
 import PDFViewerContainer from "../containers/container";
 
 interface ViewerProps {
@@ -40,6 +41,7 @@ export function Viewer(props: ViewerProps) {
     }
     return (
       <PDFViewerContainer.Provider>
+        <Toolbar  />
         <PDFDoc doc={pdfDoc} />
       </PDFViewerContainer.Provider>
     );
