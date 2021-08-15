@@ -40,8 +40,10 @@ export function Viewer(props: ViewerProps) {
       return null;
     }
     return (
-      <PDFViewerContainer.Provider>
-        <Toolbar  />
+      <PDFViewerContainer.Provider initialState={{
+        pdfDoc: pdfDoc
+      }} >
+        <Toolbar />
         <PDFDoc doc={pdfDoc} />
       </PDFViewerContainer.Provider>
     );

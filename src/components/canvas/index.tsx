@@ -35,10 +35,6 @@ const PDFCanvas: React.FunctionComponent<PDFCanvasProps> = (props) => {
     <div>
       <canvas
         ref={canvasRef}
-        style={{
-          transform: `scale(${1 / devicePixelRatio})`,
-          transformOrigin: `top left`,
-        }}
       />
     </div>
   );

@@ -18,7 +18,7 @@ const PDFPage: React.FunctionComponent<PDFPageProps> = (props) => {
     });
   }, [page, doc]);
 
-  return <>{pageDoc ? <PDFCanvas pageDoc={pageDoc} /> : null}</>;
+  return <>{pageDoc ? <div id={`__page_${page}__`} ><PDFCanvas pageDoc={pageDoc} /></div> : null}</>;
 };
 
 export default PDFPage;

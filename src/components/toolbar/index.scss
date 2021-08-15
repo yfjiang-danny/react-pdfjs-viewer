@@ -1,0 +1,47 @@
+
+.toolbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: white;
+
+    .left-button-container {
+        display: flex;
+    }
+    
+    .middle-button-container {
+        display: flex;
+    }
+    
+    .right-container {
+        display: flex;
+    }
+
+    .common-button {
+        background-color: transparent;
+        border: none;
+        padding: 6px 8px;
+        margin-left: 8px;
+        border-radius: 4px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &:focus {
+            outline: none !important;
+        }
+
+        &:hover {
+            background-color: rgba(221, 222, 223, 1);
+        }
+
+    }
+}
+
+
+
