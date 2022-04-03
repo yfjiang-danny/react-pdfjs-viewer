@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import PDFDoc from "../components/pdf-doc";
 import Toolbar from "../components/toolbar";
 import PDFViewerContainer from "../containers/container";
+import "./index.scss";
 
 interface ViewerProps {
   pdfURI: string;
@@ -18,15 +19,13 @@ export function Viewer(props: ViewerProps) {
   useEffect(() => {
     if (pdfURI) {
       setLoading(true);
-      PDFLib.getDocument(pdfURI).promise.then(
-        (pdf: PDFDocumentProxy) => {
-          setLoading(false);
+      PDFLib.getDocument(pdfURI)
+        .promise.then((pdf: PDFDocumentProxy) => {
           setPDFDoc(pdf);
-        },
-        () => {
+        })
+        .finally(() => {
           setLoading(false);
-        }
-      );
+        });
     }
   }, [pdfURI]);
 
@@ -40,14 +39,16 @@ export function Viewer(props: ViewerProps) {
       return null;
     }
     return (
-      <PDFViewerContainer.Provider initialState={{
-        pdfDoc: pdfDoc
-      }} >
+      <PDFViewerContainer.Provider
+        initialState={{
+          pdfDoc: pdfDoc,
+        }}
+      >
         <Toolbar />
         <PDFDoc doc={pdfDoc} />
       </PDFViewerContainer.Provider>
     );
   }
 
-  return <div className="viewer-container" >{contentComponent()}</div>;
+  return <div className="viewer-container">{contentComponent()}</div>;
 }

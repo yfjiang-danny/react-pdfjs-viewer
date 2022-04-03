@@ -1,5 +1,5 @@
 import React from "react";
-import "./App.css";
+import "./App.scss";
 import { Viewer } from "./viewer";
 import PDFWorker from "./viewer/worker";
 
