@@ -22,7 +22,7 @@ const PDFPage: React.FunctionComponent<PDFPageProps> = (props) => {
     <>
       {pageDoc ? (
         <div id={`__page_${page}__`}>
-          <PDFCanvas pageDoc={pageDoc} />
+          <PDFCanvas pageDoc={pageDoc} pageIndex={page} />
         </div>
       ) : null}
     </>

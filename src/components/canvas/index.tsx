@@ -10,10 +10,11 @@ import {
 
 interface PDFCanvasProps {
   pageDoc: PDFPageProxy;
+  pageIndex: number;
 }
 
 const PDFCanvas: React.FunctionComponent<PDFCanvasProps> = (props) => {
-  const { pageDoc } = props;
+  const { pageDoc, pageIndex } = props;
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const renderTask = useRef<any>();
@@ -54,7 +55,9 @@ const PDFCanvas: React.FunctionComponent<PDFCanvasProps> = (props) => {
   function update() {
     // createPromiseCapability()
     if (canvasRef.current) {
-      console.log("currentScale", currentScale);
+      if (renderTask.current) {
+        renderTask.current.cancel();
+      }
 
       var viewport = pageDoc.getViewport({ scale: getScale(currentScale) });
 
@@ -62,13 +65,26 @@ const PDFCanvas: React.FunctionComponent<PDFCanvasProps> = (props) => {
 
       canvasRef.current.height = viewport.height;
       canvasRef.current.width = viewport.width;
+      canvasRef.current.hidden = true;
 
       if (context) {
         renderTask.current = pageDoc.render({
           canvasContext: context,
           viewport: viewport,
         });
-        // renderTask.current
+
+        renderTask.current.promise.then(
+          () => {
+            if (canvasRef.current) {
+              canvasRef.current.hidden = false;
+            }
+          },
+          () => {
+            if (canvasRef.current) {
+              canvasRef.current.hidden = false;
+            }
+          }
+        );
       }
     }
   }
@@ -96,9 +112,18 @@ const PDFCanvas: React.FunctionComponent<PDFCanvasProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentScale]);
 
+  useEffect(() => {
+    return () => {
+      if (renderTask.current) {
+        renderTask.current.cancel();
+        renderTask.current = undefined;
+      }
+    };
+  }, []);
+
   return (
     <div>
-      <canvas key={currentPage} ref={canvasRef} />
+      <canvas key={pageIndex} ref={canvasRef} />
     </div>
   );
 };

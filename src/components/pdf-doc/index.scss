@@ -1,4 +1,9 @@
 .doc {
-  padding-top: 5px;
-  height: calc(100% - 48px);
+  // padding-top: 8px;
+  background-color: inherit;
+  // height: calc(100% - 48px);
+}
+
+.doc > div {
+  margin-top: 8px;
 }
