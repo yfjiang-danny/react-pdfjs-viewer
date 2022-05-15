@@ -24,7 +24,7 @@ const PDFCanvas: React.FunctionComponent<PDFCanvasProps> = (props) => {
 
   function getScaleFactor(): [number, number] {
     if (actualViewport && containerEl) {
-      const clientHeight = containerEl.clientHeight;
+      const clientHeight = document.documentElement.clientHeight;
       console.log("containerEl.clientWidth", containerEl.clientWidth);
       console.log(" actualViewport.width", actualViewport.width);
 

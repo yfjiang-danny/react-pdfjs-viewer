@@ -14,6 +14,7 @@ interface PDFViewerInitialState {
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function usePDFViewer(initialState: PDFViewerInitialState = {}) {
+  const cache: { [key: number]: boolean } = {};
   const [currentPage, setCurrentPage] = useState(initialState.initialPage || 1);
   const [currentScale, setCurrentScale] = useState<ScaleType>(
     initialState.initialScale || 1.5
