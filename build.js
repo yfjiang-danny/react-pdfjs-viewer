@@ -11,10 +11,10 @@ esbuild.build({
     format: "esm",
     external: Object.keys(dependencies),
     bundle: true,
-    minify: true,
-    sourcemap: false,
+    minify: false,
+    sourcemap: true,
     sourcesContent: false,
-    logLevel: "silent",
+    logLevel: "error",
 }).catch(err => {
     console.log(err);
 })

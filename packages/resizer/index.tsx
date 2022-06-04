@@ -28,35 +28,52 @@ const Resizer: React.FunctionComponent<ResizerProps> = ({
   });
 
   useEffect(() => {
-    if (typeof scale === "string") {
-      doc.getPage(1).then((page) => {
-        const viewport = page.getViewport({
-          scale: 1,
-        });
+    doc.getPage(1).then((page) => {
+      const viewport = page.getViewport({
+        scale: 1,
+      });
+      if (typeof scale === "string") {
+        const horizontalPadding = Horizontal_PADDING * 2;
+        const verticalPadding = VERTICAL_PADDING * 2;
         switch (scale) {
           case "fitHeight": {
-            const pageScale = (height - Horizontal_PADDING) / viewport.height;
+            const pageScale = (height - horizontalPadding) / viewport.height;
             setPageSize({
-              height: height - Horizontal_PADDING,
+              height: height - horizontalPadding,
               scale: pageScale,
               width: viewport.width * pageScale,
             });
             break;
           }
           case "fitWidth": {
-            const pageScale = (width - VERTICAL_PADDING) / viewport.width;
+            const pageScale = (width - verticalPadding) / viewport.width;
             setPageSize({
               height: viewport.height * pageScale,
               scale: pageScale,
-              width: width - VERTICAL_PADDING,
+              width: width - verticalPadding,
             });
             break;
           }
-          default:
+          default: {
+            const heightScale = (height - horizontalPadding) / viewport.height;
+            const widthScale = (width - verticalPadding) / viewport.width;
+            const pageScale = Math.min(heightScale, widthScale);
+            setPageSize({
+              height: viewport.height * pageScale,
+              scale: pageScale,
+              width: viewport.width * pageScale,
+            });
+          }
         }
-      });
-    }
-  }, []);
+      } else {
+        setPageSize({
+          width: viewport.height * scale,
+          height: viewport.height * scale,
+          scale: scale,
+        });
+      }
+    });
+  }, [doc, width, height, scale]);
 
   return (
     <div ref={resizerRef}>

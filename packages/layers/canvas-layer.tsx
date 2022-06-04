@@ -66,11 +66,7 @@ const CanvasLayer: React.FunctionComponent<CanvasLayerProps> = (props) => {
     };
   }, []);
 
-  return (
-    <div style={{ width: width, height: height }}>
-      <canvas key={pageIndex} ref={canvasRef} />
-    </div>
-  );
+  return <canvas key={pageIndex} ref={canvasRef} />;
 };
 
 export default CanvasLayer;

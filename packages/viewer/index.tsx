@@ -1,21 +1,28 @@
+import { range } from "lodash";
 import {
   PDFDocumentLoadingTask,
   PDFDocumentProxy,
+  PDFPageProxy,
 } from "pdfjs-dist/types/display/api";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
+import CanvasLayer from "../layers/canvas-layer";
+import PageLayer from "../layers/page-layer";
+import Resizer from "../resizer";
+import { PageSize, ScaleType } from "../types";
 import { PDFLib } from "../vendors/lib";
-import PDFWorker from "../worker";
 
 interface PDFViewerProps {
   pdfURI: string;
   errorComponent?: ((reason: any) => ReactNode) | ReactNode;
   loadingComponent?: ((progress: number) => ReactNode) | ReactNode;
+  scale: ScaleType;
 }
 
 const PDFViewer: React.FunctionComponent<PDFViewerProps> = ({
   pdfURI,
   loadingComponent,
   errorComponent,
+  scale,
 }) => {
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(-1);
@@ -59,7 +66,32 @@ const PDFViewer: React.FunctionComponent<PDFViewerProps> = ({
         ? errorComponent(errorReason)
         : errorComponent;
     }
-    return <></>;
+    return (
+      <Resizer doc={pdfDoc} scale={scale}>
+        {(pageSize: PageSize) => (
+          <>
+            {range(0, pdfDoc.numPages - 1).map((index) => {
+              return (
+                <PageLayer
+                  key={index}
+                  pageIndex={index}
+                  doc={pdfDoc}
+                  {...pageSize}
+                >
+                  {(doc: PDFPageProxy) => [
+                    <CanvasLayer
+                      {...pageSize}
+                      pageDoc={doc}
+                      pageIndex={index}
+                    />,
+                  ]}
+                </PageLayer>
+              );
+            })}
+          </>
+        )}
+      </Resizer>
+    );
   }
 
   return (
