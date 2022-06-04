@@ -9,29 +9,25 @@
   },
   "main": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rm -fr ./dist && node build.js && tsc"
+  },
   "dependencies": {  
     "eslint": "^8.17.0",
     "lodash": "^4.17.21",
     "node-sass": "^6.0.1",
     "pdfjs-dist": "^2.8.335",
     "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-scripts": "4.0.3",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/lodash": "^4.14.171",
     "typescript": "^4.1.2",
-    "unstated-next": "^1.1.0",
-    "web-vitals": "^1.0.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "rm -fr ./dist && node build.js && tsc",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "esbuild": "^0.14.42"
   },
   "browserslist": {
     "production": [
@@ -44,13 +40,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "@types/lodash": "^4.14.171",
-    "esbuild": "^0.14.42"
   }
 }
