@@ -1,5 +1,5 @@
 import { PDFPageProxy } from "pdfjs-dist/types/display/api";
-import React from "react";
+import { FunctionComponent } from "react";
 interface CanvasLayerProps {
     pageDoc: PDFPageProxy;
     pageIndex: number;
@@ -7,5 +7,5 @@ interface CanvasLayerProps {
     height: number;
     scale: number;
 }
-declare const CanvasLayer: React.FunctionComponent<CanvasLayerProps>;
+declare const CanvasLayer: FunctionComponent<CanvasLayerProps>;
 export default CanvasLayer;

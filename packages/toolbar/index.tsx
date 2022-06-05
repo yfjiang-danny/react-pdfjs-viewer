@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, FunctionComponent } from "react";
 import Select from "../share/selector";
 import "./index.scss";
 
@@ -6,7 +6,7 @@ export const TOOLBAR_HEIGHT = 48;
 
 interface ToolbarProps {}
 
-const Toolbar: React.FunctionComponent<ToolbarProps> = (props) => {
+const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   function onPreviousButtonClick(): void {
     // setCurrentPage((pre) => {
     //   return pre > 1 ? pre - 1 : 1;
@@ -19,7 +19,7 @@ const Toolbar: React.FunctionComponent<ToolbarProps> = (props) => {
     // });
   }
 
-  function onScaleChange(event: React.ChangeEvent<HTMLSelectElement>): void {
+  function onScaleChange(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("onScaleChange", event.currentTarget.value);
     if (!isNaN(Number(event.currentTarget.value))) {
       const scale = parseFloat(event.currentTarget.value);

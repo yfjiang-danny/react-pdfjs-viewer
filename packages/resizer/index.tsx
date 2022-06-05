@@ -1,5 +1,11 @@
 import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, {
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useRectObserver } from "../hooks/useRectObserver";
 import { PageSize, ScaleType } from "../types";
 import { Horizontal_PADDING, VERTICAL_PADDING } from "../types/constant";
@@ -11,11 +17,7 @@ interface ResizerProps {
   children: (rect: PageSize) => ReactNode;
 }
 
-const Resizer: React.FunctionComponent<ResizerProps> = ({
-  doc,
-  scale,
-  children,
-}) => {
+const Resizer: FunctionComponent<ResizerProps> = ({ doc, scale, children }) => {
   const resizerRef = useRef<HTMLDivElement | null>(null);
   const [pageSize, setPageSize] = useState<PageSize>({
     width: 0,

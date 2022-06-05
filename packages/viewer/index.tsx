@@ -4,7 +4,7 @@ import {
   PDFDocumentProxy,
   PDFPageProxy,
 } from "pdfjs-dist/types/display/api";
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
 import CanvasLayer from "../layers/canvas-layer";
 import PageLayer from "../layers/page-layer";
 import Resizer from "../resizer";
@@ -18,7 +18,7 @@ interface PDFViewerProps {
   scale: ScaleType;
 }
 
-const PDFViewer: React.FunctionComponent<PDFViewerProps> = ({
+const PDFViewer: FC<PDFViewerProps> = ({
   pdfURI,
   loadingComponent,
   errorComponent,

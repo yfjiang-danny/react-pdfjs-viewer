@@ -1,6 +1,6 @@
 import { PDFPageProxy, TextContent } from "pdfjs-dist/types/display/api";
 import { TextLayerRenderTask } from "pdfjs-dist/types/display/text_layer";
-import React, { useEffect, useRef, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { PDFLib } from "../vendors/lib";
 
 interface TextLayerProps {
@@ -9,7 +9,7 @@ interface TextLayerProps {
   scale: number;
 }
 
-const TextLayer: React.FunctionComponent<TextLayerProps> = (props) => {
+const TextLayer: FunctionComponent<TextLayerProps> = (props) => {
   const { pageDoc, pageIndex, scale } = props;
 
   const textContainerRef = useRef<HTMLDivElement | null>(null);

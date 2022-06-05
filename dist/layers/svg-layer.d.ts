@@ -1,5 +1,5 @@
-import React from "react";
+import { FunctionComponent } from "react";
 interface SvgLayerProps {
 }
-declare const SvgLayer: React.FunctionComponent<SvgLayerProps>;
+declare const SvgLayer: FunctionComponent<SvgLayerProps>;
 export default SvgLayer;

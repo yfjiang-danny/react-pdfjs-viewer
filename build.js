@@ -14,7 +14,7 @@ esbuild.build({
     minify: false,
     sourcemap: true,
     sourcesContent: false,
-    logLevel: "error",
+    logLevel: "silent",
 }).catch(err => {
     console.log(err);
 })

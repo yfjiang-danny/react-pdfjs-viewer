@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { FC, ReactNode } from "react";
 import { ScaleType } from "../types";
 interface PDFViewerProps {
     pdfURI: string;
@@ -6,5 +6,5 @@ interface PDFViewerProps {
     loadingComponent?: ((progress: number) => ReactNode) | ReactNode;
     scale: ScaleType;
 }
-declare const PDFViewer: React.FunctionComponent<PDFViewerProps>;
+declare const PDFViewer: FC<PDFViewerProps>;
 export default PDFViewer;

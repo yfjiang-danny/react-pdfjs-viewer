@@ -1,6 +1,6 @@
-import React from "react";
+import { FC } from "react";
 export interface PDFWorkerProps {
     workerDir: string;
 }
-declare const PDFWorker: React.FC<PDFWorkerProps>;
+declare const PDFWorker: FC<PDFWorkerProps>;
 export default PDFWorker;

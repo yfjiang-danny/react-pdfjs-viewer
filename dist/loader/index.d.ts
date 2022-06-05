@@ -1,5 +1,5 @@
-import React from "react";
+import { FunctionComponent } from "react";
 interface PDFLoaderProps {
 }
-declare const PDFLoader: React.FunctionComponent<PDFLoaderProps>;
+declare const PDFLoader: FunctionComponent<PDFLoaderProps>;
 export default PDFLoader;

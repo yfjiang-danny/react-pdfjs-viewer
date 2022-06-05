@@ -1,9 +1,9 @@
 import { PDFPageProxy } from "pdfjs-dist/types/display/api";
-import React from "react";
+import { FunctionComponent } from "react";
 interface TextLayerProps {
     pageDoc: PDFPageProxy;
     pageIndex: number;
     scale: number;
 }
-declare const TextLayer: React.FunctionComponent<TextLayerProps>;
+declare const TextLayer: FunctionComponent<TextLayerProps>;
 export default TextLayer;

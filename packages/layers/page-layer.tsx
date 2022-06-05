@@ -1,5 +1,10 @@
 import { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/display/api";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 interface PageLayerProps {
   pageIndex: number;
@@ -9,7 +14,7 @@ interface PageLayerProps {
   children: (doc: PDFPageProxy) => ReactNode | ReactNode[];
 }
 
-const PageLayer: React.FunctionComponent<PageLayerProps> = ({
+const PageLayer: FunctionComponent<PageLayerProps> = ({
   doc,
   pageIndex,
   width,

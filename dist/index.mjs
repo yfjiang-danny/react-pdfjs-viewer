@@ -1085,7 +1085,7 @@ var require_react_development = __commonJS({
           }
           return dispatcher.useContext(Context, unstable_observedBits);
         }
-        function useState7(initialState) {
+        function useState6(initialState) {
           var dispatcher = resolveDispatcher();
           return dispatcher.useState(initialState);
         }
@@ -1673,7 +1673,7 @@ var require_react_development = __commonJS({
         exports2.useMemo = useMemo;
         exports2.useReducer = useReducer;
         exports2.useRef = useRef6;
-        exports2.useState = useState7;
+        exports2.useState = useState6;
         exports2.version = ReactVersion;
       })();
     }
@@ -41726,7 +41726,7 @@ var require_pdf2 = __commonJS({
 var import_react = __toESM(require_react());
 var CanvasLayer = (props) => {
   const { pageDoc, pageIndex, width, height, scale } = props;
-  const canvasRef = import_react.default.useRef(null);
+  const canvasRef = (0, import_react.useRef)(null);
   const renderTask = (0, import_react.useRef)();
   (0, import_react.useEffect)(() => {
     if (canvasRef.current) {
@@ -41881,11 +41881,7 @@ var VERTICAL_PADDING = 5;
 var Horizontal_PADDING = 5;
 
 // packages/resizer/index.tsx
-var Resizer = ({
-  doc,
-  scale,
-  children
-}) => {
+var Resizer = ({ doc, scale, children }) => {
   const resizerRef = (0, import_react6.useRef)(null);
   const [pageSize, setPageSize] = (0, import_react6.useState)({
     width: 0,
