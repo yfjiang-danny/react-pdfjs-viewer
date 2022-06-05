@@ -1722,9 +1722,9 @@ var require_https = __commonJS({
   }
 });
 
-// (disabled):url
+// (disabled):node_modules/url/url.js
 var require_url = __commonJS({
-  "(disabled):url"() {
+  "(disabled):node_modules/url/url.js"() {
   }
 });
 

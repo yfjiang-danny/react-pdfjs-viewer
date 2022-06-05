@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-pdfjs-viewer": "git+ssh://git@github.com:yfjiang-danny/react-pdfjs-viewer.git#v0.1.0-dev"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
