@@ -7,6 +7,7 @@ import {
 import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
 import CanvasLayer from "../layers/canvas-layer";
 import PageLayer from "../layers/page-layer";
+import TextLayer from "../layers/text-layer";
 import Resizer from "../resizer";
 import { PageSize, ScaleType } from "../types";
 import { PDFLib } from "../vendors/lib";
@@ -16,6 +17,8 @@ interface PDFViewerProps {
   errorComponent?: ((reason: any) => ReactNode) | ReactNode;
   loadingComponent?: ((progress: number) => ReactNode) | ReactNode;
   scale: ScaleType;
+  width: string | number;
+  height: string | number;
 }
 
 const PDFViewer: FC<PDFViewerProps> = ({
@@ -23,6 +26,8 @@ const PDFViewer: FC<PDFViewerProps> = ({
   loadingComponent,
   errorComponent,
   scale,
+  width,
+  height,
 }) => {
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(-1);
@@ -71,10 +76,11 @@ const PDFViewer: FC<PDFViewerProps> = ({
         {(pageSize: PageSize) => (
           <>
             {range(0, pdfDoc.numPages - 1).map((index) => {
+              const pageIndex = index + 1;
               return (
                 <PageLayer
                   key={index}
-                  pageIndex={index + 1}
+                  pageIndex={pageIndex}
                   doc={pdfDoc}
                   {...pageSize}
                 >
@@ -82,7 +88,14 @@ const PDFViewer: FC<PDFViewerProps> = ({
                     <CanvasLayer
                       {...pageSize}
                       pageDoc={doc}
-                      pageIndex={index}
+                      pageIndex={pageIndex}
+                      key={`canvas_layer_${pageIndex}`}
+                    />,
+                    <TextLayer
+                      {...pageSize}
+                      pageDoc={doc}
+                      pageIndex={pageIndex}
+                      key={`text_layer_${pageIndex}`}
                     />,
                   ]}
                 </PageLayer>
@@ -95,7 +108,11 @@ const PDFViewer: FC<PDFViewerProps> = ({
   }
 
   return (
-    <div id="pdf_viewer_container" className="pdf-viewer-container">
+    <div
+      id="pdf_viewer_container"
+      className="pdf-viewer-container"
+      style={{ height: height, width: width }}
+    >
       {contentComponent()}
     </div>
   );

@@ -1,5 +1,6 @@
 const esbuild = require("esbuild");
 const { devDependencies } = require("./package.json");
+const lessLoader = require('esbuild-plugin-less');
 
 esbuild
   .build({
@@ -16,6 +17,7 @@ esbuild
     sourcemap: true,
     sourcesContent: false,
     logLevel: "silent",
+    plugins: [lessLoader.lessLoader()],
   })
   .catch((err) => {
     console.log(err);

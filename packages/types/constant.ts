@@ -6,5 +6,5 @@ export const MAX_SCALE = 10.0;
 export const UNKNOWN_SCALE = 0;
 export const MAX_AUTO_SCALE = 1.25;
 export const SCROLLBAR_PADDING = 40;
-export const VERTICAL_PADDING = 5;
-export const Horizontal_PADDING = 5;
+export const VERTICAL_PADDING = 16;
+export const HORIZONTAL_PADDING = 24;

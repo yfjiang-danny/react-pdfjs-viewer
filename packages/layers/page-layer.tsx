@@ -34,7 +34,12 @@ const PageLayer: FunctionComponent<PageLayerProps> = ({
       {pageDoc ? (
         <div
           id={`__page_${pageIndex}__`}
-          style={{ height: height, width: width }}
+          style={{
+            height: height,
+            width: width,
+            margin: "auto",
+            position: "relative",
+          }}
         >
           {children(pageDoc)}
         </div>

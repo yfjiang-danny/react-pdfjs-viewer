@@ -29,6 +29,7 @@ var CanvasLayer = (props) => {
       if (renderTask.current) {
         renderTask.current.cancel();
       }
+      console.log("scale", scale);
       var viewport = pageDoc.getViewport({ scale });
       var outputScale = window.devicePixelRatio || 1;
       var context = canvasRef.current.getContext("2d");
@@ -61,11 +62,13 @@ var CanvasLayer = (props) => {
         canvasRef.current.height = 0;
       }
     };
-  }, []);
-  return /* @__PURE__ */ React.createElement("canvas", {
+  }, [pageDoc, scale]);
+  return /* @__PURE__ */ React.createElement("div", {
+    style: { width, height }
+  }, /* @__PURE__ */ React.createElement("canvas", {
     key: pageIndex,
     ref: canvasRef
-  });
+  }));
 };
 var canvas_layer_default = CanvasLayer;
 
@@ -84,7 +87,7 @@ import * as PDFLib from "pdfjs-dist";
 
 // packages/layers/text-layer.tsx
 var TextLayer = (props) => {
-  const { pageDoc, pageIndex, scale } = props;
+  const { pageDoc, pageIndex, width, height, scale } = props;
   const textContainerRef = useRef2(null);
   const renderTask = useRef2(null);
   useEffect2(() => {
@@ -104,10 +107,18 @@ var TextLayer = (props) => {
       });
     }
     return () => {
+      if (renderTask.current) {
+        renderTask.current.cancel();
+      }
     };
-  }, []);
+  }, [pageDoc, scale]);
   return /* @__PURE__ */ React3.createElement("div", {
-    ref: textContainerRef
+    ref: textContainerRef,
+    style: {
+      width,
+      height
+    },
+    className: "text-layer"
   });
 };
 var text_layer_default = TextLayer;
@@ -136,7 +147,12 @@ var PageLayer = ({
   }, [pageIndex, doc]);
   return /* @__PURE__ */ React4.createElement(React4.Fragment, null, pageDoc ? /* @__PURE__ */ React4.createElement("div", {
     id: `__page_${pageIndex}__`,
-    style: { height, width }
+    style: {
+      height,
+      width,
+      margin: "auto",
+      position: "relative"
+    }
   }, children(pageDoc)) : null);
 };
 var page_layer_default = PageLayer;
@@ -180,8 +196,8 @@ function useRectObserver({ elRef }) {
 }
 
 // packages/types/constant.ts
-var VERTICAL_PADDING = 5;
-var Horizontal_PADDING = 5;
+var VERTICAL_PADDING = 16;
+var HORIZONTAL_PADDING = 24;
 
 // packages/resizer/index.tsx
 var Resizer = ({ doc, scale, children }) => {
@@ -199,51 +215,49 @@ var Resizer = ({ doc, scale, children }) => {
       const viewport = page.getViewport({
         scale: 1
       });
+      let h = 0;
+      let w = 0;
+      let pageScale = 1;
       if (typeof scale === "string") {
-        const horizontalPadding = Horizontal_PADDING * 2;
+        const horizontalPadding = HORIZONTAL_PADDING * 2;
         const verticalPadding = VERTICAL_PADDING * 2;
         switch (scale) {
           case "fitHeight": {
-            const pageScale = (height - horizontalPadding) / viewport.height;
-            setPageSize({
-              height: height - horizontalPadding,
-              scale: pageScale,
-              width: viewport.width * pageScale
-            });
+            pageScale = (height - verticalPadding) / viewport.height;
+            h = height - verticalPadding;
+            w = viewport.width * pageScale;
             break;
           }
           case "fitWidth": {
-            const pageScale = (width - verticalPadding) / viewport.width;
-            setPageSize({
-              height: viewport.height * pageScale,
-              scale: pageScale,
-              width: width - verticalPadding
-            });
+            pageScale = (width - horizontalPadding) / viewport.width;
+            h = viewport.height * pageScale;
+            w = width - horizontalPadding;
             break;
           }
           default: {
-            const heightScale = (height - horizontalPadding) / viewport.height;
-            const widthScale = (width - verticalPadding) / viewport.width;
-            const pageScale = Math.min(heightScale, widthScale);
-            setPageSize({
-              height: viewport.height * pageScale,
-              scale: pageScale,
-              width: viewport.width * pageScale
-            });
+            const heightScale = (height - verticalPadding) / viewport.height;
+            const widthScale = (width - horizontalPadding) / viewport.width;
+            pageScale = Math.min(heightScale, widthScale);
+            h = viewport.height * pageScale;
+            w = viewport.width * pageScale;
           }
         }
       } else {
-        setPageSize({
-          width: viewport.height * scale,
-          height: viewport.height * scale,
-          scale
-        });
+        pageScale = scale;
+        w = viewport.height * pageScale;
+        h = viewport.height * pageScale;
       }
+      setPageSize({
+        height: Math.floor(h),
+        width: Math.floor(w),
+        scale: pageScale
+      });
     });
   }, [doc, width, height, scale]);
   return /* @__PURE__ */ React5.createElement("div", {
-    ref: resizerRef
-  }, pageSize.width == 0 ? null : children(pageSize));
+    ref: resizerRef,
+    style: { width: "100%", height: "100%" }
+  }, pageSize.height == 0 || pageSize.width == 0 ? null : children(pageSize));
 };
 var resizer_default = Resizer;
 
@@ -252,7 +266,9 @@ var PDFViewer = ({
   pdfURI,
   loadingComponent,
   errorComponent,
-  scale
+  scale,
+  width,
+  height
 }) => {
   const [loading, setLoading] = useState5(false);
   const [loadingProgress, setLoadingProgress] = useState5(-1);
@@ -288,21 +304,29 @@ var PDFViewer = ({
       doc: pdfDoc,
       scale
     }, (pageSize) => /* @__PURE__ */ React6.createElement(React6.Fragment, null, range(0, pdfDoc.numPages - 1).map((index) => {
+      const pageIndex = index + 1;
       return /* @__PURE__ */ React6.createElement(page_layer_default, __spreadValues({
         key: index,
-        pageIndex: index + 1,
+        pageIndex,
         doc: pdfDoc
       }, pageSize), (doc) => [
         /* @__PURE__ */ React6.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
           pageDoc: doc,
-          pageIndex: index
+          pageIndex,
+          key: `canvas_layer_${pageIndex}`
+        })),
+        /* @__PURE__ */ React6.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+          pageDoc: doc,
+          pageIndex,
+          key: `text_layer_${pageIndex}`
         }))
       ]);
     })));
   }
   return /* @__PURE__ */ React6.createElement("div", {
     id: "pdf_viewer_container",
-    className: "pdf-viewer-container"
+    className: "pdf-viewer-container",
+    style: { height, width }
   }, contentComponent());
 };
 var viewer_default = PDFViewer;

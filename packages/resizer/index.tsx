@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useRectObserver } from "../hooks/useRectObserver";
 import { PageSize, ScaleType } from "../types";
-import { Horizontal_PADDING, VERTICAL_PADDING } from "../types/constant";
+import { HORIZONTAL_PADDING, VERTICAL_PADDING } from "../types/constant";
 import { PDFLib } from "../vendors/lib";
 
 interface ResizerProps {
@@ -34,52 +34,49 @@ const Resizer: FunctionComponent<ResizerProps> = ({ doc, scale, children }) => {
       const viewport = page.getViewport({
         scale: 1,
       });
+      let h = 0;
+      let w = 0;
+      let pageScale = 1;
       if (typeof scale === "string") {
-        const horizontalPadding = Horizontal_PADDING * 2;
+        const horizontalPadding = HORIZONTAL_PADDING * 2;
         const verticalPadding = VERTICAL_PADDING * 2;
         switch (scale) {
           case "fitHeight": {
-            const pageScale = (height - horizontalPadding) / viewport.height;
-            setPageSize({
-              height: height - horizontalPadding,
-              scale: pageScale,
-              width: viewport.width * pageScale,
-            });
+            pageScale = (height - verticalPadding) / viewport.height;
+            h = height - verticalPadding;
+            w = viewport.width * pageScale;
             break;
           }
           case "fitWidth": {
-            const pageScale = (width - verticalPadding) / viewport.width;
-            setPageSize({
-              height: viewport.height * pageScale,
-              scale: pageScale,
-              width: width - verticalPadding,
-            });
+            pageScale = (width - horizontalPadding) / viewport.width;
+            h = viewport.height * pageScale;
+            w = width - horizontalPadding;
             break;
           }
           default: {
-            const heightScale = (height - horizontalPadding) / viewport.height;
-            const widthScale = (width - verticalPadding) / viewport.width;
-            const pageScale = Math.min(heightScale, widthScale);
-            setPageSize({
-              height: viewport.height * pageScale,
-              scale: pageScale,
-              width: viewport.width * pageScale,
-            });
+            const heightScale = (height - verticalPadding) / viewport.height;
+            const widthScale = (width - horizontalPadding) / viewport.width;
+            pageScale = Math.min(heightScale, widthScale);
+            h = viewport.height * pageScale;
+            w = viewport.width * pageScale;
           }
         }
       } else {
-        setPageSize({
-          width: viewport.height * scale,
-          height: viewport.height * scale,
-          scale: scale,
-        });
+        pageScale = scale;
+        w = viewport.height * pageScale;
+        h = viewport.height * pageScale;
       }
+      setPageSize({
+        height: Math.floor(h),
+        width: Math.floor(w),
+        scale: pageScale,
+      });
     });
   }, [doc, width, height, scale]);
 
   return (
-    <div ref={resizerRef}>
-      {pageSize.width == 0 ? null : children(pageSize)}
+    <div ref={resizerRef} style={{ width: "100%", height: "100%" }}>
+      {pageSize.height == 0 || pageSize.width == 0 ? null : children(pageSize)}
     </div>
   );
 };

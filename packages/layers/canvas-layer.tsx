@@ -21,6 +21,8 @@ const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
         renderTask.current.cancel();
       }
 
+      console.log("scale", scale);
+
       var viewport = pageDoc.getViewport({ scale });
 
       // Support HiDPI-screens.
@@ -64,9 +66,13 @@ const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
         canvasRef.current.height = 0;
       }
     };
-  }, []);
+  }, [pageDoc, scale]);
 
-  return <canvas key={pageIndex} ref={canvasRef} />;
+  return (
+    <div style={{ width: width, height: height }}>
+      <canvas key={pageIndex} ref={canvasRef} />
+    </div>
+  );
 };
 
 export default CanvasLayer;
