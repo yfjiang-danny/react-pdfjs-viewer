@@ -3,14 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 9000",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-pdfjs-viewer": "git+ssh://git@github.com:yfjiang-danny/react-pdfjs-viewer.git#v0.1.0-dev"
+    "react-dom": "17.0.2"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",

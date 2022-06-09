@@ -74,7 +74,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
               return (
                 <PageLayer
                   key={index}
-                  pageIndex={index}
+                  pageIndex={index + 1}
                   doc={pdfDoc}
                   {...pageSize}
                 >

@@ -1,5 +1,5 @@
-import * as PDFLib from "pdfjs-dist/legacy/build/pdf";
 import React, { FC } from "react";
+import { PDFLib } from "../vendors/lib";
 
 export interface PDFWorkerProps {
   workerDir: string;
