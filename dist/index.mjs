@@ -111,7 +111,7 @@ var TextLayer = (props) => {
         renderTask.current.cancel();
       }
     };
-  }, [pageDoc, scale]);
+  }, [pageDoc, scale, width, height]);
   return /* @__PURE__ */ React3.createElement("div", {
     ref: textContainerRef,
     style: {
