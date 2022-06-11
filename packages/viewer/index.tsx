@@ -8,9 +8,10 @@ import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
 import CanvasLayer from "../layers/canvas-layer";
 import PageLayer from "../layers/page-layer";
 import TextLayer from "../layers/text-layer";
-import Resizer from "../resizer";
-import { PageSize, ScaleType } from "../types";
+import { PageSize, ScaleType, ScrollMode } from "../types";
 import { PDFLib } from "../vendors/lib";
+import "../styles/viewer.less";
+import { usePageResizer } from "../hooks/usePageResize";
 
 interface PDFViewerProps {
   pdfURI: string;
@@ -19,6 +20,7 @@ interface PDFViewerProps {
   scale: ScaleType;
   width: string | number;
   height: string | number;
+  scrollMode?: ScrollMode;
 }
 
 const PDFViewer: FC<PDFViewerProps> = ({
@@ -28,12 +30,25 @@ const PDFViewer: FC<PDFViewerProps> = ({
   scale,
   width,
   height,
+  scrollMode = "vertical",
 }) => {
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(-1);
   const [pdfDoc, setPDFDoc] = useState<PDFDocumentProxy>();
   const [errorReason, setErrorReason] = useState<any>();
   const loadingTask = useRef<PDFDocumentLoadingTask | null>(null);
+  const viewerRef = useRef<HTMLDivElement | null>(null);
+  const [renderingPageIndex, setRenderingPageIndex] = useState(-1);
+
+  const pageSize = usePageResizer({
+    resizerRef: viewerRef,
+    doc: pdfDoc,
+    scale: scale,
+  });
+
+  useEffect(() => {
+    setRenderingPageIndex(1);
+  }, [pageSize]);
 
   useEffect(() => {
     if (pdfURI) {
@@ -72,10 +87,10 @@ const PDFViewer: FC<PDFViewerProps> = ({
         : errorComponent;
     }
     return (
-      <Resizer doc={pdfDoc} scale={scale}>
-        {(pageSize: PageSize) => (
-          <>
-            {range(0, pdfDoc.numPages - 1).map((index) => {
+      <div>
+        {pageSize.width == 0
+          ? null
+          : range(0, pdfDoc.numPages - 1).map((index) => {
               const pageIndex = index + 1;
               return (
                 <PageLayer
@@ -83,35 +98,42 @@ const PDFViewer: FC<PDFViewerProps> = ({
                   pageIndex={pageIndex}
                   doc={pdfDoc}
                   {...pageSize}
+                  scrollMode={scrollMode}
                 >
-                  {(doc: PDFPageProxy) => [
-                    <CanvasLayer
-                      {...pageSize}
-                      pageDoc={doc}
-                      pageIndex={pageIndex}
-                      key={`canvas_layer_${pageIndex}`}
-                    />,
-                    <TextLayer
-                      {...pageSize}
-                      pageDoc={doc}
-                      pageIndex={pageIndex}
-                      key={`text_layer_${pageIndex}`}
-                    />,
-                  ]}
+                  {(doc: PDFPageProxy) =>
+                    renderingPageIndex < pageIndex
+                      ? null
+                      : [
+                          <CanvasLayer
+                            {...pageSize}
+                            pageDoc={doc}
+                            pageIndex={pageIndex}
+                            key={`canvas_layer_${pageIndex}`}
+                            onCompleted={() => {
+                              setRenderingPageIndex((pre) => pre + 1);
+                            }}
+                          />,
+                          <TextLayer
+                            {...pageSize}
+                            pageDoc={doc}
+                            pageIndex={pageIndex}
+                            key={`text_layer_${pageIndex}`}
+                          />,
+                        ]
+                  }
                 </PageLayer>
               );
             })}
-          </>
-        )}
-      </Resizer>
+      </div>
     );
   }
 
   return (
     <div
       id="pdf_viewer_container"
-      className="pdf-viewer-container"
+      className="viewer"
       style={{ height: height, width: width }}
+      ref={viewerRef}
     >
       {contentComponent()}
     </div>

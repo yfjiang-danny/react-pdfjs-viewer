@@ -21,7 +21,7 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 // packages/layers/canvas-layer.tsx
 import React, { useEffect, useRef } from "react";
 var CanvasLayer = (props) => {
-  const { pageDoc, pageIndex, width, height, scale } = props;
+  const { pageDoc, pageIndex, width, height, scale, onCompleted } = props;
   const canvasRef = useRef(null);
   const renderTask = useRef();
   useEffect(() => {
@@ -49,10 +49,12 @@ var CanvasLayer = (props) => {
           if (canvasRef.current) {
             canvasRef.current.hidden = false;
           }
+          onCompleted == null ? void 0 : onCompleted();
         }, () => {
           if (canvasRef.current) {
             canvasRef.current.hidden = false;
           }
+          onCompleted == null ? void 0 : onCompleted();
         });
       }
     }
@@ -64,6 +66,7 @@ var CanvasLayer = (props) => {
     };
   }, [pageDoc, scale]);
   return /* @__PURE__ */ React.createElement("div", {
+    className: "canvas-layer",
     style: { width, height }
   }, /* @__PURE__ */ React.createElement("canvas", {
     key: pageIndex,
@@ -125,7 +128,7 @@ var text_layer_default = TextLayer;
 
 // packages/viewer/index.tsx
 import { range } from "lodash";
-import React6, { useEffect as useEffect6, useRef as useRef5, useState as useState5 } from "react";
+import React5, { useEffect as useEffect6, useRef as useRef4, useState as useState5 } from "react";
 
 // packages/layers/page-layer.tsx
 import React4, {
@@ -137,7 +140,8 @@ var PageLayer = ({
   pageIndex,
   width,
   height,
-  children
+  children,
+  scrollMode
 }) => {
   const [pageDoc, setPageDoc] = useState2();
   useEffect3(() => {
@@ -146,23 +150,23 @@ var PageLayer = ({
     });
   }, [pageIndex, doc]);
   return /* @__PURE__ */ React4.createElement(React4.Fragment, null, pageDoc ? /* @__PURE__ */ React4.createElement("div", {
+    className: `page-layer ${scrollMode}-scroll`,
     id: `__page_${pageIndex}__`,
     style: {
       height,
-      width,
-      margin: "auto",
-      position: "relative"
+      width
     }
   }, children(pageDoc)) : null);
 };
 var page_layer_default = PageLayer;
 
-// packages/resizer/index.tsx
-import React5, {
-  useEffect as useEffect5,
-  useRef as useRef4,
-  useState as useState4
-} from "react";
+// packages/hooks/usePageResize.ts
+import { useState as useState4, useEffect as useEffect5 } from "react";
+
+// packages/types/constant.ts
+var MIN_SCALE = 0.1;
+var VERTICAL_PADDING = 16;
+var HORIZONTAL_PADDING = 24;
 
 // packages/hooks/useRectObserver.ts
 import { useEffect as useEffect4, useRef as useRef3, useState as useState3 } from "react";
@@ -195,13 +199,8 @@ function useRectObserver({ elRef }) {
   };
 }
 
-// packages/types/constant.ts
-var VERTICAL_PADDING = 16;
-var HORIZONTAL_PADDING = 24;
-
-// packages/resizer/index.tsx
-var Resizer = ({ doc, scale, children }) => {
-  const resizerRef = useRef4(null);
+// packages/hooks/usePageResize.ts
+function usePageResizer({ resizerRef, doc, scale }) {
   const [pageSize, setPageSize] = useState4({
     width: 0,
     height: 0,
@@ -211,6 +210,9 @@ var Resizer = ({ doc, scale, children }) => {
     elRef: resizerRef
   });
   useEffect5(() => {
+    if (!doc) {
+      return;
+    }
     doc.getPage(1).then((page) => {
       const viewport = page.getViewport({
         scale: 1
@@ -243,7 +245,7 @@ var Resizer = ({ doc, scale, children }) => {
           }
         }
       } else {
-        pageScale = scale;
+        pageScale = scale < MIN_SCALE ? MIN_SCALE : scale;
         w = viewport.height * pageScale;
         h = viewport.height * pageScale;
       }
@@ -254,12 +256,8 @@ var Resizer = ({ doc, scale, children }) => {
       });
     });
   }, [doc, width, height, scale]);
-  return /* @__PURE__ */ React5.createElement("div", {
-    ref: resizerRef,
-    style: { width: "100%", height: "100%" }
-  }, pageSize.height == 0 || pageSize.width == 0 ? null : children(pageSize));
-};
-var resizer_default = Resizer;
+  return pageSize;
+}
 
 // packages/viewer/index.tsx
 var PDFViewer = ({
@@ -268,13 +266,24 @@ var PDFViewer = ({
   errorComponent,
   scale,
   width,
-  height
+  height,
+  scrollMode = "vertical"
 }) => {
   const [loading, setLoading] = useState5(false);
   const [loadingProgress, setLoadingProgress] = useState5(-1);
   const [pdfDoc, setPDFDoc] = useState5();
   const [errorReason, setErrorReason] = useState5();
-  const loadingTask = useRef5(null);
+  const loadingTask = useRef4(null);
+  const viewerRef = useRef4(null);
+  const [renderingPageIndex, setRenderingPageIndex] = useState5(-1);
+  const pageSize = usePageResizer({
+    resizerRef: viewerRef,
+    doc: pdfDoc,
+    scale
+  });
+  useEffect6(() => {
+    setRenderingPageIndex(1);
+  }, [pageSize]);
   useEffect6(() => {
     if (pdfURI) {
       loadingTask.current = PDFLib.getDocument(pdfURI);
@@ -300,42 +309,45 @@ var PDFViewer = ({
     if (errorReason || !pdfDoc) {
       return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent;
     }
-    return /* @__PURE__ */ React6.createElement(resizer_default, {
-      doc: pdfDoc,
-      scale
-    }, (pageSize) => /* @__PURE__ */ React6.createElement(React6.Fragment, null, range(0, pdfDoc.numPages - 1).map((index) => {
+    return /* @__PURE__ */ React5.createElement("div", null, pageSize.width == 0 ? null : range(0, pdfDoc.numPages - 1).map((index) => {
       const pageIndex = index + 1;
-      return /* @__PURE__ */ React6.createElement(page_layer_default, __spreadValues({
+      return /* @__PURE__ */ React5.createElement(page_layer_default, __spreadProps(__spreadValues({
         key: index,
         pageIndex,
         doc: pdfDoc
-      }, pageSize), (doc) => [
-        /* @__PURE__ */ React6.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+      }, pageSize), {
+        scrollMode
+      }), (doc) => renderingPageIndex < pageIndex ? null : [
+        /* @__PURE__ */ React5.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
           pageDoc: doc,
           pageIndex,
-          key: `canvas_layer_${pageIndex}`
+          key: `canvas_layer_${pageIndex}`,
+          onCompleted: () => {
+            setRenderingPageIndex((pre) => pre + 1);
+          }
         })),
-        /* @__PURE__ */ React6.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+        /* @__PURE__ */ React5.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
           pageDoc: doc,
           pageIndex,
           key: `text_layer_${pageIndex}`
         }))
       ]);
-    })));
+    }));
   }
-  return /* @__PURE__ */ React6.createElement("div", {
+  return /* @__PURE__ */ React5.createElement("div", {
     id: "pdf_viewer_container",
-    className: "pdf-viewer-container",
-    style: { height, width }
+    className: "viewer",
+    style: { height, width },
+    ref: viewerRef
   }, contentComponent());
 };
 var viewer_default = PDFViewer;
 
 // packages/worker/index.tsx
-import React7 from "react";
+import React6 from "react";
 var PDFWorker = ({ workerDir, children }) => {
   PDFLib.GlobalWorkerOptions.workerSrc = workerDir;
-  return /* @__PURE__ */ React7.createElement(React7.Fragment, null, children);
+  return /* @__PURE__ */ React6.createElement(React6.Fragment, null, children);
 };
 var worker_default = PDFWorker;
 export {

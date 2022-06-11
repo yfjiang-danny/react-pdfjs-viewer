@@ -6,6 +6,7 @@ interface CanvasLayerProps {
     width: number;
     height: number;
     scale: number;
+    onCompleted?(): void;
 }
 declare const CanvasLayer: FunctionComponent<CanvasLayerProps>;
 export default CanvasLayer;

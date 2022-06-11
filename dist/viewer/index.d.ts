@@ -1,5 +1,6 @@
 import { FC, ReactNode } from "react";
-import { ScaleType } from "../types";
+import { ScaleType, ScrollMode } from "../types";
+import "../styles/viewer.less";
 interface PDFViewerProps {
     pdfURI: string;
     errorComponent?: ((reason: any) => ReactNode) | ReactNode;
@@ -7,6 +8,7 @@ interface PDFViewerProps {
     scale: ScaleType;
     width: string | number;
     height: string | number;
+    scrollMode?: ScrollMode;
 }
 declare const PDFViewer: FC<PDFViewerProps>;
 export default PDFViewer;

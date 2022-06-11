@@ -7,10 +7,11 @@ interface CanvasLayerProps {
   width: number;
   height: number;
   scale: number;
+  onCompleted?(): void;
 }
 
 const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
-  const { pageDoc, pageIndex, width, height, scale } = props;
+  const { pageDoc, pageIndex, width, height, scale, onCompleted } = props;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTask = useRef<any>();
@@ -51,11 +52,13 @@ const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
             if (canvasRef.current) {
               canvasRef.current.hidden = false;
             }
+            onCompleted?.();
           },
           () => {
             if (canvasRef.current) {
               canvasRef.current.hidden = false;
             }
+            onCompleted?.();
           }
         );
       }
@@ -69,7 +72,7 @@ const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
   }, [pageDoc, scale]);
 
   return (
-    <div style={{ width: width, height: height }}>
+    <div className="canvas-layer" style={{ width: width, height: height }}>
       <canvas key={pageIndex} ref={canvasRef} />
     </div>
   );

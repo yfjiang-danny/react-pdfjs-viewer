@@ -22,4 +22,27 @@
   cursor: text;
   transform-origin: 0% 0%;
 }
+.text-layer ::selection {
+  background: #0000ff;
+}
+
+/* packages/styles/page-layer.less */
+.page-layer {
+  position: relative;
+  background-color: #ededf0;
+}
+.page-layer.vertical-scroll {
+  margin: 16px auto;
+}
+
+/* packages/styles/viewer.less */
+.viewer,
+.viewer > div {
+  background-color: #ededf0;
+}
+.viewer > div::before,
+.viewer > div::after {
+  content: "";
+  display: table;
+}
 /*# sourceMappingURL=index.css.map */

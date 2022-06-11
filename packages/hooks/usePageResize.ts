@@ -1,24 +1,20 @@
 import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
-import React, {
-  FunctionComponent,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { useRectObserver } from "../hooks/useRectObserver";
+import { useState, useEffect } from "react";
 import { PageSize, ScaleType } from "../types";
-import { HORIZONTAL_PADDING, VERTICAL_PADDING } from "../types/constant";
-import { PDFLib } from "../vendors/lib";
+import {
+  HORIZONTAL_PADDING,
+  VERTICAL_PADDING,
+  MIN_SCALE,
+} from "../types/constant";
+import { useRectObserver } from "./useRectObserver";
 
-interface ResizerProps {
-  doc: PDFDocumentProxy;
+interface PageResizerProps {
+  doc?: PDFDocumentProxy;
   scale: ScaleType;
-  children: (rect: PageSize) => ReactNode;
+  resizerRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
-const Resizer: FunctionComponent<ResizerProps> = ({ doc, scale, children }) => {
-  const resizerRef = useRef<HTMLDivElement | null>(null);
+function usePageResizer({ resizerRef, doc, scale }: PageResizerProps) {
   const [pageSize, setPageSize] = useState<PageSize>({
     width: 0,
     height: 0,
@@ -30,6 +26,9 @@ const Resizer: FunctionComponent<ResizerProps> = ({ doc, scale, children }) => {
   });
 
   useEffect(() => {
+    if (!doc) {
+      return;
+    }
     doc.getPage(1).then((page) => {
       const viewport = page.getViewport({
         scale: 1,
@@ -62,7 +61,7 @@ const Resizer: FunctionComponent<ResizerProps> = ({ doc, scale, children }) => {
           }
         }
       } else {
-        pageScale = scale;
+        pageScale = scale < MIN_SCALE ? MIN_SCALE : scale;
         w = viewport.height * pageScale;
         h = viewport.height * pageScale;
       }
@@ -74,11 +73,7 @@ const Resizer: FunctionComponent<ResizerProps> = ({ doc, scale, children }) => {
     });
   }, [doc, width, height, scale]);
 
-  return (
-    <div ref={resizerRef} style={{ width: "100%", height: "100%" }}>
-      {pageSize.height == 0 || pageSize.width == 0 ? null : children(pageSize)}
-    </div>
-  );
-};
+  return pageSize;
+}
 
-export default Resizer;
+export { usePageResizer };

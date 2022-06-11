@@ -5,6 +5,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import "../styles/page-layer.less";
+import { ScrollMode } from "../types";
 
 interface PageLayerProps {
   pageIndex: number;
@@ -12,6 +14,7 @@ interface PageLayerProps {
   width: number;
   height: number;
   children: (doc: PDFPageProxy) => ReactNode | ReactNode[];
+  scrollMode: ScrollMode;
 }
 
 const PageLayer: FunctionComponent<PageLayerProps> = ({
@@ -20,6 +23,7 @@ const PageLayer: FunctionComponent<PageLayerProps> = ({
   width,
   height,
   children,
+  scrollMode,
 }) => {
   const [pageDoc, setPageDoc] = useState<PDFPageProxy>();
 
@@ -33,12 +37,11 @@ const PageLayer: FunctionComponent<PageLayerProps> = ({
     <>
       {pageDoc ? (
         <div
+          className={`page-layer ${scrollMode}-scroll`}
           id={`__page_${pageIndex}__`}
           style={{
             height: height,
             width: width,
-            margin: "auto",
-            position: "relative",
           }}
         >
           {children(pageDoc)}
