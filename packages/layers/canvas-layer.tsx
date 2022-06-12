@@ -69,7 +69,7 @@ const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
         canvasRef.current.height = 0;
       }
     };
-  }, [pageDoc, scale]);
+  }, [pageDoc, scale, width, height]);
 
   return (
     <div className="canvas-layer" style={{ width: width, height: height }}>

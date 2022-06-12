@@ -29,7 +29,6 @@
 /* packages/styles/page-layer.less */
 .page-layer {
   position: relative;
-  background-color: #ededf0;
 }
 .page-layer.vertical-scroll {
   margin: 16px auto;

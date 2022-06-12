@@ -64,7 +64,7 @@ var CanvasLayer = (props) => {
         canvasRef.current.height = 0;
       }
     };
-  }, [pageDoc, scale]);
+  }, [pageDoc, scale, width, height]);
   return /* @__PURE__ */ React.createElement("div", {
     className: "canvas-layer",
     style: { width, height }
@@ -249,10 +249,16 @@ function usePageResizer({ resizerRef, doc, scale }) {
         w = viewport.height * pageScale;
         h = viewport.height * pageScale;
       }
-      setPageSize({
+      const newPageSize = {
         height: Math.floor(h),
         width: Math.floor(w),
         scale: pageScale
+      };
+      setPageSize((pre) => {
+        if (JSON.stringify(pre) == JSON.stringify(newPageSize)) {
+          return pre;
+        }
+        return newPageSize;
       });
     });
   }, [doc, width, height, scale]);

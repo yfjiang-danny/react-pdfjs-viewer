@@ -65,10 +65,16 @@ function usePageResizer({ resizerRef, doc, scale }: PageResizerProps) {
         w = viewport.height * pageScale;
         h = viewport.height * pageScale;
       }
-      setPageSize({
+      const newPageSize = {
         height: Math.floor(h),
         width: Math.floor(w),
         scale: pageScale,
+      };
+      setPageSize((pre) => {
+        if (JSON.stringify(pre) == JSON.stringify(newPageSize)) {
+          return pre;
+        }
+        return newPageSize;
       });
     });
   }, [doc, width, height, scale]);
