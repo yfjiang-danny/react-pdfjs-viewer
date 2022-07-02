@@ -18,6 +18,9 @@ esbuild
     sourcesContent: false,
     logLevel: "silent",
     plugins: [lessLoader.lessLoader()],
+    loader: {
+      ".gif": "file"
+    }
   })
   .catch((err) => {
     console.log(err);

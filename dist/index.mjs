@@ -21,57 +21,78 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 // packages/layers/canvas-layer.tsx
 import React, { useEffect, useRef } from "react";
 var CanvasLayer = (props) => {
-  const { pageDoc, pageIndex, width, height, scale, onCompleted } = props;
+  const {
+    pageDoc,
+    pageIndex,
+    renderingIndex,
+    width,
+    height,
+    scale,
+    onCompleted
+  } = props;
+  const wrapperRef = useRef(null);
   const canvasRef = useRef(null);
   const renderTask = useRef();
-  useEffect(() => {
+  function refresh(width2, height2) {
     if (canvasRef.current) {
-      if (renderTask.current) {
-        renderTask.current.cancel();
-      }
-      console.log("scale", scale);
-      var viewport = pageDoc.getViewport({ scale });
-      var outputScale = window.devicePixelRatio || 1;
-      var context = canvasRef.current.getContext("2d");
-      canvasRef.current.height = Math.floor(viewport.height * outputScale);
-      canvasRef.current.width = Math.floor(viewport.width * outputScale);
-      canvasRef.current.style.width = `${Math.floor(viewport.width)}px`;
-      canvasRef.current.style.height = `${Math.floor(viewport.height)}px`;
-      canvasRef.current.hidden = true;
-      const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
-      if (context) {
-        renderTask.current = pageDoc.render({
-          canvasContext: context,
-          viewport,
-          transform
-        });
-        renderTask.current.promise.then(() => {
-          if (canvasRef.current) {
-            canvasRef.current.hidden = false;
-          }
-          onCompleted == null ? void 0 : onCompleted();
-        }, () => {
-          if (canvasRef.current) {
-            canvasRef.current.hidden = false;
-          }
-          onCompleted == null ? void 0 : onCompleted();
-        });
-      }
+      canvasRef.current.style.width = `${Math.floor(width2)}px`;
+      canvasRef.current.style.height = `${Math.floor(height2)}px`;
+      canvasRef.current.style.transform = `scale(1,1)`;
     }
-    return () => {
-      if (canvasRef.current) {
-        canvasRef.current.width = 0;
-        canvasRef.current.height = 0;
-      }
-    };
-  }, [pageDoc, scale, width, height]);
+  }
+  function showCanvas(canvasEl) {
+    var _a;
+    if (wrapperRef.current) {
+      canvasEl.hidden = false;
+      wrapperRef.current.appendChild(canvasEl);
+      canvasRef.current && ((_a = wrapperRef.current) == null ? void 0 : _a.removeChild(canvasRef.current));
+      canvasRef.current = canvasEl;
+    }
+  }
+  useEffect(() => {
+    if (renderingIndex !== pageIndex) {
+      return;
+    }
+    if (renderTask.current) {
+      renderTask.current.cancel();
+    }
+    console.log(renderingIndex, pageIndex);
+    var viewport = pageDoc.getViewport({ scale });
+    refresh(viewport.width, viewport.height);
+    var outputScale = window.devicePixelRatio || 1;
+    const canvasEl = document.createElement("canvas");
+    var context = canvasEl.getContext("2d");
+    canvasEl.height = Math.floor(viewport.height * outputScale);
+    canvasEl.width = Math.floor(viewport.width * outputScale);
+    canvasEl.style.width = `${Math.floor(viewport.width)}px`;
+    canvasEl.style.height = `${Math.floor(viewport.height)}px`;
+    canvasEl.style.position = "absolute";
+    canvasEl.style.top = "0";
+    canvasEl.style.left = "0";
+    canvasEl.style.bottom = "0";
+    canvasEl.style.right = "0";
+    canvasEl.hidden = true;
+    const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
+    if (context) {
+      renderTask.current = pageDoc.render({
+        canvasContext: context,
+        viewport,
+        transform
+      });
+      renderTask.current.promise.then(() => {
+        showCanvas(canvasEl);
+        onCompleted == null ? void 0 : onCompleted();
+      }, () => {
+        showCanvas(canvasEl);
+        onCompleted == null ? void 0 : onCompleted();
+      });
+    }
+  }, [pageDoc, scale, width, height, renderingIndex]);
   return /* @__PURE__ */ React.createElement("div", {
     className: "canvas-layer",
-    style: { width, height }
-  }, /* @__PURE__ */ React.createElement("canvas", {
-    key: pageIndex,
-    ref: canvasRef
-  }));
+    style: { width, height },
+    ref: wrapperRef
+  });
 };
 var canvas_layer_default = CanvasLayer;
 
@@ -128,7 +149,7 @@ var text_layer_default = TextLayer;
 
 // packages/viewer/index.tsx
 import { range } from "lodash";
-import React5, { useEffect as useEffect6, useRef as useRef4, useState as useState5 } from "react";
+import React6, { useEffect as useEffect6, useRef as useRef4, useState as useState5 } from "react";
 
 // packages/layers/page-layer.tsx
 import React4, {
@@ -159,6 +180,15 @@ var PageLayer = ({
   }, children(pageDoc)) : null);
 };
 var page_layer_default = PageLayer;
+
+// packages/layers/loading-layer.tsx
+import React5 from "react";
+var LoadingLayer = (props) => {
+  return /* @__PURE__ */ React5.createElement("div", {
+    className: "loading-layer"
+  });
+};
+var loading_layer_default = LoadingLayer;
 
 // packages/hooks/usePageResize.ts
 import { useState as useState4, useEffect as useEffect5 } from "react";
@@ -281,7 +311,8 @@ var PDFViewer = ({
   const [errorReason, setErrorReason] = useState5();
   const loadingTask = useRef4(null);
   const viewerRef = useRef4(null);
-  const [renderingPageIndex, setRenderingPageIndex] = useState5(-1);
+  const [renderingPageIndex, setRenderingPageIndex] = useState5(1);
+  const [renderMap, setRenderMap] = useState5({});
   const pageSize = usePageResizer({
     resizerRef: viewerRef,
     doc: pdfDoc,
@@ -315,32 +346,36 @@ var PDFViewer = ({
     if (errorReason || !pdfDoc) {
       return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent;
     }
-    return /* @__PURE__ */ React5.createElement("div", null, pageSize.width == 0 ? null : range(0, pdfDoc.numPages - 1).map((index) => {
+    return /* @__PURE__ */ React6.createElement("div", null, pageSize.width == 0 ? null : range(0, pdfDoc.numPages).map((index) => {
       const pageIndex = index + 1;
-      return /* @__PURE__ */ React5.createElement(page_layer_default, __spreadProps(__spreadValues({
+      return /* @__PURE__ */ React6.createElement(page_layer_default, __spreadProps(__spreadValues({
         key: index,
         pageIndex,
         doc: pdfDoc
       }, pageSize), {
         scrollMode
-      }), (doc) => renderingPageIndex < pageIndex ? null : [
-        /* @__PURE__ */ React5.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+      }), (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ React6.createElement(loading_layer_default, null) : [
+        /* @__PURE__ */ React6.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
           pageDoc: doc,
           pageIndex,
+          renderingIndex: renderingPageIndex,
           key: `canvas_layer_${pageIndex}`,
           onCompleted: () => {
             setRenderingPageIndex((pre) => pre + 1);
           }
         })),
-        /* @__PURE__ */ React5.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+        /* @__PURE__ */ React6.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
           pageDoc: doc,
           pageIndex,
           key: `text_layer_${pageIndex}`
-        }))
+        })),
+        renderingPageIndex <= pageIndex ? /* @__PURE__ */ React6.createElement(loading_layer_default, {
+          key: `loading_layer_${pageIndex}`
+        }) : null
       ]);
     }));
   }
-  return /* @__PURE__ */ React5.createElement("div", {
+  return /* @__PURE__ */ React6.createElement("div", {
     id: "pdf_viewer_container",
     className: "viewer",
     style: { height, width },
@@ -350,10 +385,10 @@ var PDFViewer = ({
 var viewer_default = PDFViewer;
 
 // packages/worker/index.tsx
-import React6 from "react";
+import React7 from "react";
 var PDFWorker = ({ workerDir, children }) => {
   PDFLib.GlobalWorkerOptions.workerSrc = workerDir;
-  return /* @__PURE__ */ React6.createElement(React6.Fragment, null, children);
+  return /* @__PURE__ */ React7.createElement(React7.Fragment, null, children);
 };
 var worker_default = PDFWorker;
 export {

@@ -1,3 +1,8 @@
+/* packages/styles/canvas-layer.less */
+.canvas-layer {
+  overflow: hidden;
+}
+
 /* packages/styles/text-layer.less */
 .text-layer {
   position: absolute;
@@ -29,9 +34,21 @@
 /* packages/styles/page-layer.less */
 .page-layer {
   position: relative;
+  background-color: #fff;
 }
 .page-layer.vertical-scroll {
   margin: 16px auto;
+}
+
+/* packages/styles/loading-layer.less */
+.loading-layer {
+  position: absolute;
+  display: block;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: url(./loading-icon-AQX2QBUJ.gif) center no-repeat;
 }
 
 /* packages/styles/viewer.less */
