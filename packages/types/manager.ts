@@ -32,11 +32,13 @@ class PDFViewerManager {
   renderingPage = -1;
   map: Map<number, PageViewer> = new Map();
   scrollDirection: ScrollDirection = ScrollDirection.Forward;
+  queue = [];
 
   constructor(doc: PDFDocumentProxy) {
     this.doc = doc;
     this.pageNum = doc.numPages;
     this.renderingPage = 1;
+    doc.getStats();
   }
 
   onPageRendered(doc: PDFPageProxy, index: number) {
@@ -48,7 +50,13 @@ class PDFViewerManager {
     this.renderNext();
   }
 
-  renderNext() {}
+  renderNext(index?: number) {
+    if (typeof index == "number") {
+      this.renderingPage++;
+    }
+    if (this.scrollDirection == ScrollDirection.Forward) {
+    }
+  }
 }
 
 export { PDFViewerManager };

@@ -13,12 +13,13 @@ import { PageSize, ScaleType, ScrollMode } from "../types";
 import { PDFLib } from "../vendors/lib";
 import "../styles/viewer.less";
 import { usePageResizer } from "../hooks/usePageResize";
+import { usePDFViewer } from "../provider";
+import { roundToDivide, ScrollState, watchScroll } from "../utils";
 
 interface PDFViewerProps {
   pdfURI: string;
   errorComponent?: ((reason: any) => ReactNode) | ReactNode;
   loadingComponent?: ((progress: number) => ReactNode) | ReactNode;
-  scale: ScaleType;
   width: string | number;
   height: string | number;
   scrollMode?: ScrollMode;
@@ -28,11 +29,12 @@ const PDFViewer: FC<PDFViewerProps> = ({
   pdfURI,
   loadingComponent,
   errorComponent,
-  scale,
   width,
   height,
   scrollMode = "vertical",
 }) => {
+  const { scale, totalPage, setCurrentPage, setTotalPage } = usePDFViewer();
+
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(-1);
   const [pdfDoc, setPDFDoc] = useState<PDFDocumentProxy>();
@@ -63,6 +65,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
       loadingTask.current.promise
         .then((pdf: PDFDocumentProxy) => {
           setPDFDoc(pdf);
+          setTotalPage(pdf.numPages);
         })
         .catch((reason) => {
           setErrorReason(reason);
@@ -72,6 +75,47 @@ const PDFViewer: FC<PDFViewerProps> = ({
         });
     }
   }, [pdfURI]);
+
+  function scrollHandler(state: ScrollState) {
+    if (scrollMode == "vertical") {
+      if (pageSize.height == 0) {
+        return;
+      }
+      const r = state.lastY % pageSize.height;
+      let d = Math.floor(state.lastY / pageSize.height) + 1;
+      const pageIndex =
+        r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
+      setCurrentPage((pre) => {
+        if (pre == pageIndex) {
+          return pre;
+        }
+        return pageIndex;
+      });
+      return;
+    }
+    if (pageSize.width == 0) {
+      return;
+    }
+    const r = state.lastX % pageSize.width;
+    let d = Math.floor(state.lastX / pageSize.width) + 1;
+    const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
+    setCurrentPage((pre) => {
+      if (pre == page) {
+        return pre;
+      }
+      return page;
+    });
+  }
+
+  useEffect(() => {
+    let scrollState: ScrollState | null = null;
+    if (viewerRef.current) {
+      scrollState = watchScroll(viewerRef.current, scrollHandler);
+    }
+    return () => {
+      scrollState && scrollState.remove();
+    };
+  }, [scrollHandler]);
 
   function contentComponent(): ReactNode {
     if (!pdfURI) {

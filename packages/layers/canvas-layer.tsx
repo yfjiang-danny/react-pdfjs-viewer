@@ -53,8 +53,6 @@ const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
       renderTask.current.cancel();
     }
 
-    console.log(renderingIndex, pageIndex);
-
     var viewport = pageDoc.getViewport({ scale });
     refresh(viewport.width, viewport.height);
 

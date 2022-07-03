@@ -22,8 +22,9 @@ declare class PDFViewerManager {
     renderingPage: number;
     map: Map<number, PageViewer>;
     scrollDirection: ScrollDirection;
+    queue: never[];
     constructor(doc: PDFDocumentProxy);
     onPageRendered(doc: PDFPageProxy, index: number): void;
-    renderNext(): void;
+    renderNext(index?: number): void;
 }
 export { PDFViewerManager };

@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { ArrowDropDown } from "../../assets/svg";
-import "./index.scss";
+import "./index.less";
 
 interface SelectProps {
   children: ReactNode;

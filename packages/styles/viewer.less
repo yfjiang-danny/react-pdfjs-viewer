@@ -1,9 +1,13 @@
+.viewer {
+  overflow: auto;
+}
 
-.viewer, .viewer>div {
+.viewer,
+.viewer > div {
   background-color: rgba(237, 237, 240, 1);
 }
-.viewer>div::before, .viewer>div::after {
-    content: '';
-    display: table;
+.viewer > div::before,
+.viewer > div::after {
+  content: "";
+  display: table;
 }
-

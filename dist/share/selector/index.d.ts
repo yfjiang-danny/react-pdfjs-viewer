@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import "./index.scss";
+import "./index.less";
 interface SelectProps {
     children: ReactNode;
     defaultValue?: string;
