@@ -47,6 +47,12 @@ const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
           transform: transform,
         });
 
+        renderTask.current.onContinue = () => {
+          if (canvasRef.current) {
+            canvasRef.current.hidden = false;
+          }
+        };
+
         renderTask.current.promise.then(
           () => {
             if (canvasRef.current) {
