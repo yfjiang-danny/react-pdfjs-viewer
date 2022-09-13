@@ -1,37 +1,83 @@
-import React, { ChangeEvent, FunctionComponent } from "react";
+import React, {
+  ChangeEvent,
+  FunctionComponent,
+  useEffect,
+  useState,
+} from "react";
+import { usePDFViewer } from "../provider";
 import Select from "../share/selector";
-import "./index.scss";
+import { ScaleType } from "../types";
+import { scrollIntoView } from "../utils";
+import "./index.less";
 
 export const TOOLBAR_HEIGHT = 48;
 
 interface ToolbarProps {}
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
+  const { currentPage, setCurrentPage, scale, setScale, totalPage } =
+    usePDFViewer();
+
+  const [inputPageIndex, setInputPageIndex] = useState(currentPage);
+
+  useEffect(() => {
+    setInputPageIndex(currentPage);
+  }, [currentPage]);
+
   function onPreviousButtonClick(): void {
-    // setCurrentPage((pre) => {
-    //   return pre > 1 ? pre - 1 : 1;
-    // });
+    setCurrentPage((pre) => {
+      return pre > 1 ? pre - 1 : 1;
+    });
   }
 
   function onNextButtonClick(): void {
-    // setCurrentPage((pre) => {
-    //   return pre < totalPage ? pre + 1 : totalPage;
-    // });
+    setCurrentPage((pre) => {
+      return pre < totalPage ? pre + 1 : totalPage;
+    });
   }
 
   function onScaleChange(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("onScaleChange", event.currentTarget.value);
     if (!isNaN(Number(event.currentTarget.value))) {
       const scale = parseFloat(event.currentTarget.value);
-      //   setCurrentScale(scale);
+      setScale(scale);
       return;
     }
-    // setCurrentScale(event.currentTarget.value as ScaleType);
+    setScale(event.currentTarget.value as ScaleType);
+  }
+
+  function onPageInputChange(ev: React.ChangeEvent<HTMLInputElement>): void {
+    const v = ev.target.value;
+    setInputPageIndex(parseInt(v));
+  }
+
+  function scrollToPageIndex(index: number) {
+    const scrollEl = document.getElementById("pdf_viewer_container");
+    if (scrollEl) {
+      const el = document.getElementById(`__page_${index}__`);
+
+      el &&
+        scrollEl.scrollTo({
+          top: el.offsetTop,
+        });
+    }
+  }
+
+  function onPageInputKeyDown(ev: React.KeyboardEvent): void {
+    console.log(ev);
+    if (ev.code == "Enter") {
+      if (inputPageIndex < 1 || inputPageIndex > totalPage) {
+        setInputPageIndex(currentPage);
+        return;
+      }
+      setCurrentPage(inputPageIndex);
+      scrollToPageIndex(inputPageIndex);
+    }
   }
 
   return (
     <div className="toolbar">
-      <div className="left-button-container">
+      <div className="toolbar-left">
         <button className="common-button">Search</button>
         <button className="common-button" onClick={onPreviousButtonClick}>
           Previous
@@ -39,9 +85,24 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
         <button className="common-button" onClick={onNextButtonClick}>
           Next
         </button>
+        <div className="page-input-wrapper">
+          <input
+            className="page-input"
+            value={`${inputPageIndex}`}
+            onChange={onPageInputChange}
+            onKeyDown={onPageInputKeyDown}
+            type="number"
+            title="页面"
+            size={4}
+            min={1}
+            autoComplete="off"
+            max={totalPage}
+          />{" "}
+          / {totalPage}
+        </div>
       </div>
-      <div className="middle-button-container">
-        <Select control value={`auto`} onChange={onScaleChange}>
+      <div className="toolbar-center">
+        <Select control value={`${scale}`} onChange={onScaleChange}>
           <option value="auto">自动缩放</option>
           <option value="fitWidth">适合页宽</option>
           <option value="fitHeight">适合页面</option>
@@ -55,7 +116,7 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
           <option value="4">400%</option>
         </Select>
       </div>
-      <div></div>
+      <div className="toolbar-right"></div>
     </div>
   );
 };

@@ -21,57 +21,77 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 // packages/layers/canvas-layer.tsx
 import React, { useEffect, useRef } from "react";
 var CanvasLayer = (props) => {
-  const { pageDoc, pageIndex, width, height, scale, onCompleted } = props;
+  const {
+    pageDoc,
+    pageIndex,
+    renderingIndex,
+    width,
+    height,
+    scale,
+    onCompleted
+  } = props;
+  const wrapperRef = useRef(null);
   const canvasRef = useRef(null);
   const renderTask = useRef();
-  useEffect(() => {
+  function refresh(width2, height2) {
     if (canvasRef.current) {
-      if (renderTask.current) {
-        renderTask.current.cancel();
-      }
-      console.log("scale", scale);
-      var viewport = pageDoc.getViewport({ scale });
-      var outputScale = window.devicePixelRatio || 1;
-      var context = canvasRef.current.getContext("2d");
-      canvasRef.current.height = Math.floor(viewport.height * outputScale);
-      canvasRef.current.width = Math.floor(viewport.width * outputScale);
-      canvasRef.current.style.width = `${Math.floor(viewport.width)}px`;
-      canvasRef.current.style.height = `${Math.floor(viewport.height)}px`;
-      canvasRef.current.hidden = true;
-      const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
-      if (context) {
-        renderTask.current = pageDoc.render({
-          canvasContext: context,
-          viewport,
-          transform
-        });
-        renderTask.current.promise.then(() => {
-          if (canvasRef.current) {
-            canvasRef.current.hidden = false;
-          }
-          onCompleted == null ? void 0 : onCompleted();
-        }, () => {
-          if (canvasRef.current) {
-            canvasRef.current.hidden = false;
-          }
-          onCompleted == null ? void 0 : onCompleted();
-        });
-      }
+      canvasRef.current.style.width = `${Math.floor(width2)}px`;
+      canvasRef.current.style.height = `${Math.floor(height2)}px`;
+      canvasRef.current.style.transform = `scale(1,1)`;
     }
-    return () => {
-      if (canvasRef.current) {
-        canvasRef.current.width = 0;
-        canvasRef.current.height = 0;
-      }
-    };
-  }, [pageDoc, scale, width, height]);
+  }
+  function showCanvas(canvasEl) {
+    var _a;
+    if (wrapperRef.current) {
+      canvasEl.hidden = false;
+      wrapperRef.current.appendChild(canvasEl);
+      canvasRef.current && ((_a = wrapperRef.current) == null ? void 0 : _a.removeChild(canvasRef.current));
+      canvasRef.current = canvasEl;
+    }
+  }
+  useEffect(() => {
+    if (renderingIndex !== pageIndex) {
+      return;
+    }
+    if (renderTask.current) {
+      renderTask.current.cancel();
+    }
+    var viewport = pageDoc.getViewport({ scale });
+    refresh(viewport.width, viewport.height);
+    var outputScale = window.devicePixelRatio || 1;
+    const canvasEl = document.createElement("canvas");
+    var context = canvasEl.getContext("2d");
+    canvasEl.height = Math.floor(viewport.height * outputScale);
+    canvasEl.width = Math.floor(viewport.width * outputScale);
+    canvasEl.style.width = `${Math.floor(viewport.width)}px`;
+    canvasEl.style.height = `${Math.floor(viewport.height)}px`;
+    canvasEl.style.position = "absolute";
+    canvasEl.style.top = "0";
+    canvasEl.style.left = "0";
+    canvasEl.style.bottom = "0";
+    canvasEl.style.right = "0";
+    canvasEl.hidden = true;
+    const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
+    if (context) {
+      renderTask.current = pageDoc.render({
+        canvasContext: context,
+        viewport,
+        transform
+      });
+      renderTask.current.promise.then(() => {
+        showCanvas(canvasEl);
+        onCompleted == null ? void 0 : onCompleted();
+      }, () => {
+        showCanvas(canvasEl);
+        onCompleted == null ? void 0 : onCompleted();
+      });
+    }
+  }, [pageDoc, scale, width, height, renderingIndex]);
   return /* @__PURE__ */ React.createElement("div", {
     className: "canvas-layer",
-    style: { width, height }
-  }, /* @__PURE__ */ React.createElement("canvas", {
-    key: pageIndex,
-    ref: canvasRef
-  }));
+    style: { width, height },
+    ref: wrapperRef
+  });
 };
 var canvas_layer_default = CanvasLayer;
 
@@ -128,7 +148,7 @@ var text_layer_default = TextLayer;
 
 // packages/viewer/index.tsx
 import { range } from "lodash";
-import React5, { useEffect as useEffect6, useRef as useRef4, useState as useState5 } from "react";
+import React7, { useEffect as useEffect6, useRef as useRef4, useState as useState6 } from "react";
 
 // packages/layers/page-layer.tsx
 import React4, {
@@ -159,6 +179,15 @@ var PageLayer = ({
   }, children(pageDoc)) : null);
 };
 var page_layer_default = PageLayer;
+
+// packages/layers/loading-layer.tsx
+import React5 from "react";
+var LoadingLayer = (props) => {
+  return /* @__PURE__ */ React5.createElement("div", {
+    className: "loading-layer"
+  });
+};
+var loading_layer_default = LoadingLayer;
 
 // packages/hooks/usePageResize.ts
 import { useState as useState4, useEffect as useEffect5 } from "react";
@@ -246,7 +275,7 @@ function usePageResizer({ resizerRef, doc, scale }) {
         }
       } else {
         pageScale = scale < MIN_SCALE ? MIN_SCALE : scale;
-        w = viewport.height * pageScale;
+        w = viewport.width * pageScale;
         h = viewport.height * pageScale;
       }
       const newPageSize = {
@@ -265,23 +294,95 @@ function usePageResizer({ resizerRef, doc, scale }) {
   return pageSize;
 }
 
+// packages/provider/index.tsx
+import React6, { useState as useState5 } from "react";
+function usePDFViewerHook(initialState = {
+  scale: "auto",
+  page: 1
+}) {
+  const [scale, setScale] = useState5(initialState.scale);
+  const [currentPage, setCurrentPage] = useState5(initialState.page);
+  const [totalPage, setTotalPage] = useState5(0);
+  return {
+    scale,
+    setScale,
+    currentPage,
+    setCurrentPage,
+    totalPage,
+    setTotalPage
+  };
+}
+var PDFViewerContext = React6.createContext(null);
+function usePDFViewer() {
+  const state = React6.useContext(PDFViewerContext);
+  if (!state) {
+    throw new Error("Component must be wrapped with <PDFViewerProvider>");
+  }
+  return state;
+}
+var PDFViewerProvider = (props) => {
+  const value = usePDFViewerHook(props.initialState);
+  return /* @__PURE__ */ React6.createElement(PDFViewerContext.Provider, {
+    value
+  }, props.children);
+};
+
+// packages/utils/index.ts
+function watchScroll(viewAreaElement, callback) {
+  const debounceScroll = function(evt) {
+    if (rAF) {
+      return;
+    }
+    rAF = window.requestAnimationFrame(function viewAreaElementScrolled() {
+      rAF = null;
+      const currentX = viewAreaElement.scrollLeft;
+      const lastX = state.lastX;
+      if (currentX !== lastX) {
+        state.right = currentX > lastX;
+      }
+      state.lastX = currentX;
+      const currentY = viewAreaElement.scrollTop;
+      const lastY = state.lastY;
+      if (currentY !== lastY) {
+        state.down = currentY > lastY;
+      }
+      state.lastY = currentY;
+      callback(state);
+    });
+  };
+  const state = {
+    right: true,
+    down: true,
+    lastX: viewAreaElement.scrollLeft,
+    lastY: viewAreaElement.scrollTop,
+    _eventHandler: debounceScroll,
+    remove: () => {
+      viewAreaElement.removeEventListener("scroll", debounceScroll, true);
+    }
+  };
+  let rAF = null;
+  viewAreaElement.addEventListener("scroll", debounceScroll, true);
+  return state;
+}
+
 // packages/viewer/index.tsx
 var PDFViewer = ({
   pdfURI,
   loadingComponent,
   errorComponent,
-  scale,
   width,
   height,
   scrollMode = "vertical"
 }) => {
-  const [loading, setLoading] = useState5(false);
-  const [loadingProgress, setLoadingProgress] = useState5(-1);
-  const [pdfDoc, setPDFDoc] = useState5();
-  const [errorReason, setErrorReason] = useState5();
+  const { scale, totalPage, setCurrentPage, setTotalPage } = usePDFViewer();
+  const [loading, setLoading] = useState6(false);
+  const [loadingProgress, setLoadingProgress] = useState6(-1);
+  const [pdfDoc, setPDFDoc] = useState6();
+  const [errorReason, setErrorReason] = useState6();
   const loadingTask = useRef4(null);
   const viewerRef = useRef4(null);
-  const [renderingPageIndex, setRenderingPageIndex] = useState5(-1);
+  const [renderingPageIndex, setRenderingPageIndex] = useState6(1);
+  const [renderMap, setRenderMap] = useState6({});
   const pageSize = usePageResizer({
     resizerRef: viewerRef,
     doc: pdfDoc,
@@ -298,6 +399,7 @@ var PDFViewer = ({
       };
       loadingTask.current.promise.then((pdf) => {
         setPDFDoc(pdf);
+        setTotalPage(pdf.numPages);
       }).catch((reason) => {
         setErrorReason(reason);
       }).finally(() => {
@@ -305,6 +407,44 @@ var PDFViewer = ({
       });
     }
   }, [pdfURI]);
+  function scrollHandler(state) {
+    if (scrollMode == "vertical") {
+      if (pageSize.height == 0) {
+        return;
+      }
+      const r2 = state.lastY % pageSize.height;
+      let d2 = Math.floor(state.lastY / pageSize.height) + 1;
+      const pageIndex = r2 > pageSize.height / 2 ? Math.min(d2 + 1, totalPage) : d2;
+      setCurrentPage((pre) => {
+        if (pre == pageIndex) {
+          return pre;
+        }
+        return pageIndex;
+      });
+      return;
+    }
+    if (pageSize.width == 0) {
+      return;
+    }
+    const r = state.lastX % pageSize.width;
+    let d = Math.floor(state.lastX / pageSize.width) + 1;
+    const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
+    setCurrentPage((pre) => {
+      if (pre == page) {
+        return pre;
+      }
+      return page;
+    });
+  }
+  useEffect6(() => {
+    let scrollState = null;
+    if (viewerRef.current) {
+      scrollState = watchScroll(viewerRef.current, scrollHandler);
+    }
+    return () => {
+      scrollState && scrollState.remove();
+    };
+  }, [scrollHandler]);
   function contentComponent() {
     if (!pdfURI) {
       return "\u8BF7\u8F93\u5165 PDF";
@@ -315,32 +455,44 @@ var PDFViewer = ({
     if (errorReason || !pdfDoc) {
       return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent;
     }
-    return /* @__PURE__ */ React5.createElement("div", null, pageSize.width == 0 ? null : range(0, pdfDoc.numPages - 1).map((index) => {
+    return /* @__PURE__ */ React7.createElement("div", null, pageSize.width == 0 ? null : range(0, pdfDoc.numPages).map((index) => {
       const pageIndex = index + 1;
-      return /* @__PURE__ */ React5.createElement(page_layer_default, __spreadProps(__spreadValues({
+      return /* @__PURE__ */ React7.createElement(page_layer_default, __spreadProps(__spreadValues({
         key: index,
         pageIndex,
         doc: pdfDoc
       }, pageSize), {
         scrollMode
-      }), (doc) => renderingPageIndex < pageIndex ? null : [
-        /* @__PURE__ */ React5.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+      }), (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ React7.createElement(loading_layer_default, null) : [
+        /* @__PURE__ */ React7.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
           pageDoc: doc,
           pageIndex,
+          renderingIndex: renderingPageIndex,
           key: `canvas_layer_${pageIndex}`,
           onCompleted: () => {
             setRenderingPageIndex((pre) => pre + 1);
+            setRenderMap((pre) => {
+              if (pre[pageIndex]) {
+                return pre;
+              }
+              return __spreadProps(__spreadValues({}, pre), {
+                pageIndex: true
+              });
+            });
           }
         })),
-        /* @__PURE__ */ React5.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+        /* @__PURE__ */ React7.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
           pageDoc: doc,
           pageIndex,
           key: `text_layer_${pageIndex}`
-        }))
+        })),
+        renderingPageIndex <= pageIndex ? /* @__PURE__ */ React7.createElement(loading_layer_default, {
+          key: `loading_layer_${pageIndex}`
+        }) : null
       ]);
     }));
   }
-  return /* @__PURE__ */ React5.createElement("div", {
+  return /* @__PURE__ */ React7.createElement("div", {
     id: "pdf_viewer_container",
     className: "viewer",
     style: { height, width },
@@ -350,17 +502,181 @@ var PDFViewer = ({
 var viewer_default = PDFViewer;
 
 // packages/worker/index.tsx
-import React6 from "react";
+import React8 from "react";
 var PDFWorker = ({ workerDir, children }) => {
   PDFLib.GlobalWorkerOptions.workerSrc = workerDir;
-  return /* @__PURE__ */ React6.createElement(React6.Fragment, null, children);
+  return /* @__PURE__ */ React8.createElement(React8.Fragment, null, children);
 };
 var worker_default = PDFWorker;
+
+// packages/toolbar/index.tsx
+import React11, {
+  useEffect as useEffect8,
+  useState as useState8
+} from "react";
+
+// packages/share/selector/index.tsx
+import React10, { useEffect as useEffect7, useState as useState7 } from "react";
+
+// packages/assets/svg/arrow-drop-down.tsx
+import React9, { forwardRef } from "react";
+var SvgArrowDropDown = forwardRef((props, ref) => {
+  return /* @__PURE__ */ React9.createElement("svg", __spreadProps(__spreadValues({
+    viewBox: "0 0 24 24"
+  }, props), {
+    ref
+  }), /* @__PURE__ */ React9.createElement("path", {
+    d: "M7 10l5 5 5-5z"
+  }));
+});
+var arrow_drop_down_default = SvgArrowDropDown;
+
+// packages/share/selector/index.tsx
+var Select = (props) => {
+  const [value, setValue] = useState7(props.defaultValue);
+  function onChange(event) {
+    var _a;
+    (_a = props.onChange) == null ? void 0 : _a.call(props, event);
+    if (props.control) {
+      return;
+    }
+    setValue(event.currentTarget.value);
+  }
+  useEffect7(() => {
+    if (props.control) {
+      setValue(props.value);
+    }
+  }, [props.value]);
+  return /* @__PURE__ */ React10.createElement("div", {
+    className: "select-container"
+  }, /* @__PURE__ */ React10.createElement("div", {
+    className: "input-container"
+  }, /* @__PURE__ */ React10.createElement("select", {
+    className: "native-select",
+    value,
+    onChange
+  }, props.children), /* @__PURE__ */ React10.createElement(arrow_drop_down_default, {
+    className: "select-icon"
+  })));
+};
+var selector_default = Select;
+
+// packages/toolbar/index.tsx
+var Toolbar = (props) => {
+  const { currentPage, setCurrentPage, scale, setScale, totalPage } = usePDFViewer();
+  const [inputPageIndex, setInputPageIndex] = useState8(currentPage);
+  useEffect8(() => {
+    setInputPageIndex(currentPage);
+  }, [currentPage]);
+  function onPreviousButtonClick() {
+    setCurrentPage((pre) => {
+      return pre > 1 ? pre - 1 : 1;
+    });
+  }
+  function onNextButtonClick() {
+    setCurrentPage((pre) => {
+      return pre < totalPage ? pre + 1 : totalPage;
+    });
+  }
+  function onScaleChange(event) {
+    console.log("onScaleChange", event.currentTarget.value);
+    if (!isNaN(Number(event.currentTarget.value))) {
+      const scale2 = parseFloat(event.currentTarget.value);
+      setScale(scale2);
+      return;
+    }
+    setScale(event.currentTarget.value);
+  }
+  function onPageInputChange(ev) {
+    const v = ev.target.value;
+    setInputPageIndex(parseInt(v));
+  }
+  function scrollToPageIndex(index) {
+    const scrollEl = document.getElementById("pdf_viewer_container");
+    if (scrollEl) {
+      const el = document.getElementById(`__page_${index}__`);
+      el && scrollEl.scrollTo({
+        top: el.offsetTop
+      });
+    }
+  }
+  function onPageInputKeyDown(ev) {
+    console.log(ev);
+    if (ev.code == "Enter") {
+      if (inputPageIndex < 1 || inputPageIndex > totalPage) {
+        setInputPageIndex(currentPage);
+        return;
+      }
+      setCurrentPage(inputPageIndex);
+      scrollToPageIndex(inputPageIndex);
+    }
+  }
+  return /* @__PURE__ */ React11.createElement("div", {
+    className: "toolbar"
+  }, /* @__PURE__ */ React11.createElement("div", {
+    className: "toolbar-left"
+  }, /* @__PURE__ */ React11.createElement("button", {
+    className: "common-button"
+  }, "Search"), /* @__PURE__ */ React11.createElement("button", {
+    className: "common-button",
+    onClick: onPreviousButtonClick
+  }, "Previous"), /* @__PURE__ */ React11.createElement("button", {
+    className: "common-button",
+    onClick: onNextButtonClick
+  }, "Next"), /* @__PURE__ */ React11.createElement("div", {
+    className: "page-input-wrapper"
+  }, /* @__PURE__ */ React11.createElement("input", {
+    className: "page-input",
+    value: `${inputPageIndex}`,
+    onChange: onPageInputChange,
+    onKeyDown: onPageInputKeyDown,
+    type: "number",
+    title: "\u9875\u9762",
+    size: 4,
+    min: 1,
+    autoComplete: "off",
+    max: totalPage
+  }), " ", "/ ", totalPage)), /* @__PURE__ */ React11.createElement("div", {
+    className: "toolbar-center"
+  }, /* @__PURE__ */ React11.createElement(selector_default, {
+    control: true,
+    value: `${scale}`,
+    onChange: onScaleChange
+  }, /* @__PURE__ */ React11.createElement("option", {
+    value: "auto"
+  }, "\u81EA\u52A8\u7F29\u653E"), /* @__PURE__ */ React11.createElement("option", {
+    value: "fitWidth"
+  }, "\u9002\u5408\u9875\u5BBD"), /* @__PURE__ */ React11.createElement("option", {
+    value: "fitHeight"
+  }, "\u9002\u5408\u9875\u9762"), /* @__PURE__ */ React11.createElement("option", {
+    value: "0.5"
+  }, "50%"), /* @__PURE__ */ React11.createElement("option", {
+    value: "0.75"
+  }, "75%"), /* @__PURE__ */ React11.createElement("option", {
+    value: "1"
+  }, "100%"), /* @__PURE__ */ React11.createElement("option", {
+    value: "1.25"
+  }, "125%"), /* @__PURE__ */ React11.createElement("option", {
+    value: "1.5"
+  }, "150%"), /* @__PURE__ */ React11.createElement("option", {
+    value: "2"
+  }, "200%"), /* @__PURE__ */ React11.createElement("option", {
+    value: "3"
+  }, "300%"), /* @__PURE__ */ React11.createElement("option", {
+    value: "4"
+  }, "400%"))), /* @__PURE__ */ React11.createElement("div", {
+    className: "toolbar-right"
+  }));
+};
+var toolbar_default = Toolbar;
 export {
   canvas_layer_default as CanvasLayer,
   viewer_default as PDFViewer,
+  PDFViewerProvider,
   worker_default as PDFWorker,
   svg_layer_default as SVGLayer,
-  text_layer_default as TextLayer
+  text_layer_default as TextLayer,
+  toolbar_default as Toolbar,
+  usePDFViewer
 };
 //# sourceMappingURL=index.mjs.map

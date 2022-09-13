@@ -62,7 +62,7 @@ function usePageResizer({ resizerRef, doc, scale }: PageResizerProps) {
         }
       } else {
         pageScale = scale < MIN_SCALE ? MIN_SCALE : scale;
-        w = viewport.height * pageScale;
+        w = viewport.width * pageScale;
         h = viewport.height * pageScale;
       }
       const newPageSize = {

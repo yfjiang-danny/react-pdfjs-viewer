@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import "./index.scss";
+import "./index.less";
 export declare const TOOLBAR_HEIGHT = 48;
 interface ToolbarProps {
 }
