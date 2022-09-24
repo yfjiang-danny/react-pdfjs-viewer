@@ -1,0 +1,10 @@
+export declare const DEFAULT_SCALE_VALUE = "auto";
+export declare const DEFAULT_SCALE = 1;
+export declare const DEFAULT_SCALE_DELTA = 1.1;
+export declare const MIN_SCALE = 0.1;
+export declare const MAX_SCALE = 10;
+export declare const UNKNOWN_SCALE = 0;
+export declare const MAX_AUTO_SCALE = 1.25;
+export declare const SCROLLBAR_PADDING = 40;
+export declare const VERTICAL_PADDING = 16;
+export declare const HORIZONTAL_PADDING = 24;

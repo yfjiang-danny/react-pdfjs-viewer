@@ -1,8 +1,8 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 
 interface SvgLayerProps {}
 
-const SvgLayer: React.FunctionComponent<SvgLayerProps> = (props) => {
+const SvgLayer: FunctionComponent<SvgLayerProps> = (props) => {
   return <>SvgLayer Component</>;
 };
 
