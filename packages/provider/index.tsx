@@ -49,6 +49,11 @@ interface PDFViewerProviderProps {
   initialState?: PDFViewerInitialState;
 }
 
+/**
+ * PDFViewer context provider
+ * @param props
+ * @returns
+ */
 const PDFViewerProvider: FC<PDFViewerProviderProps> = (props) => {
   const value = usePDFViewerHook(props.initialState);
 

@@ -1,46 +1,62 @@
-# Getting Started with Create React App
+# React PDF Viewer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React component to view PDF document. It is base on [mozilla/pdfjs](https://github.com/mozilla/pdfjs-dist).
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- [ ] Support password protected document
+- [ ] Zooming: Support custom levels such as actual size, page fit, and page width
+- [ ] Navigation between pages
+- [ ] Can go to the first and last pages quickly
+- [ ] Search for text
+- [ ] Preview page thumbnails
+- [ ] View and navigate the table of contents
+- [ ] List and download attachments
+- [ ] Rotating
+- [ ] Text selection and hand tool modes
+- [ ] Different scrolling modes
+- [ ] Full screen mode
+- [ ] Can open a file from local. Users can drag and drop a local file to view it
+- [ ] Download file
+- [ ] View the document properties
+- [ ] Support SSR
+- [ ] Print
+- [ ] Theming
+- [ ] Dark mode
+- [ ] Accessibility
 
-### `yarn start`
+## 🖥 Environment Support
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Modern browsers
+- Server-side Rendering
+- [Electron](https://www.electronjs.org/)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/electron/electron_48x48.png" alt="Electron" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Electron |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Edge                                                                                                                                                                                                 | last 2 versions                                                                                                                                                                                                  | last 2 versions                                                                                                                                                                                              | last 2 versions                                                                                                                                                                                              | last 2 versions                                                                                                                                                                                                      |
 
-### `yarn test`
+## Install
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm install react-pdfjs-viewer
+```
 
-### `yarn build`
+```bash
+yarn add react-pdfjs-viewer
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🔨 Usage
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```jsx
+import { Button, DatePicker } from "antd";
+const App = () => (
+  <>
+    <Button type="primary">PRESS ME</Button>
+    <DatePicker placeholder="select date" />
+  </>
+);
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### TypeScript
 
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+`react-pdfjs-viewer` is written in TypeScript with complete definitions.
