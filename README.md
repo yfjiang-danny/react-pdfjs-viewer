@@ -48,12 +48,20 @@ yarn add react-pdfjs-viewer
 ## 🔨 Usage
 
 ```jsx
-import { Button, DatePicker } from "antd";
+import {
+  PDFViewer,
+  PDFViewerProvider,
+  PDFWorker,
+  Toolbar,
+} from "react-pdfjs-viewer";
+import "react-pdfjs-viewer/dist/index.css";
 const App = () => (
-  <>
-    <Button type="primary">PRESS ME</Button>
-    <DatePicker placeholder="select date" />
-  </>
+  <PDFViewerProvider>
+    <Toolbar />
+    <PDFWorker workerDir="https://unpkg.com/pdfjs-dist@2.8.335/build/pdf.worker.js">
+      <PDFViewer pdfURI="xxx.pdf" width="100%" height="100%" />
+    </PDFWorker>
+  </PDFViewerProvider>
 );
 ```
 
