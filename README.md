@@ -5,15 +5,15 @@ A React component to view PDF document. It is base on [mozilla/pdfjs](https://gi
 ## Features
 
 - [ ] Support password protected document
-- [ ] Zooming: Support custom levels such as actual size, page fit, and page width
-- [ ] Navigation between pages
+- [x] Zooming: Support custom levels such as actual size, page fit, and page width
+- [x] Navigation between pages
 - [ ] Can go to the first and last pages quickly
 - [ ] Search for text
 - [ ] Preview page thumbnails
 - [ ] View and navigate the table of contents
 - [ ] List and download attachments
 - [ ] Rotating
-- [ ] Text selection and hand tool modes
+- [x] Text selection and hand tool modes
 - [ ] Different scrolling modes
 - [ ] Full screen mode
 - [ ] Can open a file from local. Users can drag and drop a local file to view it

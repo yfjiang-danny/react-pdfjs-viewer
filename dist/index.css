@@ -31,15 +31,6 @@
   background: #0000ff;
 }
 
-/* packages/styles/page-layer.less */
-.page-layer {
-  position: relative;
-  background-color: #fff;
-}
-.page-layer.vertical-scroll {
-  margin: 16px auto;
-}
-
 /* packages/styles/loading-layer.less */
 .loading-layer {
   position: absolute;
@@ -49,6 +40,15 @@
   right: 0;
   bottom: 0;
   background: url(./loading-icon-AQX2QBUJ.gif) center no-repeat;
+}
+
+/* packages/styles/page-layer.less */
+.page-layer {
+  position: relative;
+  background-color: #fff;
+}
+.page-layer.vertical-scroll {
+  margin: 16px auto;
 }
 
 /* packages/styles/viewer.less */

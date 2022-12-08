@@ -16,5 +16,10 @@ declare function usePDFViewer(): PDFViewerState;
 interface PDFViewerProviderProps {
     initialState?: PDFViewerInitialState;
 }
+/**
+ * PDFViewer context provider
+ * @param props
+ * @returns
+ */
 declare const PDFViewerProvider: FC<PDFViewerProviderProps>;
 export { usePDFViewer, PDFViewerProvider };

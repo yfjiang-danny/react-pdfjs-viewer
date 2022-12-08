@@ -7,7 +7,6 @@ import React, {
 import { usePDFViewer } from "../provider";
 import Select from "../share/selector";
 import { ScaleType } from "../types";
-import { scrollIntoView } from "../utils";
 import "./index.less";
 
 export const TOOLBAR_HEIGHT = 48;
@@ -25,14 +24,24 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   }, [currentPage]);
 
   function onPreviousButtonClick(): void {
+    console.log(3333);
+
     setCurrentPage((pre) => {
-      return pre > 1 ? pre - 1 : 1;
+      const res = pre > 1 ? pre - 1 : 1;
+
+      scrollToPageIndex(res);
+
+      return res;
     });
   }
 
   function onNextButtonClick(): void {
     setCurrentPage((pre) => {
-      return pre < totalPage ? pre + 1 : totalPage;
+      const res = pre < totalPage ? pre + 1 : totalPage;
+
+      scrollToPageIndex(res);
+
+      return res;
     });
   }
 
@@ -52,6 +61,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   }
 
   function scrollToPageIndex(index: number) {
+    console.log("scrollToPageIndex", index);
+
     const scrollEl = document.getElementById("pdf_viewer_container");
     if (scrollEl) {
       const el = document.getElementById(`__page_${index}__`);
@@ -64,8 +75,7 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   }
 
   function onPageInputKeyDown(ev: React.KeyboardEvent): void {
-    console.log(ev);
-    if (ev.code == "Enter") {
+    if (ev.key == "Enter") {
       if (inputPageIndex < 1 || inputPageIndex > totalPage) {
         setInputPageIndex(currentPage);
         return;

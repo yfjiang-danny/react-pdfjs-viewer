@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
-import { ScrollMode } from "../types";
 import "../styles/viewer.less";
+import { ScrollMode } from "../types";
 interface PDFViewerProps {
     pdfURI: string;
     errorComponent?: ((reason: any) => ReactNode) | ReactNode;
