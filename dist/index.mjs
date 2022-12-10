@@ -156,6 +156,7 @@ var text_layer_default = TextLayer;
 // packages/viewer/index.tsx
 import { range } from "lodash";
 import { useEffect as useEffect6, useRef as useRef4, useState as useState6 } from "react";
+<<<<<<< HEAD
 
 // packages/layers/page-layer.tsx
 import {
@@ -199,9 +200,11 @@ var LoadingLayer = (props) => {
   });
 };
 var loading_layer_default = LoadingLayer;
+=======
+>>>>>>> 191f4dcfa09f51cda8168100e180fb329b7aca74
 
 // packages/hooks/usePageResize.ts
-import { useState as useState4, useEffect as useEffect5 } from "react";
+import { useState as useState3, useEffect as useEffect4 } from "react";
 
 // packages/types/constant.ts
 var MIN_SCALE = 0.1;
@@ -209,10 +212,10 @@ var VERTICAL_PADDING = 16;
 var HORIZONTAL_PADDING = 24;
 
 // packages/hooks/useRectObserver.ts
-import { useEffect as useEffect4, useRef as useRef3, useState as useState3 } from "react";
+import { useEffect as useEffect3, useRef as useRef3, useState as useState2 } from "react";
 function useRectObserver({ elRef }) {
-  const [width, setWidth] = useState3(0);
-  const [height, setHeight] = useState3(0);
+  const [width, setWidth] = useState2(0);
+  const [height, setHeight] = useState2(0);
   const observer = useRef3(null);
   function resizeObserver(entries) {
     for (const entry of entries) {
@@ -221,7 +224,7 @@ function useRectObserver({ elRef }) {
       setHeight(height2);
     }
   }
-  useEffect4(() => {
+  useEffect3(() => {
     if (elRef.current) {
       observer.current = new ResizeObserver(resizeObserver);
       observer.current.observe(elRef.current);
@@ -241,7 +244,7 @@ function useRectObserver({ elRef }) {
 
 // packages/hooks/usePageResize.ts
 function usePageResizer({ resizerRef, doc, scale }) {
-  const [pageSize, setPageSize] = useState4({
+  const [pageSize, setPageSize] = useState3({
     width: 0,
     height: 0,
     scale: 1
@@ -249,7 +252,7 @@ function usePageResizer({ resizerRef, doc, scale }) {
   const { width, height } = useRectObserver({
     elRef: resizerRef
   });
-  useEffect5(() => {
+  useEffect4(() => {
     if (!doc) {
       return;
     }
@@ -304,6 +307,49 @@ function usePageResizer({ resizerRef, doc, scale }) {
   }, [doc, width, height, scale]);
   return pageSize;
 }
+
+// packages/layers/loading-layer.tsx
+import { jsx as jsx4 } from "react/jsx-runtime";
+var LoadingLayer = (props) => {
+  return /* @__PURE__ */ jsx4("div", {
+    className: "loading-layer"
+  });
+};
+var loading_layer_default = LoadingLayer;
+
+// packages/layers/page-layer.tsx
+import {
+  useEffect as useEffect5,
+  useState as useState4
+} from "react";
+import { Fragment as Fragment2, jsx as jsx5 } from "react/jsx-runtime";
+var PageLayer = ({
+  doc,
+  pageIndex,
+  width,
+  height,
+  children,
+  scrollMode
+}) => {
+  const [pageDoc, setPageDoc] = useState4();
+  useEffect5(() => {
+    doc.getPage(pageIndex).then((pageDoc2) => {
+      setPageDoc(pageDoc2);
+    });
+  }, [pageIndex, doc]);
+  return /* @__PURE__ */ jsx5(Fragment2, {
+    children: pageDoc ? /* @__PURE__ */ jsx5("div", {
+      className: `page-layer ${scrollMode}-scroll`,
+      id: `__page_${pageIndex}__`,
+      style: {
+        height,
+        width
+      },
+      children: children(pageDoc)
+    }) : null
+  });
+};
+var page_layer_default = PageLayer;
 
 // packages/provider/index.tsx
 import React4, { useState as useState5 } from "react";
@@ -389,7 +435,7 @@ var PDFViewer = ({
   height,
   scrollMode = "vertical"
 }) => {
-  const { scale, totalPage, setCurrentPage, setTotalPage } = usePDFViewer();
+  const { scale, totalPage, currentPage, setCurrentPage, setTotalPage } = usePDFViewer();
   const [loading, setLoading] = useState6(false);
   const [loadingProgress, setLoadingProgress] = useState6(-1);
   const [pdfDoc, setPDFDoc] = useState6();
@@ -599,17 +645,30 @@ var Toolbar = (props) => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
   function onPreviousButtonClick() {
+    console.log(3333);
     setCurrentPage((pre) => {
+<<<<<<< HEAD
       const v = pre > 1 ? pre - 1 : 1;
       scrollToPageIndex(v);
       return v;
+=======
+      const res = pre > 1 ? pre - 1 : 1;
+      scrollToPageIndex(res);
+      return res;
+>>>>>>> 191f4dcfa09f51cda8168100e180fb329b7aca74
     });
   }
   function onNextButtonClick() {
     setCurrentPage((pre) => {
+<<<<<<< HEAD
       const v = pre < totalPage ? pre + 1 : totalPage;
       scrollToPageIndex(v);
       return v;
+=======
+      const res = pre < totalPage ? pre + 1 : totalPage;
+      scrollToPageIndex(res);
+      return res;
+>>>>>>> 191f4dcfa09f51cda8168100e180fb329b7aca74
     });
   }
   function onScaleChange(event) {
@@ -626,6 +685,7 @@ var Toolbar = (props) => {
     setInputPageIndex(parseInt(v));
   }
   function scrollToPageIndex(index) {
+    console.log("scrollToPageIndex", index);
     const scrollEl = document.getElementById("pdf_viewer_container");
     if (scrollEl) {
       const el = document.getElementById(`__page_${index}__`);
@@ -635,8 +695,7 @@ var Toolbar = (props) => {
     }
   }
   function onPageInputKeyDown(ev) {
-    console.log(ev);
-    if (ev.code == "Enter") {
+    if (ev.key == "Enter") {
       if (inputPageIndex < 1 || inputPageIndex > totalPage) {
         setInputPageIndex(currentPage);
         return;
