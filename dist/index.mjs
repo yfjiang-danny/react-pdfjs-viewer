@@ -156,52 +156,6 @@ var text_layer_default = TextLayer;
 // packages/viewer/index.tsx
 import { range } from "lodash";
 import { useEffect as useEffect6, useRef as useRef4, useState as useState6 } from "react";
-<<<<<<< HEAD
-
-// packages/layers/page-layer.tsx
-import {
-  useEffect as useEffect3,
-  useState as useState2
-} from "react";
-import { Fragment as Fragment2, jsx as jsx4 } from "react/jsx-runtime";
-var PageLayer = ({
-  doc,
-  pageIndex,
-  width,
-  height,
-  children,
-  scrollMode
-}) => {
-  const [pageDoc, setPageDoc] = useState2();
-  useEffect3(() => {
-    doc.getPage(pageIndex).then((pageDoc2) => {
-      setPageDoc(pageDoc2);
-    });
-  }, [pageIndex, doc]);
-  return /* @__PURE__ */ jsx4(Fragment2, {
-    children: pageDoc ? /* @__PURE__ */ jsx4("div", {
-      className: `page-layer ${scrollMode}-scroll`,
-      id: `__page_${pageIndex}__`,
-      style: {
-        height,
-        width
-      },
-      children: children(pageDoc)
-    }) : null
-  });
-};
-var page_layer_default = PageLayer;
-
-// packages/layers/loading-layer.tsx
-import { jsx as jsx5 } from "react/jsx-runtime";
-var LoadingLayer = (props) => {
-  return /* @__PURE__ */ jsx5("div", {
-    className: "loading-layer"
-  });
-};
-var loading_layer_default = LoadingLayer;
-=======
->>>>>>> 191f4dcfa09f51cda8168100e180fb329b7aca74
 
 // packages/hooks/usePageResize.ts
 import { useState as useState3, useEffect as useEffect4 } from "react";
@@ -647,28 +601,16 @@ var Toolbar = (props) => {
   function onPreviousButtonClick() {
     console.log(3333);
     setCurrentPage((pre) => {
-<<<<<<< HEAD
-      const v = pre > 1 ? pre - 1 : 1;
-      scrollToPageIndex(v);
-      return v;
-=======
       const res = pre > 1 ? pre - 1 : 1;
       scrollToPageIndex(res);
       return res;
->>>>>>> 191f4dcfa09f51cda8168100e180fb329b7aca74
     });
   }
   function onNextButtonClick() {
     setCurrentPage((pre) => {
-<<<<<<< HEAD
-      const v = pre < totalPage ? pre + 1 : totalPage;
-      scrollToPageIndex(v);
-      return v;
-=======
       const res = pre < totalPage ? pre + 1 : totalPage;
       scrollToPageIndex(res);
       return res;
->>>>>>> 191f4dcfa09f51cda8168100e180fb329b7aca74
     });
   }
   function onScaleChange(event) {
