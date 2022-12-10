@@ -13,7 +13,7 @@
   "main": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -fr ./dist && node build.js && tsc"
+    "build": "node build.js && tsc"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",

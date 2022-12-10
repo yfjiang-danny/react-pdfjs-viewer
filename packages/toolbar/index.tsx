@@ -26,13 +26,19 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
 
   function onPreviousButtonClick(): void {
     setCurrentPage((pre) => {
-      return pre > 1 ? pre - 1 : 1;
+      const v = pre > 1 ? pre - 1 : 1;
+      scrollToPageIndex(v);
+      return v;
     });
   }
 
   function onNextButtonClick(): void {
     setCurrentPage((pre) => {
-      return pre < totalPage ? pre + 1 : totalPage;
+      const v = pre < totalPage ? pre + 1 : totalPage;
+
+      scrollToPageIndex(v);
+
+      return v;
     });
   }
 
