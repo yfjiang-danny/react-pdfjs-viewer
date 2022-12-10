@@ -11,6 +11,7 @@ interface SelectProps {
   control?: boolean;
 }
 
+// TODO: Refactor
 const Select: React.FunctionComponent<SelectProps> = (props) => {
   const [value, setValue] = useState<string | undefined>(props.defaultValue);
 

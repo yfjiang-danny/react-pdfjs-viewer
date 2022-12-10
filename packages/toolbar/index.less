@@ -40,6 +40,23 @@
     display: flex;
     flex: 1;
     justify-content: center;
+
+    .zoom-button {
+      display: inline-block;
+      user-select: none;
+      min-width: 16px;
+      border: none;
+      border-radius: 2px;
+      color: var(--main-color);
+      padding: 2px 6px 0;
+      width: 28px;
+      height: 28px;
+
+       &:hover {
+          background-color: var(--button-hover-color);
+       }
+    }
+
   }
 
   .toolbar-right {

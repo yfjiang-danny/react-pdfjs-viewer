@@ -1,6 +1,6 @@
 # React PDF Viewer
 
-A React component to view PDF document. It is base on [mozilla/pdfjs](https://github.com/mozilla/pdfjs-dist).
+A React component to view PDF document. It is base on [mozilla/pdf.js](https://github.com/mozilla/pdf.js).
 
 ## Features
 
