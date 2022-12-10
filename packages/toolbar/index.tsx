@@ -85,6 +85,14 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     }
   }
 
+  function onZoomOut(): void {
+    // TODO:
+  }
+
+  function onZoomIn(): void {
+    // TODO:
+  }
+
   return (
     <div className="toolbar">
       <div className="toolbar-left">
@@ -112,6 +120,15 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
         </div>
       </div>
       <div className="toolbar-center">
+        <div>
+          <button className="zoom-button zoom-out" onClick={onZoomOut}>
+            -
+          </button>
+          <span className="divider"></span>
+          <button className="zoom-button zoom-in" onClick={onZoomIn}>
+            +
+          </button>
+        </div>
         <Select control value={`${scale}`} onChange={onScaleChange}>
           <option value="auto">自动缩放</option>
           <option value="fitWidth">适合页宽</option>
