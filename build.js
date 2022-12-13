@@ -1,6 +1,11 @@
-const esbuild = require("esbuild");
-const { devDependencies } = require("./package.json");
-const lessLoader = require('esbuild-plugin-less');
+import esbuild from 'esbuild';
+import svg from 'esbuild-plugin-svg';
+import {lessLoader} from 'esbuild-plugin-less';
+import { readFileSync } from 'fs';
+
+const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
+
+const devDependencies = packageJson.devDependencies;
 
 esbuild
   .build({
@@ -17,7 +22,7 @@ esbuild
     sourcemap: true,
     sourcesContent: false,
     logLevel: "silent",
-    plugins: [lessLoader.lessLoader()],
+    plugins: [lessLoader(),svg()],
     loader: {
       ".gif": "file"
     }

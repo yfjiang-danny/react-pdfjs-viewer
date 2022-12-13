@@ -11,6 +11,7 @@ import LoadingLayer from "../layers/loading-layer";
 import PageLayer from "../layers/page-layer";
 import TextLayer from "../layers/text-layer";
 import { usePDFViewer } from "../provider";
+import "../styles/index.less";
 import "../styles/viewer.less";
 import { ScrollMode } from "../types";
 import { ScrollState, watchScroll } from "../utils";

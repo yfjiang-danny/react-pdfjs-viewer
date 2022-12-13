@@ -646,6 +646,10 @@ var Toolbar = (props) => {
       scrollToPageIndex(inputPageIndex);
     }
   }
+  function onZoomOut() {
+  }
+  function onZoomIn() {
+  }
   return /* @__PURE__ */ jsxs2("div", {
     className: "toolbar",
     children: [
@@ -688,59 +692,84 @@ var Toolbar = (props) => {
           })
         ]
       }),
-      /* @__PURE__ */ jsx11("div", {
+      /* @__PURE__ */ jsxs2("div", {
         className: "toolbar-center",
-        children: /* @__PURE__ */ jsxs2(selector_default, {
-          control: true,
-          value: `${scale}`,
-          onChange: onScaleChange,
-          children: [
-            /* @__PURE__ */ jsx11("option", {
-              value: "auto",
-              children: "\u81EA\u52A8\u7F29\u653E"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "fitWidth",
-              children: "\u9002\u5408\u9875\u5BBD"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "fitHeight",
-              children: "\u9002\u5408\u9875\u9762"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "0.5",
-              children: "50%"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "0.75",
-              children: "75%"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "1",
-              children: "100%"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "1.25",
-              children: "125%"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "1.5",
-              children: "150%"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "2",
-              children: "200%"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "3",
-              children: "300%"
-            }),
-            /* @__PURE__ */ jsx11("option", {
-              value: "4",
-              children: "400%"
-            })
-          ]
-        })
+        children: [
+          /* @__PURE__ */ jsxs2("div", {
+            children: [
+              /* @__PURE__ */ jsx11("button", {
+                className: "zoom-button zoom-out",
+                onClick: onZoomOut,
+                children: /* @__PURE__ */ jsx11("span", {
+                  className: "zoom-label",
+                  children: "\u7F29\u5C0F"
+                })
+              }),
+              /* @__PURE__ */ jsx11("span", {
+                className: "divider"
+              }),
+              /* @__PURE__ */ jsx11("button", {
+                className: "zoom-button zoom-in",
+                onClick: onZoomIn,
+                children: /* @__PURE__ */ jsx11("span", {
+                  className: "zoom-label",
+                  children: "\u653E\u5927"
+                })
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs2(selector_default, {
+            control: true,
+            value: `${scale}`,
+            onChange: onScaleChange,
+            children: [
+              /* @__PURE__ */ jsx11("option", {
+                value: "auto",
+                children: "\u81EA\u52A8\u7F29\u653E"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "fitWidth",
+                children: "\u9002\u5408\u9875\u5BBD"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "fitHeight",
+                children: "\u9002\u5408\u9875\u9762"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "0.5",
+                children: "50%"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "0.75",
+                children: "75%"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "1",
+                children: "100%"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "1.25",
+                children: "125%"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "1.5",
+                children: "150%"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "2",
+                children: "200%"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "3",
+                children: "300%"
+              }),
+              /* @__PURE__ */ jsx11("option", {
+                value: "4",
+                children: "400%"
+              })
+            ]
+          })
+        ]
       }),
       /* @__PURE__ */ jsx11("div", {
         className: "toolbar-right"

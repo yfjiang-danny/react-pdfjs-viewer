@@ -122,11 +122,11 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
       <div className="toolbar-center">
         <div>
           <button className="zoom-button zoom-out" onClick={onZoomOut}>
-            -
+            <span className="zoom-label">缩小</span>
           </button>
           <span className="divider"></span>
           <button className="zoom-button zoom-in" onClick={onZoomIn}>
-            +
+            <span className="zoom-label">放大</span>
           </button>
         </div>
         <Select control value={`${scale}`} onChange={onScaleChange}>
