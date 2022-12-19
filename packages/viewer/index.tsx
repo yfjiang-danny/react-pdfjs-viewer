@@ -5,12 +5,13 @@ import {
   PDFPageProxy,
 } from "pdfjs-dist/types/display/api";
 import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
-import { usePageResizer } from "../hooks/usePageResize";
+import { usePageResizes } from "../hooks/usePageResize";
 import CanvasLayer from "../layers/canvas-layer";
 import LoadingLayer from "../layers/loading-layer";
 import PageLayer from "../layers/page-layer";
 import TextLayer from "../layers/text-layer";
 import { usePDFViewer } from "../provider";
+import { useInternalState } from "../provider/internal";
 import "../styles/index.less";
 import "../styles/viewer.less";
 import { ScrollMode } from "../types";
@@ -36,6 +37,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
 }) => {
   const { scale, totalPage, currentPage, setCurrentPage, setTotalPage } =
     usePDFViewer();
+  const { scaleNumberRef } = useInternalState();
 
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(-1);
@@ -46,11 +48,15 @@ const PDFViewer: FC<PDFViewerProps> = ({
   const [renderingPageIndex, setRenderingPageIndex] = useState(1);
   const [renderMap, setRenderMap] = useState<{ [key: number]: boolean }>({});
 
-  const pageSize = usePageResizer({
-    resizerRef: viewerRef,
+  const pageSize = usePageResizes({
+    resizesRef: viewerRef,
     doc: pdfDoc,
     scale: scale,
   });
+
+  useEffect(() => {
+    scaleNumberRef.current = pageSize.scale;
+  }, [pageSize]);
 
   useEffect(() => {
     setRenderingPageIndex(1);

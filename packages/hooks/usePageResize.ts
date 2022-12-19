@@ -1,20 +1,21 @@
 import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PageSize, ScaleType } from "../types";
 import {
   HORIZONTAL_PADDING,
-  VERTICAL_PADDING,
+  MAX_SCALE,
   MIN_SCALE,
+  VERTICAL_PADDING,
 } from "../types/constant";
 import { useRectObserver } from "./useRectObserver";
 
-interface PageResizerProps {
+interface PageResizesProps {
   doc?: PDFDocumentProxy;
   scale: ScaleType;
-  resizerRef: React.MutableRefObject<HTMLDivElement | null>;
+  resizesRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
-function usePageResizer({ resizerRef, doc, scale }: PageResizerProps) {
+function usePageResizes({ resizesRef, doc, scale }: PageResizesProps) {
   const [pageSize, setPageSize] = useState<PageSize>({
     width: 0,
     height: 0,
@@ -22,7 +23,7 @@ function usePageResizer({ resizerRef, doc, scale }: PageResizerProps) {
   });
 
   const { width, height } = useRectObserver({
-    elRef: resizerRef,
+    elRef: resizesRef,
   });
 
   useEffect(() => {
@@ -61,7 +62,8 @@ function usePageResizer({ resizerRef, doc, scale }: PageResizerProps) {
           }
         }
       } else {
-        pageScale = scale < MIN_SCALE ? MIN_SCALE : scale;
+        pageScale =
+          scale < MIN_SCALE ? MIN_SCALE : scale > MAX_SCALE ? MAX_SCALE : scale;
         w = viewport.width * pageScale;
         h = viewport.height * pageScale;
       }
@@ -82,4 +84,4 @@ function usePageResizer({ resizerRef, doc, scale }: PageResizerProps) {
   return pageSize;
 }
 
-export { usePageResizer };
+export { usePageResizes };

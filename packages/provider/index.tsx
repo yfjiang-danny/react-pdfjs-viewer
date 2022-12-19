@@ -1,5 +1,6 @@
-import React, { FC, useState } from "react";
+import React, { FC, useRef, useState } from "react";
 import { ScaleType } from "../types";
+import { InternalStateContext, useInternalStateHook } from "./internal";
 
 interface PDFViewerInitialState {
   scale: ScaleType;
@@ -7,6 +8,7 @@ interface PDFViewerInitialState {
 }
 
 interface PDFViewerState {
+  scaleNumberRef: React.MutableRefObject<number>;
   scale: ScaleType;
   setScale: React.Dispatch<React.SetStateAction<ScaleType>>;
   currentPage: number;
@@ -22,10 +24,12 @@ function usePDFViewerHook(
   }
 ): PDFViewerState {
   const [scale, setScale] = useState<ScaleType>(initialState.scale);
+  const scaleNumberRef = useRef(1);
   const [currentPage, setCurrentPage] = useState<number>(initialState.page);
   const [totalPage, setTotalPage] = useState<number>(0);
 
   return {
+    scaleNumberRef,
     scale,
     setScale,
     currentPage,
@@ -56,10 +60,13 @@ interface PDFViewerProviderProps {
  */
 const PDFViewerProvider: FC<PDFViewerProviderProps> = (props) => {
   const value = usePDFViewerHook(props.initialState);
+  const internalState = useInternalStateHook();
 
   return (
     <PDFViewerContext.Provider value={value}>
-      {props.children}
+      <InternalStateContext.Provider value={internalState}>
+        {props.children}
+      </InternalStateContext.Provider>
     </PDFViewerContext.Provider>
   );
 };

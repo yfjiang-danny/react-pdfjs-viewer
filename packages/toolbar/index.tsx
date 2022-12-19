@@ -5,8 +5,10 @@ import React, {
   useState,
 } from "react";
 import { usePDFViewer } from "../provider";
+import { useInternalState } from "../provider/internal";
 import Select from "../share/selector";
 import { ScaleType } from "../types";
+import { MAX_SCALE, MIN_SCALE } from "../types/constant";
 import "./index.less";
 
 export const TOOLBAR_HEIGHT = 48;
@@ -16,6 +18,7 @@ interface ToolbarProps {}
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   const { currentPage, setCurrentPage, scale, setScale, totalPage } =
     usePDFViewer();
+  const { scaleNumberRef } = useInternalState();
 
   const [inputPageIndex, setInputPageIndex] = useState(currentPage);
 
@@ -24,8 +27,6 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   }, [currentPage]);
 
   function onPreviousButtonClick(): void {
-    console.log(3333);
-
     setCurrentPage((pre) => {
       const res = pre > 1 ? pre - 1 : 1;
 
@@ -85,12 +86,24 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     }
   }
 
+  // 缩小
   function onZoomOut(): void {
-    // TODO:
+    setScale((pre) => {
+      const s = scaleNumberRef.current;
+      let delta = Math.max(1, Math.floor(s));
+
+      return Math.max(MIN_SCALE, s - delta * 0.1);
+    });
   }
 
+  // 放大
   function onZoomIn(): void {
-    // TODO:
+    setScale((pre) => {
+      const s = scaleNumberRef.current;
+      let delta = Math.max(1, Math.floor(s));
+
+      return Math.min(MAX_SCALE, s + delta * 0.1);
+    });
   }
 
   return (
@@ -120,7 +133,7 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
         </div>
       </div>
       <div className="toolbar-center">
-        <div>
+        <div className="zoom-button-wrapper">
           <button className="zoom-button zoom-out" onClick={onZoomOut}>
             <span className="zoom-label">缩小</span>
           </button>

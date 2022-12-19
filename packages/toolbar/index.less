@@ -41,6 +41,11 @@
     flex: 1;
     justify-content: center;
 
+    .zoom-button-wrapper {
+      display: flex;
+      align-items: center;
+    }
+
     .zoom-button {
       display: inline-block;
       user-select: none;
@@ -54,7 +59,6 @@
       background: none;
       position: relative;
 
-      
       &:hover {
         background-color: var(--button-hover-color);
       }
@@ -81,16 +85,28 @@
       }
     }
 
-    .zoom-in {
+    .zoom-out {
       &::before {
-        -webkit-mask-image: var(--toolbarButton-zoomIn-icon);
-    mask-image: var(--toolbarButton-zoomIn-icon);
+        -webkit-mask-image: var(--toolbarButton-zoomOut-icon);
+        mask-image: var(--toolbarButton-zoomOut-icon);
       }
     }
 
+    .zoom-in {
+      &::before {
+        -webkit-mask-image: var(--toolbarButton-zoomIn-icon);
+        mask-image: var(--toolbarButton-zoomIn-icon);
+      }
+    }
+
+    .divider {
+      display: inline-block;
+      margin: 4px 0;
+      width: 1px;
+      height: 20px;
+      background-color: var(--separator-color);
+    }
   }
-
-
 
   .toolbar-right {
     display: flex;

@@ -191,13 +191,14 @@ var text_layer_default = TextLayer;
 
 // packages/viewer/index.tsx
 var import_lodash = require("lodash");
-var import_react7 = require("react");
+var import_react8 = require("react");
 
 // packages/hooks/usePageResize.ts
 var import_react4 = require("react");
 
 // packages/types/constant.ts
 var MIN_SCALE = 0.1;
+var MAX_SCALE = 10;
 var VERTICAL_PADDING = 16;
 var HORIZONTAL_PADDING = 24;
 
@@ -233,14 +234,14 @@ function useRectObserver({ elRef }) {
 }
 
 // packages/hooks/usePageResize.ts
-function usePageResizer({ resizerRef, doc, scale }) {
+function usePageResizes({ resizesRef, doc, scale }) {
   const [pageSize, setPageSize] = (0, import_react4.useState)({
     width: 0,
     height: 0,
     scale: 1
   });
   const { width, height } = useRectObserver({
-    elRef: resizerRef
+    elRef: resizesRef
   });
   (0, import_react4.useEffect)(() => {
     if (!doc) {
@@ -278,7 +279,7 @@ function usePageResizer({ resizerRef, doc, scale }) {
           }
         }
       } else {
-        pageScale = scale < MIN_SCALE ? MIN_SCALE : scale;
+        pageScale = scale < MIN_SCALE ? MIN_SCALE : scale > MAX_SCALE ? MAX_SCALE : scale;
         w = viewport.width * pageScale;
         h = viewport.height * pageScale;
       }
@@ -339,16 +340,37 @@ var PageLayer = ({
 var page_layer_default = PageLayer;
 
 // packages/provider/index.tsx
+var import_react7 = __toESM(require("react"), 1);
+
+// packages/provider/internal.ts
 var import_react6 = __toESM(require("react"), 1);
+function useInternalStateHook() {
+  const scaleNumberRef = (0, import_react6.useRef)(1);
+  return {
+    scaleNumberRef
+  };
+}
+var InternalStateContext = import_react6.default.createContext(null);
+function useInternalState() {
+  const state = import_react6.default.useContext(InternalStateContext);
+  if (!state) {
+    throw new Error("Component must be wrapped with <PDFViewerProvider>");
+  }
+  return state;
+}
+
+// packages/provider/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 function usePDFViewerHook(initialState = {
   scale: "auto",
   page: 1
 }) {
-  const [scale, setScale] = (0, import_react6.useState)(initialState.scale);
-  const [currentPage, setCurrentPage] = (0, import_react6.useState)(initialState.page);
-  const [totalPage, setTotalPage] = (0, import_react6.useState)(0);
+  const [scale, setScale] = (0, import_react7.useState)(initialState.scale);
+  const scaleNumberRef = (0, import_react7.useRef)(1);
+  const [currentPage, setCurrentPage] = (0, import_react7.useState)(initialState.page);
+  const [totalPage, setTotalPage] = (0, import_react7.useState)(0);
   return {
+    scaleNumberRef,
     scale,
     setScale,
     currentPage,
@@ -357,9 +379,9 @@ function usePDFViewerHook(initialState = {
     setTotalPage
   };
 }
-var PDFViewerContext = import_react6.default.createContext(null);
+var PDFViewerContext = import_react7.default.createContext(null);
 function usePDFViewer() {
-  const state = import_react6.default.useContext(PDFViewerContext);
+  const state = import_react7.default.useContext(PDFViewerContext);
   if (!state) {
     throw new Error("Component must be wrapped with <PDFViewerProvider>");
   }
@@ -367,9 +389,13 @@ function usePDFViewer() {
 }
 var PDFViewerProvider = (props) => {
   const value = usePDFViewerHook(props.initialState);
+  const internalState = useInternalStateHook();
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PDFViewerContext.Provider, {
     value,
-    children: props.children
+    children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(InternalStateContext.Provider, {
+      value: internalState,
+      children: props.children
+    })
   });
 };
 
@@ -423,23 +449,27 @@ var PDFViewer = ({
   scrollMode = "vertical"
 }) => {
   const { scale, totalPage, currentPage, setCurrentPage, setTotalPage } = usePDFViewer();
-  const [loading, setLoading] = (0, import_react7.useState)(false);
-  const [loadingProgress, setLoadingProgress] = (0, import_react7.useState)(-1);
-  const [pdfDoc, setPDFDoc] = (0, import_react7.useState)();
-  const [errorReason, setErrorReason] = (0, import_react7.useState)();
-  const loadingTask = (0, import_react7.useRef)(null);
-  const viewerRef = (0, import_react7.useRef)(null);
-  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react7.useState)(1);
-  const [renderMap, setRenderMap] = (0, import_react7.useState)({});
-  const pageSize = usePageResizer({
-    resizerRef: viewerRef,
+  const { scaleNumberRef } = useInternalState();
+  const [loading, setLoading] = (0, import_react8.useState)(false);
+  const [loadingProgress, setLoadingProgress] = (0, import_react8.useState)(-1);
+  const [pdfDoc, setPDFDoc] = (0, import_react8.useState)();
+  const [errorReason, setErrorReason] = (0, import_react8.useState)();
+  const loadingTask = (0, import_react8.useRef)(null);
+  const viewerRef = (0, import_react8.useRef)(null);
+  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react8.useState)(1);
+  const [renderMap, setRenderMap] = (0, import_react8.useState)({});
+  const pageSize = usePageResizes({
+    resizesRef: viewerRef,
     doc: pdfDoc,
     scale
   });
-  (0, import_react7.useEffect)(() => {
+  (0, import_react8.useEffect)(() => {
+    scaleNumberRef.current = pageSize.scale;
+  }, [pageSize]);
+  (0, import_react8.useEffect)(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
-  (0, import_react7.useEffect)(() => {
+  (0, import_react8.useEffect)(() => {
     if (pdfURI) {
       loadingTask.current = PDFLib.getDocument(pdfURI);
       loadingTask.current.onProgress = (progress) => {
@@ -484,7 +514,7 @@ var PDFViewer = ({
       return page;
     });
   }
-  (0, import_react7.useEffect)(() => {
+  (0, import_react8.useEffect)(() => {
     let scrollState = null;
     if (viewerRef.current) {
       scrollState = watchScroll(viewerRef.current, scrollHandler);
@@ -561,15 +591,15 @@ var PDFWorker = ({ workerDir, children }) => {
 var worker_default = PDFWorker;
 
 // packages/toolbar/index.tsx
-var import_react10 = require("react");
+var import_react11 = require("react");
 
 // packages/share/selector/index.tsx
-var import_react9 = require("react");
+var import_react10 = require("react");
 
 // packages/assets/svg/arrow-drop-down.tsx
-var import_react8 = require("react");
+var import_react9 = require("react");
 var import_jsx_runtime = require("react/jsx-runtime");
-var SvgArrowDropDown = (0, import_react8.forwardRef)(
+var SvgArrowDropDown = (0, import_react9.forwardRef)(
   (props, ref) => {
     return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", __spreadProps(__spreadValues({
       viewBox: "0 0 24 24"
@@ -586,7 +616,7 @@ var arrow_drop_down_default = SvgArrowDropDown;
 // packages/share/selector/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 var Select = (props) => {
-  const [value, setValue] = (0, import_react9.useState)(props.defaultValue);
+  const [value, setValue] = (0, import_react10.useState)(props.defaultValue);
   function onChange(event) {
     var _a;
     (_a = props.onChange) == null ? void 0 : _a.call(props, event);
@@ -595,7 +625,7 @@ var Select = (props) => {
     }
     setValue(event.currentTarget.value);
   }
-  (0, import_react9.useEffect)(() => {
+  (0, import_react10.useEffect)(() => {
     if (props.control) {
       setValue(props.value);
     }
@@ -624,12 +654,12 @@ var selector_default = Select;
 var import_jsx_runtime = require("react/jsx-runtime");
 var Toolbar = (props) => {
   const { currentPage, setCurrentPage, scale, setScale, totalPage } = usePDFViewer();
-  const [inputPageIndex, setInputPageIndex] = (0, import_react10.useState)(currentPage);
-  (0, import_react10.useEffect)(() => {
+  const { scaleNumberRef } = useInternalState();
+  const [inputPageIndex, setInputPageIndex] = (0, import_react11.useState)(currentPage);
+  (0, import_react11.useEffect)(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
   function onPreviousButtonClick() {
-    console.log(3333);
     setCurrentPage((pre) => {
       const res = pre > 1 ? pre - 1 : 1;
       scrollToPageIndex(res);
@@ -677,8 +707,18 @@ var Toolbar = (props) => {
     }
   }
   function onZoomOut() {
+    setScale((pre) => {
+      const s = scaleNumberRef.current;
+      let delta = Math.max(1, Math.floor(s));
+      return Math.max(MIN_SCALE, s - delta * 0.1);
+    });
   }
   function onZoomIn() {
+    setScale((pre) => {
+      const s = scaleNumberRef.current;
+      let delta = Math.max(1, Math.floor(s));
+      return Math.min(MAX_SCALE, s + delta * 0.1);
+    });
   }
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
     className: "toolbar",
@@ -726,6 +766,7 @@ var Toolbar = (props) => {
         className: "toolbar-center",
         children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+            className: "zoom-button-wrapper",
             children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
                 className: "zoom-button zoom-out",

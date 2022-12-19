@@ -5,6 +5,7 @@ interface PDFViewerInitialState {
     page: number;
 }
 interface PDFViewerState {
+    scaleNumberRef: React.MutableRefObject<number>;
     scale: ScaleType;
     setScale: React.Dispatch<React.SetStateAction<ScaleType>>;
     currentPage: number;

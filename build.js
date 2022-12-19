@@ -1,5 +1,4 @@
 import esbuild from "esbuild";
-import svg from "esbuild-plugin-svg";
 import { lessLoader } from "esbuild-plugin-less";
 import { readFileSync } from "fs";
 
@@ -26,9 +25,10 @@ function build() {
         sourcemap: true,
         sourcesContent: false,
         logLevel: "silent",
-        plugins: [lessLoader(), svg()],
+        plugins: [lessLoader()],
         loader: {
           ".gif": "file",
+          ".svg": "file",
         },
       })
       .catch((err) => {

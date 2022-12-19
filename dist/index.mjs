@@ -155,13 +155,14 @@ var text_layer_default = TextLayer;
 
 // packages/viewer/index.tsx
 import { range } from "lodash";
-import { useEffect as useEffect6, useRef as useRef4, useState as useState6 } from "react";
+import { useEffect as useEffect6, useRef as useRef6, useState as useState6 } from "react";
 
 // packages/hooks/usePageResize.ts
-import { useState as useState3, useEffect as useEffect4 } from "react";
+import { useEffect as useEffect4, useState as useState3 } from "react";
 
 // packages/types/constant.ts
 var MIN_SCALE = 0.1;
+var MAX_SCALE = 10;
 var VERTICAL_PADDING = 16;
 var HORIZONTAL_PADDING = 24;
 
@@ -197,14 +198,14 @@ function useRectObserver({ elRef }) {
 }
 
 // packages/hooks/usePageResize.ts
-function usePageResizer({ resizerRef, doc, scale }) {
+function usePageResizes({ resizesRef, doc, scale }) {
   const [pageSize, setPageSize] = useState3({
     width: 0,
     height: 0,
     scale: 1
   });
   const { width, height } = useRectObserver({
-    elRef: resizerRef
+    elRef: resizesRef
   });
   useEffect4(() => {
     if (!doc) {
@@ -242,7 +243,7 @@ function usePageResizer({ resizerRef, doc, scale }) {
           }
         }
       } else {
-        pageScale = scale < MIN_SCALE ? MIN_SCALE : scale;
+        pageScale = scale < MIN_SCALE ? MIN_SCALE : scale > MAX_SCALE ? MAX_SCALE : scale;
         w = viewport.width * pageScale;
         h = viewport.height * pageScale;
       }
@@ -306,16 +307,37 @@ var PageLayer = ({
 var page_layer_default = PageLayer;
 
 // packages/provider/index.tsx
-import React4, { useState as useState5 } from "react";
+import React5, { useRef as useRef5, useState as useState5 } from "react";
+
+// packages/provider/internal.ts
+import React4, { useRef as useRef4 } from "react";
+function useInternalStateHook() {
+  const scaleNumberRef = useRef4(1);
+  return {
+    scaleNumberRef
+  };
+}
+var InternalStateContext = React4.createContext(null);
+function useInternalState() {
+  const state = React4.useContext(InternalStateContext);
+  if (!state) {
+    throw new Error("Component must be wrapped with <PDFViewerProvider>");
+  }
+  return state;
+}
+
+// packages/provider/index.tsx
 import { jsx as jsx6 } from "react/jsx-runtime";
 function usePDFViewerHook(initialState = {
   scale: "auto",
   page: 1
 }) {
   const [scale, setScale] = useState5(initialState.scale);
+  const scaleNumberRef = useRef5(1);
   const [currentPage, setCurrentPage] = useState5(initialState.page);
   const [totalPage, setTotalPage] = useState5(0);
   return {
+    scaleNumberRef,
     scale,
     setScale,
     currentPage,
@@ -324,9 +346,9 @@ function usePDFViewerHook(initialState = {
     setTotalPage
   };
 }
-var PDFViewerContext = React4.createContext(null);
+var PDFViewerContext = React5.createContext(null);
 function usePDFViewer() {
-  const state = React4.useContext(PDFViewerContext);
+  const state = React5.useContext(PDFViewerContext);
   if (!state) {
     throw new Error("Component must be wrapped with <PDFViewerProvider>");
   }
@@ -334,9 +356,13 @@ function usePDFViewer() {
 }
 var PDFViewerProvider = (props) => {
   const value = usePDFViewerHook(props.initialState);
+  const internalState = useInternalStateHook();
   return /* @__PURE__ */ jsx6(PDFViewerContext.Provider, {
     value,
-    children: props.children
+    children: /* @__PURE__ */ jsx6(InternalStateContext.Provider, {
+      value: internalState,
+      children: props.children
+    })
   });
 };
 
@@ -390,19 +416,23 @@ var PDFViewer = ({
   scrollMode = "vertical"
 }) => {
   const { scale, totalPage, currentPage, setCurrentPage, setTotalPage } = usePDFViewer();
+  const { scaleNumberRef } = useInternalState();
   const [loading, setLoading] = useState6(false);
   const [loadingProgress, setLoadingProgress] = useState6(-1);
   const [pdfDoc, setPDFDoc] = useState6();
   const [errorReason, setErrorReason] = useState6();
-  const loadingTask = useRef4(null);
-  const viewerRef = useRef4(null);
+  const loadingTask = useRef6(null);
+  const viewerRef = useRef6(null);
   const [renderingPageIndex, setRenderingPageIndex] = useState6(1);
   const [renderMap, setRenderMap] = useState6({});
-  const pageSize = usePageResizer({
-    resizerRef: viewerRef,
+  const pageSize = usePageResizes({
+    resizesRef: viewerRef,
     doc: pdfDoc,
     scale
   });
+  useEffect6(() => {
+    scaleNumberRef.current = pageSize.scale;
+  }, [pageSize]);
   useEffect6(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
@@ -594,12 +624,12 @@ var selector_default = Select;
 import { jsx as jsx11, jsxs as jsxs2 } from "react/jsx-runtime";
 var Toolbar = (props) => {
   const { currentPage, setCurrentPage, scale, setScale, totalPage } = usePDFViewer();
+  const { scaleNumberRef } = useInternalState();
   const [inputPageIndex, setInputPageIndex] = useState8(currentPage);
   useEffect8(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
   function onPreviousButtonClick() {
-    console.log(3333);
     setCurrentPage((pre) => {
       const res = pre > 1 ? pre - 1 : 1;
       scrollToPageIndex(res);
@@ -647,8 +677,18 @@ var Toolbar = (props) => {
     }
   }
   function onZoomOut() {
+    setScale((pre) => {
+      const s = scaleNumberRef.current;
+      let delta = Math.max(1, Math.floor(s));
+      return Math.max(MIN_SCALE, s - delta * 0.1);
+    });
   }
   function onZoomIn() {
+    setScale((pre) => {
+      const s = scaleNumberRef.current;
+      let delta = Math.max(1, Math.floor(s));
+      return Math.min(MAX_SCALE, s + delta * 0.1);
+    });
   }
   return /* @__PURE__ */ jsxs2("div", {
     className: "toolbar",
@@ -696,6 +736,7 @@ var Toolbar = (props) => {
         className: "toolbar-center",
         children: [
           /* @__PURE__ */ jsxs2("div", {
+            className: "zoom-button-wrapper",
             children: [
               /* @__PURE__ */ jsx11("button", {
                 className: "zoom-button zoom-out",
