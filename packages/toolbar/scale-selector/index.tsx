@@ -60,6 +60,7 @@ const ScaleSelector: FC<ScaleSelectorProps> = () => {
   ];
   const { scale, setScale } = usePDFViewer();
   const instanceRef = useRef<Instance>();
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
   const displayName = useMemo(() => {
     const findOption = options.find((v) => v.value == scale);
@@ -88,7 +89,7 @@ const ScaleSelector: FC<ScaleSelectorProps> = () => {
       onCreate={(instance) => (instanceRef.current = instance)}
       placement={"bottom-start"}
       content={
-        <div>
+        <div className="scale-wrapper">
           {options.map((v) => {
             return (
               <div
@@ -97,6 +98,7 @@ const ScaleSelector: FC<ScaleSelectorProps> = () => {
                   onChanged(v);
                   instanceRef.current?.hide();
                 }}
+                className="scale-option"
               >
                 {v.label}
               </div>
@@ -104,8 +106,30 @@ const ScaleSelector: FC<ScaleSelectorProps> = () => {
           })}
         </div>
       }
+      popperOptions={{
+        modifiers: [
+          {
+            enabled: true,
+            name: "updatePosition",
+            phase: "beforeWrite",
+            requires: ["computeStyles"],
+            fn: ({ instance, state }) => {
+              if (rootRef.current) {
+                const headerWidthStr = `${rootRef.current.clientWidth}px`;
+                if (state.styles.popper.width != headerWidthStr) {
+                  state.styles.popper.width = headerWidthStr;
+                  instance.update();
+                }
+              }
+            },
+          },
+        ],
+      }}
+      hideOnClick
     >
-      <div>{displayName}</div>
+      <div className="scale-reference" ref={rootRef}>
+        {displayName}
+      </div>
     </Tippy>
   );
 };

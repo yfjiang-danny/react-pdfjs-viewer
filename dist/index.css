@@ -316,6 +316,33 @@ select {
   height: 20px;
   background-color: var(--separator-color);
 }
+.toolbar .toolbar-center .scale-wrapper {
+  background-color: #fff;
+  box-shadow: 0px 4px 8px 0px rgba(32, 69, 162, 0.12), 0px -1px 6px 0px rgba(32, 69, 162, 0.12);
+}
+.toolbar .toolbar-center .scale-reference {
+  font-size: 12px;
+  width: 140px;
+  padding: 0px 6px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  cursor: pointer;
+  background-color: var(--dropdown-btn-bg-color);
+}
+.toolbar .toolbar-center .scale-reference:hover {
+  background-color: var(--button-hover-color);
+}
+.toolbar .toolbar-center .scale-option {
+  text-align: left;
+  font-size: 12;
+  padding: 2px 16px;
+  cursor: pointer;
+}
+.toolbar .toolbar-center .scale-option:hover {
+  background-color: bisque;
+}
 .toolbar .toolbar-right {
   display: flex;
   flex: 1;

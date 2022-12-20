@@ -3757,6 +3757,7 @@ var ScaleSelector = () => {
   ];
   const { scale, setScale } = usePDFViewer();
   const instanceRef = useRef8();
+  const rootRef = useRef8(null);
   const displayName = useMemo2(() => {
     const findOption = options.find((v) => v.value == scale);
     if (findOption) {
@@ -3781,6 +3782,7 @@ var ScaleSelector = () => {
     onCreate: (instance) => instanceRef.current = instance,
     placement: "bottom-start",
     content: /* @__PURE__ */ jsx9("div", {
+      className: "scale-wrapper",
       children: options.map((v) => {
         return /* @__PURE__ */ jsx9("div", {
           onClick: () => {
@@ -3788,11 +3790,34 @@ var ScaleSelector = () => {
             onChanged(v);
             (_a = instanceRef.current) == null ? void 0 : _a.hide();
           },
+          className: "scale-option",
           children: v.label
         }, v.value);
       })
     }),
+    popperOptions: {
+      modifiers: [
+        {
+          enabled: true,
+          name: "updatePosition",
+          phase: "beforeWrite",
+          requires: ["computeStyles"],
+          fn: ({ instance, state }) => {
+            if (rootRef.current) {
+              const headerWidthStr = `${rootRef.current.clientWidth}px`;
+              if (state.styles.popper.width != headerWidthStr) {
+                state.styles.popper.width = headerWidthStr;
+                instance.update();
+              }
+            }
+          }
+        }
+      ]
+    },
+    hideOnClick: true,
     children: /* @__PURE__ */ jsx9("div", {
+      className: "scale-reference",
+      ref: rootRef,
       children: displayName
     })
   });
