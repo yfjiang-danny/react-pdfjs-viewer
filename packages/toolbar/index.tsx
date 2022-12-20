@@ -86,23 +86,27 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     }
   }
 
+  function fixed(s: number, d: number): number {
+    return parseFloat(s.toFixed(d));
+  }
+
   // 缩小
   function onZoomOut(): void {
     setScale(() => {
-      const s = scaleNumberRef.current;
+      const s = fixed(scaleNumberRef.current, 1);
       const delta = Math.max(1, Math.floor(s));
 
-      return Math.max(MIN_SCALE, s - delta * 0.1);
+      return Math.max(MIN_SCALE, fixed(s - delta * 0.1, 2));
     });
   }
 
   // 放大
   function onZoomIn(): void {
     setScale(() => {
-      const s = scaleNumberRef.current;
+      const s = fixed(scaleNumberRef.current, 1);
       const delta = Math.max(1, Math.floor(s));
 
-      return Math.min(MAX_SCALE, s + delta * 0.1);
+      return Math.min(MAX_SCALE, fixed(s + delta * 0.1, 2));
     });
   }
 

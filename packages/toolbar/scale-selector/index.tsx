@@ -68,7 +68,7 @@ const ScaleSelector: FC<ScaleSelectorProps> = () => {
       return findOption.label;
     }
     if (typeof scale == "number") {
-      return `${scale * 100}%`;
+      return `${(scale * 100).toFixed(0)}%`;
     }
     return "";
   }, [options, scale]);

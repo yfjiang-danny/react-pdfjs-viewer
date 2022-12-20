@@ -3794,7 +3794,7 @@ var ScaleSelector = () => {
       return findOption.label;
     }
     if (typeof scale == "number") {
-      return `${scale * 100}%`;
+      return `${(scale * 100).toFixed(0)}%`;
     }
     return "";
   }, [options, scale]);
@@ -3910,18 +3910,21 @@ var Toolbar = (props) => {
       scrollToPageIndex(inputPageIndex);
     }
   }
+  function fixed(s, d) {
+    return parseFloat(s.toFixed(d));
+  }
   function onZoomOut() {
     setScale(() => {
-      const s = scaleNumberRef.current;
+      const s = fixed(scaleNumberRef.current, 1);
       const delta = Math.max(1, Math.floor(s));
-      return Math.max(MIN_SCALE, s - delta * 0.1);
+      return Math.max(MIN_SCALE, fixed(s - delta * 0.1, 2));
     });
   }
   function onZoomIn() {
     setScale(() => {
-      const s = scaleNumberRef.current;
+      const s = fixed(scaleNumberRef.current, 1);
       const delta = Math.max(1, Math.floor(s));
-      return Math.min(MAX_SCALE, s + delta * 0.1);
+      return Math.min(MAX_SCALE, fixed(s + delta * 0.1, 2));
     });
   }
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {

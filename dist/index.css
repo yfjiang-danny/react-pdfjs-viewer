@@ -337,7 +337,7 @@ select {
 .toolbar .toolbar-center .scale-option {
   text-align: left;
   font-size: 12;
-  padding: 2px 16px;
+  padding: 2px 6px;
   cursor: pointer;
 }
 .toolbar .toolbar-center .scale-option:hover {
