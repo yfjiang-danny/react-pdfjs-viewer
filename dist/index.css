@@ -225,68 +225,6 @@ select {
   display: table;
 }
 
-/* packages/share/selector/index.less */
-.select-container {
-  border: 0;
-  border-radius: 2px;
-  margin: 0;
-  display: inline-flex;
-  padding: 4px 8px;
-  background-color: #d7d7db;
-  position: relative;
-  flex-direction: column;
-  vertical-align: top;
-  min-width: 120px;
-  height: 28px;
-}
-.select-container .input-container {
-  color: rgba(0, 0, 0, 0.87);
-  cursor: text;
-  display: inline-flex;
-  position: relative;
-  box-sizing: border-box;
-  align-items: center;
-  font-weight: 400;
-  letter-spacing: 0.00938em;
-}
-.select-container .input-container .native-select {
-  margin-top: 2px;
-  font-size: 14px;
-  line-height: 1.47;
-  color: currentColor;
-  background: transparent;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  min-width: 16px;
-  border: none;
-  -moz-appearance: none;
-  -moz-user-select: none;
-  user-select: none;
-  -webkit-appearance: none;
-  letter-spacing: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
-.select-container .input-container .native-select:focus {
-  outline: 0;
-}
-.select-container .input-container .select-icon {
-  top: calc(50% - 12px);
-  color: rgba(0, 0, 0, 0.54);
-  right: 0;
-  position: absolute;
-  pointer-events: none;
-  fill: currentColor;
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  font-size: 1.5rem;
-  transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  flex-shrink: 0;
-  -moz-user-select: none;
-  user-select: none;
-}
-
 /* packages/toolbar/index.less */
 .toolbar {
   font-size: 14px;

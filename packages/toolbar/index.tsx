@@ -6,10 +6,10 @@ import React, {
 } from "react";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
-import Select from "../share/selector";
 import { ScaleType } from "../types";
 import { MAX_SCALE, MIN_SCALE } from "../types/constant";
 import "./index.less";
+import ScaleSelector from "./scale-selector";
 
 export const TOOLBAR_HEIGHT = 48;
 
@@ -88,9 +88,9 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
 
   // 缩小
   function onZoomOut(): void {
-    setScale((pre) => {
+    setScale(() => {
       const s = scaleNumberRef.current;
-      let delta = Math.max(1, Math.floor(s));
+      const delta = Math.max(1, Math.floor(s));
 
       return Math.max(MIN_SCALE, s - delta * 0.1);
     });
@@ -98,9 +98,9 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
 
   // 放大
   function onZoomIn(): void {
-    setScale((pre) => {
+    setScale(() => {
       const s = scaleNumberRef.current;
-      let delta = Math.max(1, Math.floor(s));
+      const delta = Math.max(1, Math.floor(s));
 
       return Math.min(MAX_SCALE, s + delta * 0.1);
     });
@@ -142,19 +142,7 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
             <span className="zoom-label">放大</span>
           </button>
         </div>
-        <Select control value={`${scale}`} onChange={onScaleChange}>
-          <option value="auto">自动缩放</option>
-          <option value="fitWidth">适合页宽</option>
-          <option value="fitHeight">适合页面</option>
-          <option value="0.5">50%</option>
-          <option value="0.75">75%</option>
-          <option value="1">100%</option>
-          <option value="1.25">125%</option>
-          <option value="1.5">150%</option>
-          <option value="2">200%</option>
-          <option value="3">300%</option>
-          <option value="4">400%</option>
-        </Select>
+        <ScaleSelector />
       </div>
       <div className="toolbar-right"></div>
     </div>

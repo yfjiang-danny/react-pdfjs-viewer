@@ -53,14 +53,14 @@ const CanvasLayer: FunctionComponent<CanvasLayerProps> = (props) => {
       renderTask.current.cancel();
     }
 
-    var viewport = pageDoc.getViewport({ scale });
+    const viewport = pageDoc.getViewport({ scale });
     refresh(viewport.width, viewport.height);
 
     // Support HiDPI-screens.
-    var outputScale = window.devicePixelRatio || 1;
+    const outputScale = window.devicePixelRatio || 1;
 
     const canvasEl = document.createElement("canvas");
-    var context = canvasEl.getContext("2d");
+    const context = canvasEl.getContext("2d");
 
     canvasEl.height = Math.floor(viewport.height * outputScale);
     canvasEl.width = Math.floor(viewport.width * outputScale);

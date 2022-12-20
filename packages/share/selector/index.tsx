@@ -1,9 +1,8 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowDropDown } from "../../assets/svg";
 import "./index.less";
 
 interface SelectProps {
-  children: ReactNode;
   defaultValue?: string;
   disableEmpty?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;

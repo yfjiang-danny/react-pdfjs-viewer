@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
 
 const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
 
-const devDependencies = packageJson.devDependencies;
+const { devDependencies, peerDependencies } = packageJson;
 
 const formats = ["esm", "cjs"];
 
@@ -19,7 +19,10 @@ function build() {
         },
         target: "es6",
         format: v,
-        external: Object.keys(devDependencies),
+        external: [
+          ...Object.keys(devDependencies),
+          ...Object.keys(peerDependencies),
+        ],
         bundle: true,
         minify: false,
         sourcemap: true,

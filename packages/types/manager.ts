@@ -28,7 +28,7 @@ class PageViewer {
 
 class PDFViewerManager {
   doc: PDFDocumentProxy | null = null;
-  pageNum: number = 0;
+  pageNum = 0;
   renderingPage = -1;
   map: Map<number, PageViewer> = new Map();
   scrollDirection: ScrollDirection = ScrollDirection.Forward;
@@ -55,6 +55,7 @@ class PDFViewerManager {
       this.renderingPage++;
     }
     if (this.scrollDirection == ScrollDirection.Forward) {
+      // TODO:
     }
   }
 }

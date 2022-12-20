@@ -90,7 +90,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
         return;
       }
       const r = state.lastY % pageSize.height;
-      let d = Math.floor(state.lastY / pageSize.height) + 1;
+      const d = Math.floor(state.lastY / pageSize.height) + 1;
       const pageIndex =
         r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
       setCurrentPage((pre) => {
@@ -105,7 +105,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
       return;
     }
     const r = state.lastX % pageSize.width;
-    let d = Math.floor(state.lastX / pageSize.width) + 1;
+    const d = Math.floor(state.lastX / pageSize.width) + 1;
     const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
     setCurrentPage((pre) => {
       if (pre == page) {

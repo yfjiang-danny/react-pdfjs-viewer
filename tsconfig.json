@@ -3,10 +3,7 @@
     "incremental": false,
     "composite": false,
     "target": "ES6",
-    "lib": [
-      "DOM",
-      "ES6"
-    ],
+    "lib": ["DOM", "ES6"],
     "jsx": "react-jsx",
     "module": "ES6",
     "moduleResolution": "Node",
@@ -15,14 +12,8 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "strict": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
-  "include": [
-    "./packages/**/*.ts",
-    "./packages/**/*.tsx"
-  ],
-  "exclude": [
-    "./dist",
-    "./src"
-  ]
+  "include": ["./packages/**/*.ts", "./packages/**/*.tsx"],
+  "exclude": ["./dist"]
 }

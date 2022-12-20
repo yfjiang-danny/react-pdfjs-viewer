@@ -1,7 +1,6 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import "./index.less";
 interface SelectProps {
-    children: ReactNode;
     defaultValue?: string;
     disableEmpty?: boolean;
     onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;

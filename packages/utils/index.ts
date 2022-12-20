@@ -133,6 +133,7 @@ function approximateFraction(x: number) {
     c = 1,
     d = 1;
   // Limiting search to order 8.
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     // Generating next term in sequence (order of q).
     const p = a + c,
