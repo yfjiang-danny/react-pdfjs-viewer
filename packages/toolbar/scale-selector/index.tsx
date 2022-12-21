@@ -1,63 +1,62 @@
 import Tippy from "@tippyjs/react";
 import React, { FC, useMemo, useRef } from "react";
 import { Instance } from "tippy.js";
+import { ArrowDropDown } from "../../assets/svg";
 import { usePDFViewer } from "../../provider";
-import { ScaleType } from "../../types";
-
-export interface OptionModel {
-  value: ScaleType | number;
-  label: string;
-}
+import { OptionModel } from "../../types";
+import { MAX_SCALE, MIN_SCALE } from "../../types/constant";
 
 interface ScaleSelectorProps {}
 
 const ScaleSelector: FC<ScaleSelectorProps> = () => {
-  const options: OptionModel[] = [
-    {
-      value: "auto",
-      label: "自动缩放",
-    },
-    {
-      value: "fitWidth",
-      label: "适合页宽",
-    },
-    {
-      value: "fitHeight",
-      label: "适合页面",
-    },
-    {
-      value: 0.5,
-      label: "50%",
-    },
-    {
-      value: 0.75,
-      label: "75%",
-    },
-    {
-      value: 1,
-      label: "100%",
-    },
-    {
-      value: 1.25,
-      label: "125%",
-    },
-    {
-      value: 1.5,
-      label: "150%",
-    },
-    {
-      value: 2,
-      label: "200%",
-    },
-    {
-      value: 3,
-      label: "300%",
-    },
-    {
-      value: 4,
-      label: "400%",
-    },
-  ];
+  const options: OptionModel[] = useMemo(() => {
+    return [
+      {
+        value: "auto",
+        label: "自动缩放",
+      },
+      {
+        value: "fitWidth",
+        label: "适合页宽",
+      },
+      {
+        value: "fitHeight",
+        label: "适合页面",
+      },
+      {
+        value: 0.5,
+        label: "50%",
+      },
+      {
+        value: 0.75,
+        label: "75%",
+      },
+      {
+        value: 1,
+        label: "100%",
+      },
+      {
+        value: 1.25,
+        label: "125%",
+      },
+      {
+        value: 1.5,
+        label: "150%",
+      },
+      {
+        value: 2,
+        label: "200%",
+      },
+      {
+        value: 3,
+        label: "300%",
+      },
+      {
+        value: 4,
+        label: "400%",
+      },
+    ];
+  }, []);
   const { scale, setScale } = usePDFViewer();
   const instanceRef = useRef<Instance>();
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -91,13 +90,27 @@ const ScaleSelector: FC<ScaleSelectorProps> = () => {
       content={
         <div className="scale-wrapper">
           {options.map((v) => {
+            let valid = true;
+            if (typeof v.value == "number") {
+              if (v.value > MAX_SCALE) {
+                valid = false;
+                console.warn(`MAX_SCALE is ${MAX_SCALE}, you have ${v.value}`);
+              } else if (v.value < MIN_SCALE) {
+                valid = false;
+                console.warn(`MIN_SCALE is ${MIN_SCALE}, you have ${v.value}`);
+              }
+            }
             return (
               <div
                 key={v.value}
-                onClick={() => {
-                  onChanged(v);
-                  instanceRef.current?.hide();
-                }}
+                onClick={
+                  valid
+                    ? () => {
+                        onChanged(v);
+                        instanceRef.current?.hide();
+                      }
+                    : undefined
+                }
                 className="scale-option"
               >
                 {v.label}
@@ -129,6 +142,7 @@ const ScaleSelector: FC<ScaleSelectorProps> = () => {
     >
       <div className="scale-reference" ref={rootRef}>
         {displayName}
+        <ArrowDropDown className="select-icon" />
       </div>
     </Tippy>
   );

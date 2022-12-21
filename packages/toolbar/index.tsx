@@ -2,11 +2,11 @@ import React, {
   ChangeEvent,
   FunctionComponent,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
-import { ScaleType } from "../types";
 import { MAX_SCALE, MIN_SCALE } from "../types/constant";
 import "./index.less";
 import ScaleSelector from "./scale-selector";
@@ -16,11 +16,13 @@ export const TOOLBAR_HEIGHT = 48;
 interface ToolbarProps {}
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
-  const { currentPage, setCurrentPage, scale, setScale, totalPage } =
+  const { setPdfURI, currentPage, setCurrentPage, setScale, totalPage } =
     usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
   const [inputPageIndex, setInputPageIndex] = useState(currentPage);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setInputPageIndex(currentPage);
@@ -44,16 +46,6 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
 
       return res;
     });
-  }
-
-  function onScaleChange(event: ChangeEvent<HTMLSelectElement>): void {
-    console.log("onScaleChange", event.currentTarget.value);
-    if (!isNaN(Number(event.currentTarget.value))) {
-      const scale = parseFloat(event.currentTarget.value);
-      setScale(scale);
-      return;
-    }
-    setScale(event.currentTarget.value as ScaleType);
   }
 
   function onPageInputChange(ev: React.ChangeEvent<HTMLInputElement>): void {
@@ -110,15 +102,39 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     });
   }
 
+  function onFileInputButtonClicked(): void {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+
+  function onFileInputChanged(evt: ChangeEvent<HTMLInputElement>): void {
+    const file = evt.currentTarget.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      console.log("onFileInputChanged", url);
+
+      setPdfURI(url);
+    }
+  }
+
   return (
     <div className="toolbar">
       <div className="toolbar-left">
-        <button className="common-button">Search</button>
-        <button className="common-button" onClick={onPreviousButtonClick}>
-          Previous
+        <button className="common-button has-before search">
+          <span className="button-label">查找</span>
         </button>
-        <button className="common-button" onClick={onNextButtonClick}>
-          Next
+        <button
+          className="common-button has-before previous"
+          onClick={onPreviousButtonClick}
+        >
+          <span className="button-label">上一页</span>
+        </button>
+        <button
+          className="common-button has-before next"
+          onClick={onNextButtonClick}
+        >
+          <span className="button-label">下一页</span>
         </button>
         <div className="page-input-wrapper">
           <input
@@ -138,17 +154,47 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
       </div>
       <div className="toolbar-center">
         <div className="zoom-button-wrapper">
-          <button className="zoom-button zoom-out" onClick={onZoomOut}>
-            <span className="zoom-label">缩小</span>
+          <button
+            className="common-button has-before zoom-button zoom-out"
+            onClick={onZoomOut}
+          >
+            <span className="button-label zoom-label">缩小</span>
           </button>
           <span className="divider"></span>
-          <button className="zoom-button zoom-in" onClick={onZoomIn}>
-            <span className="zoom-label">放大</span>
+          <button
+            className="common-button has-before zoom-button zoom-in"
+            onClick={onZoomIn}
+          >
+            <span className="button-label zoom-label">放大</span>
           </button>
         </div>
         <ScaleSelector />
       </div>
-      <div className="toolbar-right"></div>
+      <div className="toolbar-right">
+        <button
+          className="common-button has-before open"
+          onClick={onFileInputButtonClicked}
+        >
+          <span className="button-label">打开</span>
+        </button>
+        <button className="common-button has-before print">
+          <span className="button-label">打印</span>
+        </button>
+        <button className="common-button has-before  download">
+          <span className="button-label">保存</span>
+        </button>
+        <button className="common-button has-before draw">
+          <span className="button-label">绘图</span>
+        </button>
+      </div>
+      <input
+        type="file"
+        accept=".pdf"
+        id="fileInput"
+        className="hidden"
+        onChange={onFileInputChanged}
+        ref={fileInputRef}
+      />
     </div>
   );
 };

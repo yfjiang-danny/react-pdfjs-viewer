@@ -1,11 +1,14 @@
 import React, { FC } from "react";
-import { ScaleType } from "../types";
+import { OptionModel, ScaleType } from "../types";
 interface PDFViewerInitialState {
-    scale: ScaleType;
-    page: number;
+    pdfURI: string;
+    page?: number;
+    scale?: ScaleType;
+    scaleOptions?: OptionModel[];
 }
 interface PDFViewerState {
-    scaleNumberRef: React.MutableRefObject<number>;
+    pdfURI: string;
+    setPdfURI: React.Dispatch<React.SetStateAction<string>>;
     scale: ScaleType;
     setScale: React.Dispatch<React.SetStateAction<ScaleType>>;
     currentPage: number;

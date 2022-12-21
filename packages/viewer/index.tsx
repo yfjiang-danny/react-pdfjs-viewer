@@ -4,7 +4,14 @@ import {
   PDFDocumentProxy,
   PDFPageProxy,
 } from "pdfjs-dist/types/display/api";
-import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { usePageResizes } from "../hooks/usePageResize";
 import CanvasLayer from "../layers/canvas-layer";
 import LoadingLayer from "../layers/loading-layer";
@@ -19,7 +26,6 @@ import { ScrollState, watchScroll } from "../utils";
 import { PDFLib } from "../vendors/lib";
 
 interface PDFViewerProps {
-  pdfURI: string;
   errorComponent?: ((reason: any) => ReactNode) | ReactNode;
   loadingComponent?: ((progress: number) => ReactNode) | ReactNode;
   width: string | number;
@@ -28,14 +34,13 @@ interface PDFViewerProps {
 }
 
 const PDFViewer: FC<PDFViewerProps> = ({
-  pdfURI,
   loadingComponent,
   errorComponent,
   width,
   height,
   scrollMode = "vertical",
 }) => {
-  const { scale, totalPage, currentPage, setCurrentPage, setTotalPage } =
+  const { pdfURI, scale, totalPage, setCurrentPage, setTotalPage } =
     usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
@@ -56,7 +61,8 @@ const PDFViewer: FC<PDFViewerProps> = ({
 
   useEffect(() => {
     scaleNumberRef.current = pageSize.scale;
-  }, [pageSize]);
+    console.log("pageSize", pageSize);
+  }, [pageSize, scaleNumberRef]);
 
   useEffect(() => {
     setRenderingPageIndex(1);
@@ -64,14 +70,18 @@ const PDFViewer: FC<PDFViewerProps> = ({
 
   useEffect(() => {
     if (pdfURI) {
+      setErrorReason(undefined);
       loadingTask.current = PDFLib.getDocument(pdfURI);
 
       loadingTask.current.onProgress = (progress: number) => {
+        console.log("onProgress", progress);
         setLoadingProgress(progress);
       };
 
       loadingTask.current.promise
         .then((pdf: PDFDocumentProxy) => {
+          console.log("promise", pdf);
+
           setPDFDoc(pdf);
           setTotalPage(pdf.numPages);
         })
@@ -82,38 +92,47 @@ const PDFViewer: FC<PDFViewerProps> = ({
           setLoading(false);
         });
     }
+
+    return () => {
+      loadingTask.current && loadingTask.current.destroy();
+    };
   }, [pdfURI]);
 
-  function scrollHandler(state: ScrollState) {
-    if (scrollMode == "vertical") {
-      if (pageSize.height == 0) {
+  const scrollHandler = useCallback(
+    (state: ScrollState) => {
+      if (scrollMode == "vertical") {
+        if (pageSize.height == 0) {
+          return;
+        }
+        const r = state.lastY % pageSize.height;
+        const d = Math.floor(state.lastY / pageSize.height) + 1;
+        const pageIndex =
+          r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
+        setCurrentPage((pre) => {
+          if (pre == pageIndex) {
+            return pre;
+          }
+          return pageIndex;
+        });
         return;
       }
-      const r = state.lastY % pageSize.height;
-      const d = Math.floor(state.lastY / pageSize.height) + 1;
-      const pageIndex =
-        r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
+      if (pageSize.width == 0) {
+        return;
+      }
+      const r = state.lastX % pageSize.width;
+      const d = Math.floor(state.lastX / pageSize.width) + 1;
+      const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
       setCurrentPage((pre) => {
-        if (pre == pageIndex) {
+        if (pre == page) {
           return pre;
         }
-        return pageIndex;
+        return page;
       });
-      return;
-    }
-    if (pageSize.width == 0) {
-      return;
-    }
-    const r = state.lastX % pageSize.width;
-    const d = Math.floor(state.lastX / pageSize.width) + 1;
-    const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
-    setCurrentPage((pre) => {
-      if (pre == page) {
-        return pre;
-      }
-      return page;
-    });
-  }
+    },
+    [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
+  );
+
+  // function scrollHandler
 
   useEffect(() => {
     let scrollState: ScrollState | null = null;
@@ -130,16 +149,22 @@ const PDFViewer: FC<PDFViewerProps> = ({
       // TODO: Error
       return "请输入 PDF";
     }
+
     if (loading) {
       return typeof loadingComponent == "function"
         ? loadingComponent(loadingProgress)
         : loadingComponent;
     }
-    if (errorReason || !pdfDoc) {
-      return typeof errorComponent == "function"
-        ? errorComponent(errorReason)
-        : errorComponent;
+
+    if (!pdfDoc) {
+      if (errorReason) {
+        return typeof errorComponent == "function"
+          ? errorComponent(errorReason)
+          : errorComponent ?? errorReason.toString();
+      }
+      return "Loading error";
     }
+
     return (
       <div>
         {pageSize.width == 0

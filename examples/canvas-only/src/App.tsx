@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   PDFViewer,
   PDFViewerProvider,
@@ -15,7 +15,7 @@ function App() {
         <Toolbar />
         <PDFWorker workerDir="https://unpkg.com/pdfjs-dist@2.8.335/build/pdf.worker.js">
           <PDFViewer
-            pdfURI="./compressed.tracemonkey-pldi-09.pdf"
+            // pdfURI="./compressed.tracemonkey-pldi-09.pdf"
             width="100%"
             height="calc(100vh - 48px)"
           />

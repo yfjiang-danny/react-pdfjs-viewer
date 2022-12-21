@@ -3,7 +3,6 @@ import "../styles/index.less";
 import "../styles/viewer.less";
 import { ScrollMode } from "../types";
 interface PDFViewerProps {
-    pdfURI: string;
     errorComponent?: ((reason: any) => ReactNode) | ReactNode;
     loadingComponent?: ((progress: number) => ReactNode) | ReactNode;
     width: string | number;

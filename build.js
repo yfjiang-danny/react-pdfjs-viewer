@@ -35,6 +35,7 @@ function build() {
         },
       })
       .catch((err) => {
+        // eslint-disable-next-line no-undef
         console.log(err);
       });
   });

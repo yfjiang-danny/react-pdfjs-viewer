@@ -26,7 +26,7 @@ const Select: React.FunctionComponent<SelectProps> = (props) => {
     if (props.control) {
       setValue(props.value);
     }
-  }, [props.value]);
+  }, [props.control, props.value]);
 
   return (
     <div className="select-container">

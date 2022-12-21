@@ -238,6 +238,18 @@ select {
   display: flex;
   flex: 1;
 }
+.toolbar .toolbar-left .search::before {
+  -webkit-mask-image: var(--toolbarButton-search-icon);
+  mask-image: var(--toolbarButton-search-icon);
+}
+.toolbar .toolbar-left .previous::before {
+  -webkit-mask-image: var(--toolbarButton-pageUp-icon);
+  mask-image: var(--toolbarButton-pageUp-icon);
+}
+.toolbar .toolbar-left .next::before {
+  -webkit-mask-image: var(--toolbarButton-pageDown-icon);
+  mask-image: var(--toolbarButton-pageDown-icon);
+}
 .toolbar .toolbar-left .page-input-wrapper {
   display: flex;
   align-items: center;
@@ -265,41 +277,6 @@ select {
 .toolbar .toolbar-center .zoom-button-wrapper {
   display: flex;
   align-items: center;
-}
-.toolbar .toolbar-center .zoom-button {
-  display: inline-block;
-  user-select: none;
-  min-width: 16px;
-  border: none;
-  border-radius: 2px;
-  color: var(--main-color);
-  padding: 2px 6px 0;
-  width: 28px;
-  height: 28px;
-  background: none;
-  position: relative;
-}
-.toolbar .toolbar-center .zoom-button:hover {
-  background-color: var(--button-hover-color);
-}
-.toolbar .toolbar-center .zoom-button .zoom-label {
-  display: inline-block;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-}
-.toolbar .toolbar-center .zoom-button::before {
-  position: absolute;
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  content: "";
-  background-color: var(--toolbar-icon-bg-color);
-  -webkit-mask-size: cover;
-  mask-size: cover;
-  opacity: var(--toolbar-icon-opacity);
-  top: 6px;
-  left: 6px;
 }
 .toolbar .toolbar-center .zoom-out::before {
   -webkit-mask-image: var(--toolbarButton-zoomOut-icon);
@@ -330,6 +307,7 @@ select {
   justify-content: start;
   cursor: pointer;
   background-color: var(--dropdown-btn-bg-color);
+  position: relative;
 }
 .toolbar .toolbar-center .scale-reference:hover {
   background-color: var(--button-hover-color);
@@ -343,24 +321,81 @@ select {
 .toolbar .toolbar-center .scale-option:hover {
   background-color: bisque;
 }
+.toolbar .toolbar-center .select-icon {
+  top: calc(50% - 10px);
+  color: rgba(0, 0, 0, 0.54);
+  right: 4px;
+  position: absolute;
+  pointer-events: none;
+  fill: currentColor;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  flex-shrink: 0;
+  -moz-user-select: none;
+  user-select: none;
+}
 .toolbar .toolbar-right {
   display: flex;
   flex: 1;
+  justify-content: flex-end;
+}
+.toolbar .toolbar-right .open::before {
+  -webkit-mask-image: var(--toolbarButton-openFile-icon);
+  mask-image: var(--toolbarButton-openFile-icon);
+}
+.toolbar .toolbar-right .print::before {
+  -webkit-mask-image: var(--toolbarButton-print-icon);
+  mask-image: var(--toolbarButton-print-icon);
+}
+.toolbar .toolbar-right .download::before {
+  -webkit-mask-image: var(--toolbarButton-download-icon);
+  mask-image: var(--toolbarButton-download-icon);
+}
+.toolbar .toolbar-right .draw::before {
+  -webkit-mask-image: var(--toolbarButton-editorInk-icon);
+  mask-image: var(--toolbarButton-editorInk-icon);
 }
 .toolbar .common-button {
-  background-color: transparent;
+  display: inline-block;
+  user-select: none;
+  min-width: 16px;
   border: none;
-  padding: 6px 8px;
-  margin-left: 8px;
-  border-radius: 4px;
+  border-radius: 2px;
+  color: var(--main-color);
+  padding: 2px 6px 0;
+  width: 28px;
+  height: 28px;
+  background: none;
+  position: relative;
 }
-.toolbar .common-button:first-child {
-  margin-left: 0;
+.toolbar .common-button + .common-button {
+  margin-right: 8px;
 }
 .toolbar .common-button:focus {
   outline: none !important;
 }
 .toolbar .common-button:hover {
   background-color: #dddedf;
+}
+.toolbar .common-button.has-before::before {
+  position: absolute;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  content: "";
+  background-color: var(--toolbar-icon-bg-color);
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  opacity: var(--toolbar-icon-opacity);
+  top: 6px;
+  left: 6px;
+}
+.toolbar .common-button .button-label {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 /*# sourceMappingURL=index.css.map */

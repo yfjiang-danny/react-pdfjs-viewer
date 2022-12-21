@@ -155,7 +155,12 @@ var text_layer_default = TextLayer;
 
 // packages/viewer/index.tsx
 import { range } from "lodash";
-import { useEffect as useEffect6, useRef as useRef6, useState as useState6 } from "react";
+import {
+  useCallback,
+  useEffect as useEffect6,
+  useRef as useRef5,
+  useState as useState6
+} from "react";
 
 // packages/hooks/usePageResize.ts
 import { useEffect as useEffect4, useState as useState3 } from "react";
@@ -307,7 +312,10 @@ var PageLayer = ({
 var page_layer_default = PageLayer;
 
 // packages/provider/index.tsx
-import React5, { useRef as useRef5, useState as useState5 } from "react";
+import React5, { useState as useState5 } from "react";
+
+// packages/assets/pdf/compressed.tracemonkey-pldi-09.pdf
+var compressed_tracemonkey_pldi_09_default = "./compressed.tracemonkey-pldi-09-767A2TJB.pdf";
 
 // packages/provider/internal.ts
 import React4, { useRef as useRef4 } from "react";
@@ -330,14 +338,18 @@ function useInternalState() {
 import { jsx as jsx6 } from "react/jsx-runtime";
 function usePDFViewerHook(initialState = {
   scale: "auto",
-  page: 1
+  page: 1,
+  pdfURI: compressed_tracemonkey_pldi_09_default
 }) {
-  const [scale, setScale] = useState5(initialState.scale);
-  const scaleNumberRef = useRef5(1);
-  const [currentPage, setCurrentPage] = useState5(initialState.page);
+  const [pdfURI, setPdfURI] = useState5(initialState.pdfURI);
+  const [scale, setScale] = useState5(initialState.scale || "auto");
+  const [currentPage, setCurrentPage] = useState5(
+    initialState.page || 1
+  );
   const [totalPage, setTotalPage] = useState5(0);
   return {
-    scaleNumberRef,
+    pdfURI,
+    setPdfURI,
     scale,
     setScale,
     currentPage,
@@ -408,21 +420,20 @@ function watchScroll(viewAreaElement, callback) {
 import { jsx as jsx7 } from "react/jsx-runtime";
 import { createElement } from "react";
 var PDFViewer = ({
-  pdfURI,
   loadingComponent,
   errorComponent,
   width,
   height,
   scrollMode = "vertical"
 }) => {
-  const { scale, totalPage, currentPage, setCurrentPage, setTotalPage } = usePDFViewer();
+  const { pdfURI, scale, totalPage, setCurrentPage, setTotalPage } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
   const [loading, setLoading] = useState6(false);
   const [loadingProgress, setLoadingProgress] = useState6(-1);
   const [pdfDoc, setPDFDoc] = useState6();
   const [errorReason, setErrorReason] = useState6();
-  const loadingTask = useRef6(null);
-  const viewerRef = useRef6(null);
+  const loadingTask = useRef5(null);
+  const viewerRef = useRef5(null);
   const [renderingPageIndex, setRenderingPageIndex] = useState6(1);
   const [renderMap, setRenderMap] = useState6({});
   const pageSize = usePageResizes({
@@ -432,17 +443,21 @@ var PDFViewer = ({
   });
   useEffect6(() => {
     scaleNumberRef.current = pageSize.scale;
-  }, [pageSize]);
+    console.log("pageSize", pageSize);
+  }, [pageSize, scaleNumberRef]);
   useEffect6(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
   useEffect6(() => {
     if (pdfURI) {
+      setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
       loadingTask.current.onProgress = (progress) => {
+        console.log("onProgress", progress);
         setLoadingProgress(progress);
       };
       loadingTask.current.promise.then((pdf) => {
+        console.log("promise", pdf);
         setPDFDoc(pdf);
         setTotalPage(pdf.numPages);
       }).catch((reason) => {
@@ -451,36 +466,42 @@ var PDFViewer = ({
         setLoading(false);
       });
     }
+    return () => {
+      loadingTask.current && loadingTask.current.destroy();
+    };
   }, [pdfURI]);
-  function scrollHandler(state) {
-    if (scrollMode == "vertical") {
-      if (pageSize.height == 0) {
+  const scrollHandler = useCallback(
+    (state) => {
+      if (scrollMode == "vertical") {
+        if (pageSize.height == 0) {
+          return;
+        }
+        const r2 = state.lastY % pageSize.height;
+        const d2 = Math.floor(state.lastY / pageSize.height) + 1;
+        const pageIndex = r2 > pageSize.height / 2 ? Math.min(d2 + 1, totalPage) : d2;
+        setCurrentPage((pre) => {
+          if (pre == pageIndex) {
+            return pre;
+          }
+          return pageIndex;
+        });
         return;
       }
-      const r2 = state.lastY % pageSize.height;
-      const d2 = Math.floor(state.lastY / pageSize.height) + 1;
-      const pageIndex = r2 > pageSize.height / 2 ? Math.min(d2 + 1, totalPage) : d2;
+      if (pageSize.width == 0) {
+        return;
+      }
+      const r = state.lastX % pageSize.width;
+      const d = Math.floor(state.lastX / pageSize.width) + 1;
+      const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
       setCurrentPage((pre) => {
-        if (pre == pageIndex) {
+        if (pre == page) {
           return pre;
         }
-        return pageIndex;
+        return page;
       });
-      return;
-    }
-    if (pageSize.width == 0) {
-      return;
-    }
-    const r = state.lastX % pageSize.width;
-    const d = Math.floor(state.lastX / pageSize.width) + 1;
-    const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
-    setCurrentPage((pre) => {
-      if (pre == page) {
-        return pre;
-      }
-      return page;
-    });
-  }
+    },
+    [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
+  );
   useEffect6(() => {
     let scrollState = null;
     if (viewerRef.current) {
@@ -497,8 +518,11 @@ var PDFViewer = ({
     if (loading) {
       return typeof loadingComponent == "function" ? loadingComponent(loadingProgress) : loadingComponent;
     }
-    if (errorReason || !pdfDoc) {
-      return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent;
+    if (!pdfDoc) {
+      if (errorReason) {
+        return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent != null ? errorComponent : errorReason.toString();
+      }
+      return "Loading error";
     }
     return /* @__PURE__ */ jsx7("div", {
       children: pageSize.width == 0 ? null : range(0, pdfDoc.numPages).map((index2) => {
@@ -560,6 +584,7 @@ var worker_default = PDFWorker;
 // packages/toolbar/index.tsx
 import {
   useEffect as useEffect8,
+  useRef as useRef8,
   useState as useState8
 } from "react";
 
@@ -3404,7 +3429,7 @@ tippy.setDefaultProps({
 var tippy_esm_default = tippy;
 
 // node_modules/@tippyjs/react/dist/tippy-react.esm.js
-import React7, { useLayoutEffect, useEffect as useEffect7, useRef as useRef7, useState as useState7, cloneElement, useMemo, forwardRef as forwardRef$1 } from "react";
+import React7, { useLayoutEffect, useEffect as useEffect7, useRef as useRef6, useState as useState7, cloneElement, useMemo, forwardRef as forwardRef$1 } from "react";
 import { createPortal } from "react-dom";
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null)
@@ -3488,7 +3513,7 @@ function deepPreserveProps(instanceProps, componentProps) {
 }
 var useIsomorphicLayoutEffect = isBrowser2 ? useLayoutEffect : useEffect7;
 function useMutableBox(initialValue) {
-  var ref = useRef7();
+  var ref = useRef6();
   if (!ref.current) {
     ref.current = typeof initialValue === "function" ? initialValue() : initialValue;
   }
@@ -3706,58 +3731,78 @@ var index = /* @__PURE__ */ forwardRef(/* @__PURE__ */ TippyGenerator(tippy_esm_
 var tippy_react_esm_default = index;
 
 // packages/toolbar/scale-selector/index.tsx
-import { useMemo as useMemo2, useRef as useRef8 } from "react";
+import { useMemo as useMemo2, useRef as useRef7 } from "react";
+
+// packages/assets/svg/arrow-drop-down.tsx
+import React8 from "react";
 import { jsx as jsx9 } from "react/jsx-runtime";
+function SvgArrowDropDown(props, svgRef) {
+  return /* @__PURE__ */ jsx9("svg", __spreadProps(__spreadValues({
+    viewBox: "0 0 24 24"
+  }, props), {
+    ref: svgRef,
+    children: /* @__PURE__ */ jsx9("path", {
+      d: "M7 10l5 5 5-5z"
+    })
+  }));
+}
+var ForwardRef = React8.forwardRef(SvgArrowDropDown);
+var arrow_drop_down_default = ForwardRef;
+
+// packages/toolbar/scale-selector/index.tsx
+import { jsx as jsx10, jsxs } from "react/jsx-runtime";
 var ScaleSelector = () => {
-  const options = [
-    {
-      value: "auto",
-      label: "\u81EA\u52A8\u7F29\u653E"
-    },
-    {
-      value: "fitWidth",
-      label: "\u9002\u5408\u9875\u5BBD"
-    },
-    {
-      value: "fitHeight",
-      label: "\u9002\u5408\u9875\u9762"
-    },
-    {
-      value: 0.5,
-      label: "50%"
-    },
-    {
-      value: 0.75,
-      label: "75%"
-    },
-    {
-      value: 1,
-      label: "100%"
-    },
-    {
-      value: 1.25,
-      label: "125%"
-    },
-    {
-      value: 1.5,
-      label: "150%"
-    },
-    {
-      value: 2,
-      label: "200%"
-    },
-    {
-      value: 3,
-      label: "300%"
-    },
-    {
-      value: 4,
-      label: "400%"
-    }
-  ];
+  const options = useMemo2(() => {
+    return [
+      {
+        value: "auto",
+        label: "\u81EA\u52A8\u7F29\u653E"
+      },
+      {
+        value: "fitWidth",
+        label: "\u9002\u5408\u9875\u5BBD"
+      },
+      {
+        value: "fitHeight",
+        label: "\u9002\u5408\u9875\u9762"
+      },
+      {
+        value: 0.5,
+        label: "50%"
+      },
+      {
+        value: 0.75,
+        label: "75%"
+      },
+      {
+        value: 1,
+        label: "100%"
+      },
+      {
+        value: 1.25,
+        label: "125%"
+      },
+      {
+        value: 1.5,
+        label: "150%"
+      },
+      {
+        value: 2,
+        label: "200%"
+      },
+      {
+        value: 3,
+        label: "300%"
+      },
+      {
+        value: 4,
+        label: "400%"
+      }
+    ];
+  }, []);
   const { scale, setScale } = usePDFViewer();
-  const instanceRef = useRef8();
-  const rootRef = useRef8(null);
+  const instanceRef = useRef7();
+  const rootRef = useRef7(null);
   const displayName = useMemo2(() => {
     const findOption = options.find((v) => v.value == scale);
     if (findOption) {
@@ -3776,20 +3821,30 @@ var ScaleSelector = () => {
       return v.value;
     });
   }
-  return /* @__PURE__ */ jsx9(tippy_react_esm_default, {
+  return /* @__PURE__ */ jsx10(tippy_react_esm_default, {
     interactive: true,
     trigger: "click",
     onCreate: (instance) => instanceRef.current = instance,
     placement: "bottom-start",
-    content: /* @__PURE__ */ jsx9("div", {
+    content: /* @__PURE__ */ jsx10("div", {
       className: "scale-wrapper",
       children: options.map((v) => {
-        return /* @__PURE__ */ jsx9("div", {
-          onClick: () => {
+        let valid = true;
+        if (typeof v.value == "number") {
+          if (v.value > MAX_SCALE) {
+            valid = false;
+            console.warn(`MAX_SCALE is ${MAX_SCALE}, you have ${v.value}`);
+          } else if (v.value < MIN_SCALE) {
+            valid = false;
+            console.warn(`MIN_SCALE is ${MIN_SCALE}, you have ${v.value}`);
+          }
+        }
+        return /* @__PURE__ */ jsx10("div", {
+          onClick: valid ? () => {
             var _a;
             onChanged(v);
             (_a = instanceRef.current) == null ? void 0 : _a.hide();
-          },
+          } : void 0,
           className: "scale-option",
           children: v.label
         }, v.value);
@@ -3815,21 +3870,27 @@ var ScaleSelector = () => {
       ]
     },
     hideOnClick: true,
-    children: /* @__PURE__ */ jsx9("div", {
+    children: /* @__PURE__ */ jsxs("div", {
       className: "scale-reference",
       ref: rootRef,
-      children: displayName
+      children: [
+        displayName,
+        /* @__PURE__ */ jsx10(arrow_drop_down_default, {
+          className: "select-icon"
+        })
+      ]
     })
   });
 };
 var scale_selector_default = ScaleSelector;
 
 // packages/toolbar/index.tsx
-import { jsx as jsx10, jsxs } from "react/jsx-runtime";
+import { jsx as jsx11, jsxs as jsxs2 } from "react/jsx-runtime";
 var Toolbar = (props) => {
-  const { currentPage, setCurrentPage, scale, setScale, totalPage } = usePDFViewer();
+  const { setPdfURI, currentPage, setCurrentPage, setScale, totalPage } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
   const [inputPageIndex, setInputPageIndex] = useState8(currentPage);
+  const fileInputRef = useRef8(null);
   useEffect8(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
@@ -3846,15 +3907,6 @@ var Toolbar = (props) => {
       scrollToPageIndex(res);
       return res;
     });
-  }
-  function onScaleChange(event) {
-    console.log("onScaleChange", event.currentTarget.value);
-    if (!isNaN(Number(event.currentTarget.value))) {
-      const scale2 = parseFloat(event.currentTarget.value);
-      setScale(scale2);
-      return;
-    }
-    setScale(event.currentTarget.value);
   }
   function onPageInputChange(ev) {
     const v = ev.target.value;
@@ -3897,30 +3949,53 @@ var Toolbar = (props) => {
       return Math.min(MAX_SCALE, fixed(s + delta * 0.1, 2));
     });
   }
-  return /* @__PURE__ */ jsxs("div", {
+  function onFileInputButtonClicked() {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+  function onFileInputChanged(evt) {
+    var _a;
+    const file = (_a = evt.currentTarget.files) == null ? void 0 : _a[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      console.log("onFileInputChanged", url);
+      setPdfURI(url);
+    }
+  }
+  return /* @__PURE__ */ jsxs2("div", {
     className: "toolbar",
     children: [
-      /* @__PURE__ */ jsxs("div", {
+      /* @__PURE__ */ jsxs2("div", {
         className: "toolbar-left",
         children: [
-          /* @__PURE__ */ jsx10("button", {
-            className: "common-button",
-            children: "Search"
+          /* @__PURE__ */ jsx11("button", {
+            className: "common-button has-before search",
+            children: /* @__PURE__ */ jsx11("span", {
+              className: "button-label",
+              children: "\u67E5\u627E"
+            })
           }),
-          /* @__PURE__ */ jsx10("button", {
-            className: "common-button",
+          /* @__PURE__ */ jsx11("button", {
+            className: "common-button has-before previous",
             onClick: onPreviousButtonClick,
-            children: "Previous"
+            children: /* @__PURE__ */ jsx11("span", {
+              className: "button-label",
+              children: "\u4E0A\u4E00\u9875"
+            })
           }),
-          /* @__PURE__ */ jsx10("button", {
-            className: "common-button",
+          /* @__PURE__ */ jsx11("button", {
+            className: "common-button has-before next",
             onClick: onNextButtonClick,
-            children: "Next"
+            children: /* @__PURE__ */ jsx11("span", {
+              className: "button-label",
+              children: "\u4E0B\u4E00\u9875"
+            })
           }),
-          /* @__PURE__ */ jsxs("div", {
+          /* @__PURE__ */ jsxs2("div", {
             className: "page-input-wrapper",
             children: [
-              /* @__PURE__ */ jsx10("input", {
+              /* @__PURE__ */ jsx11("input", {
                 className: "page-input",
                 value: `${inputPageIndex}`,
                 onChange: onPageInputChange,
@@ -3939,38 +4014,77 @@ var Toolbar = (props) => {
           })
         ]
       }),
-      /* @__PURE__ */ jsxs("div", {
+      /* @__PURE__ */ jsxs2("div", {
         className: "toolbar-center",
         children: [
-          /* @__PURE__ */ jsxs("div", {
+          /* @__PURE__ */ jsxs2("div", {
             className: "zoom-button-wrapper",
             children: [
-              /* @__PURE__ */ jsx10("button", {
-                className: "zoom-button zoom-out",
+              /* @__PURE__ */ jsx11("button", {
+                className: "common-button has-before zoom-button zoom-out",
                 onClick: onZoomOut,
-                children: /* @__PURE__ */ jsx10("span", {
-                  className: "zoom-label",
+                children: /* @__PURE__ */ jsx11("span", {
+                  className: "button-label zoom-label",
                   children: "\u7F29\u5C0F"
                 })
               }),
-              /* @__PURE__ */ jsx10("span", {
+              /* @__PURE__ */ jsx11("span", {
                 className: "divider"
               }),
-              /* @__PURE__ */ jsx10("button", {
-                className: "zoom-button zoom-in",
+              /* @__PURE__ */ jsx11("button", {
+                className: "common-button has-before zoom-button zoom-in",
                 onClick: onZoomIn,
-                children: /* @__PURE__ */ jsx10("span", {
-                  className: "zoom-label",
+                children: /* @__PURE__ */ jsx11("span", {
+                  className: "button-label zoom-label",
                   children: "\u653E\u5927"
                 })
               })
             ]
           }),
-          /* @__PURE__ */ jsx10(scale_selector_default, {})
+          /* @__PURE__ */ jsx11(scale_selector_default, {})
         ]
       }),
-      /* @__PURE__ */ jsx10("div", {
-        className: "toolbar-right"
+      /* @__PURE__ */ jsxs2("div", {
+        className: "toolbar-right",
+        children: [
+          /* @__PURE__ */ jsx11("button", {
+            className: "common-button has-before open",
+            onClick: onFileInputButtonClicked,
+            children: /* @__PURE__ */ jsx11("span", {
+              className: "button-label",
+              children: "\u6253\u5F00"
+            })
+          }),
+          /* @__PURE__ */ jsx11("button", {
+            className: "common-button has-before print",
+            children: /* @__PURE__ */ jsx11("span", {
+              className: "button-label",
+              children: "\u6253\u5370"
+            })
+          }),
+          /* @__PURE__ */ jsx11("button", {
+            className: "common-button has-before  download",
+            children: /* @__PURE__ */ jsx11("span", {
+              className: "button-label",
+              children: "\u4FDD\u5B58"
+            })
+          }),
+          /* @__PURE__ */ jsx11("button", {
+            className: "common-button has-before draw",
+            children: /* @__PURE__ */ jsx11("span", {
+              className: "button-label",
+              children: "\u7ED8\u56FE"
+            })
+          })
+        ]
+      }),
+      /* @__PURE__ */ jsx11("input", {
+        type: "file",
+        accept: ".pdf",
+        id: "fileInput",
+        className: "hidden",
+        onChange: onFileInputChanged,
+        ref: fileInputRef
       })
     ]
   });

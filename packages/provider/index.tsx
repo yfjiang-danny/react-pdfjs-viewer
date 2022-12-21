@@ -1,14 +1,17 @@
-import React, { FC, useRef, useState } from "react";
-import { ScaleType } from "../types";
+import React, { FC, useState } from "react";
+import { OptionModel, ScaleType } from "../types";
 import { InternalStateContext, useInternalStateHook } from "./internal";
 
 interface PDFViewerInitialState {
-  scale: ScaleType;
-  page: number;
+  pdfURI: string;
+  page?: number;
+  scale?: ScaleType;
+  scaleOptions?: OptionModel[];
 }
 
 interface PDFViewerState {
-  scaleNumberRef: React.MutableRefObject<number>;
+  pdfURI: string;
+  setPdfURI: React.Dispatch<React.SetStateAction<string>>;
   scale: ScaleType;
   setScale: React.Dispatch<React.SetStateAction<ScaleType>>;
   currentPage: number;
@@ -21,15 +24,19 @@ function usePDFViewerHook(
   initialState: PDFViewerInitialState = {
     scale: "auto",
     page: 1,
+    pdfURI: "",
   }
 ): PDFViewerState {
-  const [scale, setScale] = useState<ScaleType>(initialState.scale);
-  const scaleNumberRef = useRef(1);
-  const [currentPage, setCurrentPage] = useState<number>(initialState.page);
+  const [pdfURI, setPdfURI] = useState<string>(initialState.pdfURI);
+  const [scale, setScale] = useState<ScaleType>(initialState.scale || "auto");
+  const [currentPage, setCurrentPage] = useState<number>(
+    initialState.page || 1
+  );
   const [totalPage, setTotalPage] = useState<number>(0);
 
   return {
-    scaleNumberRef,
+    pdfURI,
+    setPdfURI,
     scale,
     setScale,
     currentPage,

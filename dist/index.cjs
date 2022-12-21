@@ -342,6 +342,9 @@ var page_layer_default = PageLayer;
 // packages/provider/index.tsx
 var import_react7 = __toESM(require("react"), 1);
 
+// packages/assets/pdf/compressed.tracemonkey-pldi-09.pdf
+var compressed_tracemonkey_pldi_09_default = "./compressed.tracemonkey-pldi-09-767A2TJB.pdf";
+
 // packages/provider/internal.ts
 var import_react6 = __toESM(require("react"), 1);
 function useInternalStateHook() {
@@ -363,14 +366,18 @@ function useInternalState() {
 var import_jsx_runtime = require("react/jsx-runtime");
 function usePDFViewerHook(initialState = {
   scale: "auto",
-  page: 1
+  page: 1,
+  pdfURI: compressed_tracemonkey_pldi_09_default
 }) {
-  const [scale, setScale] = (0, import_react7.useState)(initialState.scale);
-  const scaleNumberRef = (0, import_react7.useRef)(1);
-  const [currentPage, setCurrentPage] = (0, import_react7.useState)(initialState.page);
+  const [pdfURI, setPdfURI] = (0, import_react7.useState)(initialState.pdfURI);
+  const [scale, setScale] = (0, import_react7.useState)(initialState.scale || "auto");
+  const [currentPage, setCurrentPage] = (0, import_react7.useState)(
+    initialState.page || 1
+  );
   const [totalPage, setTotalPage] = (0, import_react7.useState)(0);
   return {
-    scaleNumberRef,
+    pdfURI,
+    setPdfURI,
     scale,
     setScale,
     currentPage,
@@ -441,14 +448,13 @@ function watchScroll(viewAreaElement, callback) {
 var import_jsx_runtime = require("react/jsx-runtime");
 var import_react = require("react");
 var PDFViewer = ({
-  pdfURI,
   loadingComponent,
   errorComponent,
   width,
   height,
   scrollMode = "vertical"
 }) => {
-  const { scale, totalPage, currentPage, setCurrentPage, setTotalPage } = usePDFViewer();
+  const { pdfURI, scale, totalPage, setCurrentPage, setTotalPage } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
   const [loading, setLoading] = (0, import_react8.useState)(false);
   const [loadingProgress, setLoadingProgress] = (0, import_react8.useState)(-1);
@@ -465,17 +471,21 @@ var PDFViewer = ({
   });
   (0, import_react8.useEffect)(() => {
     scaleNumberRef.current = pageSize.scale;
-  }, [pageSize]);
+    console.log("pageSize", pageSize);
+  }, [pageSize, scaleNumberRef]);
   (0, import_react8.useEffect)(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
   (0, import_react8.useEffect)(() => {
     if (pdfURI) {
+      setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
       loadingTask.current.onProgress = (progress) => {
+        console.log("onProgress", progress);
         setLoadingProgress(progress);
       };
       loadingTask.current.promise.then((pdf) => {
+        console.log("promise", pdf);
         setPDFDoc(pdf);
         setTotalPage(pdf.numPages);
       }).catch((reason) => {
@@ -484,36 +494,42 @@ var PDFViewer = ({
         setLoading(false);
       });
     }
+    return () => {
+      loadingTask.current && loadingTask.current.destroy();
+    };
   }, [pdfURI]);
-  function scrollHandler(state) {
-    if (scrollMode == "vertical") {
-      if (pageSize.height == 0) {
+  const scrollHandler = (0, import_react8.useCallback)(
+    (state) => {
+      if (scrollMode == "vertical") {
+        if (pageSize.height == 0) {
+          return;
+        }
+        const r2 = state.lastY % pageSize.height;
+        const d2 = Math.floor(state.lastY / pageSize.height) + 1;
+        const pageIndex = r2 > pageSize.height / 2 ? Math.min(d2 + 1, totalPage) : d2;
+        setCurrentPage((pre) => {
+          if (pre == pageIndex) {
+            return pre;
+          }
+          return pageIndex;
+        });
         return;
       }
-      const r2 = state.lastY % pageSize.height;
-      const d2 = Math.floor(state.lastY / pageSize.height) + 1;
-      const pageIndex = r2 > pageSize.height / 2 ? Math.min(d2 + 1, totalPage) : d2;
+      if (pageSize.width == 0) {
+        return;
+      }
+      const r = state.lastX % pageSize.width;
+      const d = Math.floor(state.lastX / pageSize.width) + 1;
+      const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
       setCurrentPage((pre) => {
-        if (pre == pageIndex) {
+        if (pre == page) {
           return pre;
         }
-        return pageIndex;
+        return page;
       });
-      return;
-    }
-    if (pageSize.width == 0) {
-      return;
-    }
-    const r = state.lastX % pageSize.width;
-    const d = Math.floor(state.lastX / pageSize.width) + 1;
-    const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
-    setCurrentPage((pre) => {
-      if (pre == page) {
-        return pre;
-      }
-      return page;
-    });
-  }
+    },
+    [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
+  );
   (0, import_react8.useEffect)(() => {
     let scrollState = null;
     if (viewerRef.current) {
@@ -530,8 +546,11 @@ var PDFViewer = ({
     if (loading) {
       return typeof loadingComponent == "function" ? loadingComponent(loadingProgress) : loadingComponent;
     }
-    if (errorReason || !pdfDoc) {
-      return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent;
+    if (!pdfDoc) {
+      if (errorReason) {
+        return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent != null ? errorComponent : errorReason.toString();
+      }
+      return "Loading error";
     }
     return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
       children: pageSize.width == 0 ? null : (0, import_lodash.range)(0, pdfDoc.numPages).map((index2) => {
@@ -591,7 +610,7 @@ var PDFWorker = ({ workerDir, children }) => {
 var worker_default = PDFWorker;
 
 // packages/toolbar/index.tsx
-var import_react12 = require("react");
+var import_react13 = require("react");
 
 // node_modules/@popperjs/core/lib/enums.js
 var top = "top";
@@ -3736,59 +3755,79 @@ var index = /* @__PURE__ */ forwardRef(/* @__PURE__ */ TippyGenerator(tippy_esm_
 var tippy_react_esm_default = index;
 
 // packages/toolbar/scale-selector/index.tsx
-var import_react11 = require("react");
+var import_react12 = require("react");
+
+// packages/assets/svg/arrow-drop-down.tsx
+var import_react10 = __toESM(require("react"), 1);
+var import_jsx_runtime = require("react/jsx-runtime");
+function SvgArrowDropDown(props, svgRef) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", __spreadProps(__spreadValues({
+    viewBox: "0 0 24 24"
+  }, props), {
+    ref: svgRef,
+    children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", {
+      d: "M7 10l5 5 5-5z"
+    })
+  }));
+}
+var ForwardRef = import_react10.default.forwardRef(SvgArrowDropDown);
+var arrow_drop_down_default = ForwardRef;
+
+// packages/toolbar/scale-selector/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 var ScaleSelector = () => {
-  const options = [
-    {
-      value: "auto",
-      label: "\u81EA\u52A8\u7F29\u653E"
-    },
-    {
-      value: "fitWidth",
-      label: "\u9002\u5408\u9875\u5BBD"
-    },
-    {
-      value: "fitHeight",
-      label: "\u9002\u5408\u9875\u9762"
-    },
-    {
-      value: 0.5,
-      label: "50%"
-    },
-    {
-      value: 0.75,
-      label: "75%"
-    },
-    {
-      value: 1,
-      label: "100%"
-    },
-    {
-      value: 1.25,
-      label: "125%"
-    },
-    {
-      value: 1.5,
-      label: "150%"
-    },
-    {
-      value: 2,
-      label: "200%"
-    },
-    {
-      value: 3,
-      label: "300%"
-    },
-    {
-      value: 4,
-      label: "400%"
-    }
-  ];
+  const options = (0, import_react12.useMemo)(() => {
+    return [
+      {
+        value: "auto",
+        label: "\u81EA\u52A8\u7F29\u653E"
+      },
+      {
+        value: "fitWidth",
+        label: "\u9002\u5408\u9875\u5BBD"
+      },
+      {
+        value: "fitHeight",
+        label: "\u9002\u5408\u9875\u9762"
+      },
+      {
+        value: 0.5,
+        label: "50%"
+      },
+      {
+        value: 0.75,
+        label: "75%"
+      },
+      {
+        value: 1,
+        label: "100%"
+      },
+      {
+        value: 1.25,
+        label: "125%"
+      },
+      {
+        value: 1.5,
+        label: "150%"
+      },
+      {
+        value: 2,
+        label: "200%"
+      },
+      {
+        value: 3,
+        label: "300%"
+      },
+      {
+        value: 4,
+        label: "400%"
+      }
+    ];
+  }, []);
   const { scale, setScale } = usePDFViewer();
-  const instanceRef = (0, import_react11.useRef)();
-  const rootRef = (0, import_react11.useRef)(null);
-  const displayName = (0, import_react11.useMemo)(() => {
+  const instanceRef = (0, import_react12.useRef)();
+  const rootRef = (0, import_react12.useRef)(null);
+  const displayName = (0, import_react12.useMemo)(() => {
     const findOption = options.find((v) => v.value == scale);
     if (findOption) {
       return findOption.label;
@@ -3814,12 +3853,22 @@ var ScaleSelector = () => {
     content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
       className: "scale-wrapper",
       children: options.map((v) => {
+        let valid = true;
+        if (typeof v.value == "number") {
+          if (v.value > MAX_SCALE) {
+            valid = false;
+            console.warn(`MAX_SCALE is ${MAX_SCALE}, you have ${v.value}`);
+          } else if (v.value < MIN_SCALE) {
+            valid = false;
+            console.warn(`MIN_SCALE is ${MIN_SCALE}, you have ${v.value}`);
+          }
+        }
         return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-          onClick: () => {
+          onClick: valid ? () => {
             var _a;
             onChanged(v);
             (_a = instanceRef.current) == null ? void 0 : _a.hide();
-          },
+          } : void 0,
           className: "scale-option",
           children: v.label
         }, v.value);
@@ -3845,10 +3894,15 @@ var ScaleSelector = () => {
       ]
     },
     hideOnClick: true,
-    children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+    children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
       className: "scale-reference",
       ref: rootRef,
-      children: displayName
+      children: [
+        displayName,
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(arrow_drop_down_default, {
+          className: "select-icon"
+        })
+      ]
     })
   });
 };
@@ -3857,10 +3911,11 @@ var scale_selector_default = ScaleSelector;
 // packages/toolbar/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 var Toolbar = (props) => {
-  const { currentPage, setCurrentPage, scale, setScale, totalPage } = usePDFViewer();
+  const { setPdfURI, currentPage, setCurrentPage, setScale, totalPage } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [inputPageIndex, setInputPageIndex] = (0, import_react12.useState)(currentPage);
-  (0, import_react12.useEffect)(() => {
+  const [inputPageIndex, setInputPageIndex] = (0, import_react13.useState)(currentPage);
+  const fileInputRef = (0, import_react13.useRef)(null);
+  (0, import_react13.useEffect)(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
   function onPreviousButtonClick() {
@@ -3876,15 +3931,6 @@ var Toolbar = (props) => {
       scrollToPageIndex(res);
       return res;
     });
-  }
-  function onScaleChange(event) {
-    console.log("onScaleChange", event.currentTarget.value);
-    if (!isNaN(Number(event.currentTarget.value))) {
-      const scale2 = parseFloat(event.currentTarget.value);
-      setScale(scale2);
-      return;
-    }
-    setScale(event.currentTarget.value);
   }
   function onPageInputChange(ev) {
     const v = ev.target.value;
@@ -3927,6 +3973,20 @@ var Toolbar = (props) => {
       return Math.min(MAX_SCALE, fixed(s + delta * 0.1, 2));
     });
   }
+  function onFileInputButtonClicked() {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+  function onFileInputChanged(evt) {
+    var _a;
+    const file = (_a = evt.currentTarget.files) == null ? void 0 : _a[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      console.log("onFileInputChanged", url);
+      setPdfURI(url);
+    }
+  }
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
     className: "toolbar",
     children: [
@@ -3934,18 +3994,27 @@ var Toolbar = (props) => {
         className: "toolbar-left",
         children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button",
-            children: "Search"
+            className: "common-button has-before search",
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+              className: "button-label",
+              children: "\u67E5\u627E"
+            })
           }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button",
+            className: "common-button has-before previous",
             onClick: onPreviousButtonClick,
-            children: "Previous"
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+              className: "button-label",
+              children: "\u4E0A\u4E00\u9875"
+            })
           }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button",
+            className: "common-button has-before next",
             onClick: onNextButtonClick,
-            children: "Next"
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+              className: "button-label",
+              children: "\u4E0B\u4E00\u9875"
+            })
           }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
             className: "page-input-wrapper",
@@ -3976,10 +4045,10 @@ var Toolbar = (props) => {
             className: "zoom-button-wrapper",
             children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-                className: "zoom-button zoom-out",
+                className: "common-button has-before zoom-button zoom-out",
                 onClick: onZoomOut,
                 children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-                  className: "zoom-label",
+                  className: "button-label zoom-label",
                   children: "\u7F29\u5C0F"
                 })
               }),
@@ -3987,10 +4056,10 @@ var Toolbar = (props) => {
                 className: "divider"
               }),
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-                className: "zoom-button zoom-in",
+                className: "common-button has-before zoom-button zoom-in",
                 onClick: onZoomIn,
                 children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-                  className: "zoom-label",
+                  className: "button-label zoom-label",
                   children: "\u653E\u5927"
                 })
               })
@@ -3999,8 +4068,47 @@ var Toolbar = (props) => {
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)(scale_selector_default, {})
         ]
       }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-        className: "toolbar-right"
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+        className: "toolbar-right",
+        children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+            className: "common-button has-before open",
+            onClick: onFileInputButtonClicked,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+              className: "button-label",
+              children: "\u6253\u5F00"
+            })
+          }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+            className: "common-button has-before print",
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+              className: "button-label",
+              children: "\u6253\u5370"
+            })
+          }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+            className: "common-button has-before  download",
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+              className: "button-label",
+              children: "\u4FDD\u5B58"
+            })
+          }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+            className: "common-button has-before draw",
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+              className: "button-label",
+              children: "\u7ED8\u56FE"
+            })
+          })
+        ]
+      }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+        type: "file",
+        accept: ".pdf",
+        id: "fileInput",
+        className: "hidden",
+        onChange: onFileInputChanged,
+        ref: fileInputRef
       })
     ]
   });
