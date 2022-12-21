@@ -342,9 +342,6 @@ var page_layer_default = PageLayer;
 // packages/provider/index.tsx
 var import_react7 = __toESM(require("react"), 1);
 
-// packages/assets/pdf/compressed.tracemonkey-pldi-09.pdf
-var compressed_tracemonkey_pldi_09_default = "./compressed.tracemonkey-pldi-09-767A2TJB.pdf";
-
 // packages/provider/internal.ts
 var import_react6 = __toESM(require("react"), 1);
 function useInternalStateHook() {
@@ -367,7 +364,7 @@ var import_jsx_runtime = require("react/jsx-runtime");
 function usePDFViewerHook(initialState = {
   scale: "auto",
   page: 1,
-  pdfURI: compressed_tracemonkey_pldi_09_default
+  pdfURI: ""
 }) {
   const [pdfURI, setPdfURI] = (0, import_react7.useState)(initialState.pdfURI);
   const [scale, setScale] = (0, import_react7.useState)(initialState.scale || "auto");
