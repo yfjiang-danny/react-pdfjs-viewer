@@ -160,7 +160,7 @@ function approximateFraction(x: number) {
 }
 
 /**
- * 獲取不小於 x 並且能夠被 div 整除的最大整數
+ * 获取不小于 x 并且能够被 div 整除的最大整数
  * @param x
  * @param div
  * @returns
@@ -170,10 +170,23 @@ function roundToDivide(x: number, div: number) {
   return r === 0 ? x : Math.round(x - r + div);
 }
 
+function scrollToPageIndex(index: number) {
+  const scrollEl = document.getElementById("pdf_viewer_container");
+  if (scrollEl) {
+    const el = document.getElementById(`__page_${index}__`);
+
+    el &&
+      scrollEl.scrollTo({
+        top: el.offsetTop,
+      });
+  }
+}
+
 export {
   roundToDivide,
   approximateFraction,
   watchScroll,
   scrollIntoView,
   ScrollState,
+  scrollToPageIndex,
 };

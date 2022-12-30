@@ -8,6 +8,7 @@ interface PDFViewerProps {
     width: string | number;
     height: string | number;
     scrollMode?: ScrollMode;
+    thumbnail?: boolean;
 }
 declare const PDFViewer: FC<PDFViewerProps>;
 export default PDFViewer;

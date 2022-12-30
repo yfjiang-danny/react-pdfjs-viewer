@@ -8,3 +8,5 @@ export declare const MAX_AUTO_SCALE = 1.25;
 export declare const SCROLLBAR_PADDING = 40;
 export declare const VERTICAL_PADDING = 16;
 export declare const HORIZONTAL_PADDING = 24;
+export declare const THUMBNAIL_CANVAS_BORDER_WIDTH = 1;
+export declare const THUMBNAIL_WIDTH = 98;

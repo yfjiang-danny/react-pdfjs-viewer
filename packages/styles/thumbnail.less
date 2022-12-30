@@ -1,0 +1,29 @@
+#__thumbnail__ {
+  padding: 10px 30px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  & .thumbnail-item {
+    border-radius: 2px;
+    margin: 0 10px 5px;
+    padding: 7px;
+    width: fit-content;
+
+    &.selection {
+      background-color: var(--sidebaritem-bg-color);
+      background-clip: padding-box;
+      color: rgba(255, 255, 255, 1);
+    }
+
+    & img {
+      border: 1px solid rgba(0, 0, 0, 0);
+      box-shadow: 0 0 0 1px rgb(0 0 0 / 50%), 0 2px 8px rgb(0 0 0 / 30%);
+      opacity: 0.8;
+      z-index: 99;
+      background-color: rgba(255, 255, 255, 1);
+      background-clip: content-box;
+    }
+  }
+}

@@ -8,6 +8,7 @@ import React, {
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
 import { MAX_SCALE, MIN_SCALE } from "../types/constant";
+import { scrollToPageIndex } from "../utils";
 import "./index.less";
 import ScaleSelector from "./scale-selector";
 
@@ -51,20 +52,6 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   function onPageInputChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const v = ev.target.value;
     setInputPageIndex(parseInt(v));
-  }
-
-  function scrollToPageIndex(index: number) {
-    console.log("scrollToPageIndex", index);
-
-    const scrollEl = document.getElementById("pdf_viewer_container");
-    if (scrollEl) {
-      const el = document.getElementById(`__page_${index}__`);
-
-      el &&
-        scrollEl.scrollTo({
-          top: el.offsetTop,
-        });
-    }
   }
 
   function onPageInputKeyDown(ev: React.KeyboardEvent): void {

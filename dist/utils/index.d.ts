@@ -33,10 +33,11 @@ declare function watchScroll(viewAreaElement: HTMLElement, callback: (st: Scroll
  */
 declare function approximateFraction(x: number): number[];
 /**
- * 獲取不小於 x 並且能夠被 div 整除的最大整數
+ * 获取不小于 x 并且能够被 div 整除的最大整数
  * @param x
  * @param div
  * @returns
  */
 declare function roundToDivide(x: number, div: number): number;
-export { roundToDivide, approximateFraction, watchScroll, scrollIntoView, ScrollState, };
+declare function scrollToPageIndex(index: number): void;
+export { roundToDivide, approximateFraction, watchScroll, scrollIntoView, ScrollState, scrollToPageIndex, };

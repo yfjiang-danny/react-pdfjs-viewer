@@ -19,8 +19,10 @@ import PageLayer from "../layers/page-layer";
 import TextLayer from "../layers/text-layer";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
+import Sidebar from "../sidebar";
 import "../styles/index.less";
 import "../styles/viewer.less";
+import Thumbnail from "../thumbnail";
 import { ScrollMode } from "../types";
 import { ScrollState, watchScroll } from "../utils";
 import { PDFLib } from "../vendors/lib";
@@ -31,6 +33,7 @@ interface PDFViewerProps {
   width: string | number;
   height: string | number;
   scrollMode?: ScrollMode;
+  thumbnail?: boolean;
 }
 
 const PDFViewer: FC<PDFViewerProps> = ({
@@ -39,9 +42,16 @@ const PDFViewer: FC<PDFViewerProps> = ({
   width,
   height,
   scrollMode = "vertical",
+  thumbnail = true,
 }) => {
-  const { pdfURI, scale, totalPage, setCurrentPage, setTotalPage } =
-    usePDFViewer();
+  const {
+    pdfURI,
+    scale,
+    totalPage,
+    currentPage,
+    setCurrentPage,
+    setTotalPage,
+  } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
   const [loading, setLoading] = useState(false);
@@ -61,7 +71,6 @@ const PDFViewer: FC<PDFViewerProps> = ({
 
   useEffect(() => {
     scaleNumberRef.current = pageSize.scale;
-    console.log("pageSize", pageSize);
   }, [pageSize, scaleNumberRef]);
 
   useEffect(() => {
@@ -74,14 +83,11 @@ const PDFViewer: FC<PDFViewerProps> = ({
       loadingTask.current = PDFLib.getDocument(pdfURI);
 
       loadingTask.current.onProgress = (progress: number) => {
-        console.log("onProgress", progress);
         setLoadingProgress(progress);
       };
 
       loadingTask.current.promise
         .then((pdf: PDFDocumentProxy) => {
-          console.log("promise", pdf);
-
           setPDFDoc(pdf);
           setTotalPage(pdf.numPages);
         })
@@ -229,6 +235,11 @@ const PDFViewer: FC<PDFViewerProps> = ({
       style={{ height: height, width: width }}
       ref={viewerRef}
     >
+      {thumbnail && (
+        <Sidebar>
+          <Thumbnail currentPage={currentPage} pdfDoc={pdfDoc} />
+        </Sidebar>
+      )}
       {contentComponent()}
     </div>
   );
