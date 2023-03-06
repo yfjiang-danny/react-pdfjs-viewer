@@ -108,6 +108,7 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({ pdfDoc, pageIndex }) => {
   return (
     <div
       ref={rootRef}
+      id={`thumbnail_page_${pageIndex}`}
       className={`thumbnail-item`}
       onClick={() => {
         setCurrentPage(pageIndex);
@@ -115,6 +116,11 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({ pdfDoc, pageIndex }) => {
       }}
     >
       {imgURI ? <img src={imgURI} /> : null}
+      <div
+        className="thumbnail-item-page-mask"
+        title={`第${pageIndex}页`}
+        data-num={pageIndex}
+      />
     </div>
   );
 };

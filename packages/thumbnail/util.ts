@@ -1,3 +1,7 @@
+/**
+ * TempImageFactory
+ * Create a temp canvas
+ */
 class TempImageFactory {
   static #tempCanvas: HTMLCanvasElement | null = null;
 

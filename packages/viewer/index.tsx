@@ -128,6 +128,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
       const r = state.lastX % pageSize.width;
       const d = Math.floor(state.lastX / pageSize.width) + 1;
       const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
+
       setCurrentPage((pre) => {
         if (pre == page) {
           return pre;
@@ -235,11 +236,9 @@ const PDFViewer: FC<PDFViewerProps> = ({
       style={{ height: height, width: width }}
       ref={viewerRef}
     >
-      {thumbnail && (
-        <Sidebar>
-          <Thumbnail currentPage={currentPage} pdfDoc={pdfDoc} />
-        </Sidebar>
-      )}
+      <Sidebar>
+        {thumbnail && <Thumbnail currentPage={currentPage} pdfDoc={pdfDoc} />}
+      </Sidebar>
       {contentComponent()}
     </div>
   );

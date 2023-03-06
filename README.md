@@ -35,6 +35,8 @@ A React component to view PDF document. It is base on [mozilla/pdf.js](https://g
 npm install react-pdfjs-viewer
 ```
 
+or
+
 ```bash
 yarn add react-pdfjs-viewer
 ```

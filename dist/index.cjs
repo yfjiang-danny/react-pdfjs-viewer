@@ -189,6 +189,9 @@ var TextLayer = (props) => {
             textContent
           });
         }
+      }).catch((err) => {
+        var _a;
+        (_a = renderTask.current) == null ? void 0 : _a.cancel();
       });
     }
     return () => {
@@ -241,6 +244,7 @@ function usePDFViewerHook(initialState = {
     initialState.page || 1
   );
   const [totalPage, setTotalPage] = (0, import_react4.useState)(0);
+  const [sidebarVisible, setSidebarVisible] = (0, import_react4.useState)(false);
   return {
     pdfURI,
     setPdfURI,
@@ -249,7 +253,9 @@ function usePDFViewerHook(initialState = {
     currentPage,
     setCurrentPage,
     totalPage,
-    setTotalPage
+    setTotalPage,
+    sidebarVisible,
+    setSidebarVisible
   };
 }
 var PDFViewerContext = import_react4.default.createContext(null);
@@ -274,18 +280,49 @@ var PDFViewerProvider = (props) => {
 
 // packages/thumbnail/index.tsx
 var import_lodash = require("lodash");
-
-// packages/thumbnail/item.tsx
-var import_react5 = require("react");
-
-// packages/types/constant.ts
-var MIN_SCALE = 0.1;
-var MAX_SCALE = 10;
-var VERTICAL_PADDING = 16;
-var HORIZONTAL_PADDING = 24;
-var THUMBNAIL_WIDTH = 98;
+var import_react6 = require("react");
 
 // packages/utils/index.ts
+function isInViewport(el) {
+  const rect = el.getBoundingClientRect();
+  return rect.top > 0 && rect.top + rect.height / 2 < document.documentElement.clientHeight;
+}
+function scrollIntoViewByID(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    if (isInViewport(el)) {
+      return;
+    }
+    scrollIntoView(el);
+  }
+}
+function scrollIntoView(element, spot = { top: 0, left: 0 }, scrollMatches = false) {
+  let parent = element.offsetParent;
+  if (!parent) {
+    console.error("offsetParent is not set -- cannot scroll");
+    return;
+  }
+  let offsetY = element.offsetTop + element.clientTop;
+  let offsetX = element.offsetLeft + element.clientLeft;
+  while (parent.clientHeight === parent.scrollHeight && parent.clientWidth === parent.scrollWidth || scrollMatches && (parent.classList.contains("markedContent") || getComputedStyle(parent).overflow === "hidden")) {
+    offsetY += parent.offsetTop;
+    offsetX += parent.offsetLeft;
+    parent = parent.offsetParent;
+    if (!parent) {
+      return;
+    }
+  }
+  if (spot) {
+    if (spot.top !== void 0) {
+      offsetY += spot.top;
+    }
+    if (spot.left !== void 0) {
+      offsetX += spot.left;
+      parent.scrollLeft = offsetX;
+    }
+  }
+  parent.scrollTop = offsetY;
+}
 function watchScroll(viewAreaElement, callback) {
   const debounceScroll = function(evt) {
     if (rAF) {
@@ -331,6 +368,16 @@ function scrollToPageIndex(index2) {
     });
   }
 }
+
+// packages/thumbnail/item.tsx
+var import_react5 = require("react");
+
+// packages/types/constant.ts
+var MIN_SCALE = 0.1;
+var MAX_SCALE = 10;
+var VERTICAL_PADDING = 16;
+var HORIZONTAL_PADDING = 24;
+var THUMBNAIL_WIDTH = 98;
 
 // packages/thumbnail/util.ts
 var _tempCanvas;
@@ -436,16 +483,24 @@ var ThumbnailItem = ({ pdfDoc, pageIndex }) => {
       }
     }
   }, [currentPage, pageIndex]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
     ref: rootRef,
+    id: `thumbnail_page_${pageIndex}`,
     className: `thumbnail-item`,
     onClick: () => {
       setCurrentPage(pageIndex);
       scrollToPageIndex(pageIndex);
     },
-    children: imgURI ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-      src: imgURI
-    }) : null
+    children: [
+      imgURI ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+        src: imgURI
+      }) : null,
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+        className: "thumbnail-item-page-mask",
+        title: `\u7B2C${pageIndex}\u9875`,
+        "data-num": pageIndex
+      })
+    ]
   });
 };
 var item_default = ThumbnailItem;
@@ -453,6 +508,10 @@ var item_default = ThumbnailItem;
 // packages/thumbnail/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 var Thumbnail = ({ pdfDoc, currentPage }) => {
+  const { sidebarVisible } = usePDFViewer();
+  (0, import_react6.useEffect)(() => {
+    sidebarVisible && scrollIntoViewByID(`thumbnail_page_${currentPage}`);
+  }, [currentPage, sidebarVisible]);
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
     id: "__thumbnail__",
     children: !pdfDoc ? null : (0, import_lodash.range)(0, pdfDoc.numPages).map((index2) => {
@@ -468,7 +527,7 @@ var Thumbnail = ({ pdfDoc, currentPage }) => {
 var thumbnail_default = Thumbnail;
 
 // packages/toolbar/index.tsx
-var import_react10 = require("react");
+var import_react11 = require("react");
 
 // node_modules/@popperjs/core/lib/enums.js
 var top = "top";
@@ -3311,7 +3370,7 @@ tippy.setDefaultProps({
 var tippy_esm_default = tippy;
 
 // node_modules/@tippyjs/react/dist/tippy-react.esm.js
-var import_react6 = __toESM(require("react"));
+var import_react7 = __toESM(require("react"));
 var import_react_dom = require("react-dom");
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null)
@@ -3393,9 +3452,9 @@ function deepPreserveProps(instanceProps, componentProps) {
     })
   });
 }
-var useIsomorphicLayoutEffect = isBrowser2 ? import_react6.useLayoutEffect : import_react6.useEffect;
+var useIsomorphicLayoutEffect = isBrowser2 ? import_react7.useLayoutEffect : import_react7.useEffect;
 function useMutableBox(initialValue) {
-  var ref = (0, import_react6.useRef)();
+  var ref = (0, import_react7.useRef)();
   if (!ref.current) {
     ref.current = typeof initialValue === "function" ? initialValue() : initialValue;
   }
@@ -3443,9 +3502,9 @@ function TippyGenerator(tippy2) {
     var children = _ref.children, content = _ref.content, visible = _ref.visible, singleton = _ref.singleton, render2 = _ref.render, reference2 = _ref.reference, _ref$disabled = _ref.disabled, disabled = _ref$disabled === void 0 ? false : _ref$disabled, _ref$ignoreAttributes = _ref.ignoreAttributes, ignoreAttributes = _ref$ignoreAttributes === void 0 ? true : _ref$ignoreAttributes, __source = _ref.__source, __self = _ref.__self, restOfNativeProps = _objectWithoutPropertiesLoose(_ref, ["children", "content", "visible", "singleton", "render", "reference", "disabled", "ignoreAttributes", "__source", "__self"]);
     var isControlledMode = visible !== void 0;
     var isSingletonMode = singleton !== void 0;
-    var _useState = (0, import_react6.useState)(false), mounted = _useState[0], setMounted = _useState[1];
-    var _useState2 = (0, import_react6.useState)({}), attrs = _useState2[0], setAttrs = _useState2[1];
-    var _useState3 = (0, import_react6.useState)(), singletonContent = _useState3[0], setSingletonContent = _useState3[1];
+    var _useState = (0, import_react7.useState)(false), mounted = _useState[0], setMounted = _useState[1];
+    var _useState2 = (0, import_react7.useState)({}), attrs = _useState2[0], setAttrs = _useState2[1];
+    var _useState3 = (0, import_react7.useState)(), singletonContent = _useState3[0], setSingletonContent = _useState3[1];
     var mutableBox = useMutableBox(function() {
       return {
         container: ssrSafeCreateDiv(),
@@ -3589,7 +3648,7 @@ function TippyGenerator(tippy2) {
         })
       });
     }, [attrs.placement, attrs.referenceHidden, attrs.escaped].concat(deps));
-    return /* @__PURE__ */ import_react6.default.createElement(import_react6.default.Fragment, null, children ? /* @__PURE__ */ (0, import_react6.cloneElement)(children, {
+    return /* @__PURE__ */ import_react7.default.createElement(import_react7.default.Fragment, null, children ? /* @__PURE__ */ (0, import_react7.cloneElement)(children, {
       ref: function ref(node) {
         mutableBox.ref = node;
         preserveRef(children.ref, node);
@@ -3599,9 +3658,9 @@ function TippyGenerator(tippy2) {
   return Tippy;
 }
 var forwardRef = function(Tippy, defaultProps2) {
-  return /* @__PURE__ */ (0, import_react6.forwardRef)(function TippyWrapper(_ref, _ref2) {
+  return /* @__PURE__ */ (0, import_react7.forwardRef)(function TippyWrapper(_ref, _ref2) {
     var children = _ref.children, props = _objectWithoutPropertiesLoose(_ref, ["children"]);
-    return /* @__PURE__ */ import_react6.default.createElement(Tippy, Object.assign({}, defaultProps2, props), children ? /* @__PURE__ */ (0, import_react6.cloneElement)(children, {
+    return /* @__PURE__ */ import_react7.default.createElement(Tippy, Object.assign({}, defaultProps2, props), children ? /* @__PURE__ */ (0, import_react7.cloneElement)(children, {
       ref: function ref(node) {
         preserveRef(_ref2, node);
         preserveRef(children.ref, node);
@@ -3613,10 +3672,10 @@ var index = /* @__PURE__ */ forwardRef(/* @__PURE__ */ TippyGenerator(tippy_esm_
 var tippy_react_esm_default = index;
 
 // packages/toolbar/scale-selector/index.tsx
-var import_react9 = require("react");
+var import_react10 = require("react");
 
 // packages/assets/svg/arrow-drop-down.tsx
-var import_react7 = __toESM(require("react"), 1);
+var import_react8 = __toESM(require("react"), 1);
 var import_jsx_runtime = require("react/jsx-runtime");
 function SvgArrowDropDown(props, svgRef) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", __spreadProps(__spreadValues({
@@ -3628,13 +3687,13 @@ function SvgArrowDropDown(props, svgRef) {
     })
   }));
 }
-var ForwardRef = import_react7.default.forwardRef(SvgArrowDropDown);
+var ForwardRef = import_react8.default.forwardRef(SvgArrowDropDown);
 var arrow_drop_down_default = ForwardRef;
 
 // packages/toolbar/scale-selector/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 var ScaleSelector = () => {
-  const options = (0, import_react9.useMemo)(() => {
+  const options = (0, import_react10.useMemo)(() => {
     return [
       {
         value: "auto",
@@ -3683,9 +3742,9 @@ var ScaleSelector = () => {
     ];
   }, []);
   const { scale, setScale } = usePDFViewer();
-  const instanceRef = (0, import_react9.useRef)();
-  const rootRef = (0, import_react9.useRef)(null);
-  const displayName = (0, import_react9.useMemo)(() => {
+  const instanceRef = (0, import_react10.useRef)();
+  const rootRef = (0, import_react10.useRef)(null);
+  const displayName = (0, import_react10.useMemo)(() => {
     const findOption = options.find((v) => v.value == scale);
     if (findOption) {
       return findOption.label;
@@ -3769,13 +3828,24 @@ var scale_selector_default = ScaleSelector;
 // packages/toolbar/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 var Toolbar = (props) => {
-  const { setPdfURI, currentPage, setCurrentPage, setScale, totalPage } = usePDFViewer();
+  const {
+    setPdfURI,
+    currentPage,
+    setCurrentPage,
+    setScale,
+    totalPage,
+    sidebarVisible,
+    setSidebarVisible
+  } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [inputPageIndex, setInputPageIndex] = (0, import_react10.useState)(currentPage);
-  const fileInputRef = (0, import_react10.useRef)(null);
-  (0, import_react10.useEffect)(() => {
+  const [inputPageIndex, setInputPageIndex] = (0, import_react11.useState)(currentPage);
+  const fileInputRef = (0, import_react11.useRef)(null);
+  (0, import_react11.useEffect)(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
+  function onSidebarButtonClick() {
+    setSidebarVisible((pre) => !pre);
+  }
   function onPreviousButtonClick() {
     setCurrentPage((pre) => {
       const res = pre > 1 ? pre - 1 : 1;
@@ -3841,6 +3911,14 @@ var Toolbar = (props) => {
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
         className: "toolbar-left",
         children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+            className: `common-button has-before sidebar ${sidebarVisible ? "active" : ""}`,
+            onClick: onSidebarButtonClick,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+              className: "button-label",
+              children: "\u5207\u6362\u4FA7\u8FB9\u680F"
+            })
+          }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
             className: "common-button has-before search",
             children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -3965,17 +4043,17 @@ var toolbar_default = Toolbar;
 
 // packages/viewer/index.tsx
 var import_lodash2 = require("lodash");
-var import_react14 = require("react");
+var import_react16 = require("react");
 
 // packages/hooks/usePageResize.ts
-var import_react12 = require("react");
+var import_react13 = require("react");
 
 // packages/hooks/useRectObserver.ts
-var import_react11 = require("react");
+var import_react12 = require("react");
 function useRectObserver({ elRef }) {
-  const [width, setWidth] = (0, import_react11.useState)(0);
-  const [height, setHeight] = (0, import_react11.useState)(0);
-  const observer = (0, import_react11.useRef)(null);
+  const [width, setWidth] = (0, import_react12.useState)(0);
+  const [height, setHeight] = (0, import_react12.useState)(0);
+  const observer = (0, import_react12.useRef)(null);
   function resizeObserver(entries) {
     for (const entry of entries) {
       const { width: width2, height: height2 } = entry.contentRect;
@@ -3983,7 +4061,7 @@ function useRectObserver({ elRef }) {
       setHeight(height2);
     }
   }
-  (0, import_react11.useEffect)(() => {
+  (0, import_react12.useEffect)(() => {
     if (elRef.current) {
       observer.current = new ResizeObserver(resizeObserver);
       observer.current.observe(elRef.current);
@@ -4003,7 +4081,7 @@ function useRectObserver({ elRef }) {
 
 // packages/hooks/usePageResize.ts
 function usePageResizes({ resizesRef, doc, scale }) {
-  const [pageSize, setPageSize] = (0, import_react12.useState)({
+  const [pageSize, setPageSize] = (0, import_react13.useState)({
     width: 0,
     height: 0,
     scale: 1
@@ -4011,7 +4089,7 @@ function usePageResizes({ resizesRef, doc, scale }) {
   const { width, height } = useRectObserver({
     elRef: resizesRef
   });
-  (0, import_react12.useEffect)(() => {
+  (0, import_react13.useEffect)(() => {
     if (!doc) {
       return;
     }
@@ -4077,7 +4155,7 @@ var LoadingLayer = (props) => {
 var loading_layer_default = LoadingLayer;
 
 // packages/layers/page-layer.tsx
-var import_react13 = require("react");
+var import_react14 = require("react");
 var import_jsx_runtime = require("react/jsx-runtime");
 var PageLayer = ({
   doc,
@@ -4087,8 +4165,8 @@ var PageLayer = ({
   children,
   scrollMode
 }) => {
-  const [pageDoc, setPageDoc] = (0, import_react13.useState)();
-  (0, import_react13.useEffect)(() => {
+  const [pageDoc, setPageDoc] = (0, import_react14.useState)();
+  (0, import_react14.useEffect)(() => {
     doc.getPage(pageIndex).then((pageDoc2) => {
       setPageDoc(pageDoc2);
     });
@@ -4108,11 +4186,24 @@ var PageLayer = ({
 var page_layer_default = PageLayer;
 
 // packages/sidebar/index.tsx
+var import_react15 = require("react");
 var import_jsx_runtime = require("react/jsx-runtime");
 var Sidebar = ({ children }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+  const { sidebarVisible } = usePDFViewer();
+  const resizerRef = (0, import_react15.useRef)(null);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
     id: "__sidebar__",
-    children
+    className: `${sidebarVisible ? "" : "hidden"}`,
+    children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+        id: "__sidebar_content__",
+        children
+      }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+        id: "__sidebar_resizer__",
+        ref: resizerRef
+      })
+    ]
   });
 };
 var sidebar_default = Sidebar;
@@ -4137,26 +4228,26 @@ var PDFViewer = ({
     setTotalPage
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [loading, setLoading] = (0, import_react14.useState)(false);
-  const [loadingProgress, setLoadingProgress] = (0, import_react14.useState)(-1);
-  const [pdfDoc, setPDFDoc] = (0, import_react14.useState)();
-  const [errorReason, setErrorReason] = (0, import_react14.useState)();
-  const loadingTask = (0, import_react14.useRef)(null);
-  const viewerRef = (0, import_react14.useRef)(null);
-  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react14.useState)(1);
-  const [renderMap, setRenderMap] = (0, import_react14.useState)({});
+  const [loading, setLoading] = (0, import_react16.useState)(false);
+  const [loadingProgress, setLoadingProgress] = (0, import_react16.useState)(-1);
+  const [pdfDoc, setPDFDoc] = (0, import_react16.useState)();
+  const [errorReason, setErrorReason] = (0, import_react16.useState)();
+  const loadingTask = (0, import_react16.useRef)(null);
+  const viewerRef = (0, import_react16.useRef)(null);
+  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react16.useState)(1);
+  const [renderMap, setRenderMap] = (0, import_react16.useState)({});
   const pageSize = usePageResizes({
     resizesRef: viewerRef,
     doc: pdfDoc,
     scale
   });
-  (0, import_react14.useEffect)(() => {
+  (0, import_react16.useEffect)(() => {
     scaleNumberRef.current = pageSize.scale;
   }, [pageSize, scaleNumberRef]);
-  (0, import_react14.useEffect)(() => {
+  (0, import_react16.useEffect)(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
-  (0, import_react14.useEffect)(() => {
+  (0, import_react16.useEffect)(() => {
     if (pdfURI) {
       setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
@@ -4176,7 +4267,7 @@ var PDFViewer = ({
       loadingTask.current && loadingTask.current.destroy();
     };
   }, [pdfURI]);
-  const scrollHandler = (0, import_react14.useCallback)(
+  const scrollHandler = (0, import_react16.useCallback)(
     (state) => {
       if (scrollMode == "vertical") {
         if (pageSize.height == 0) {
@@ -4208,7 +4299,7 @@ var PDFViewer = ({
     },
     [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
   );
-  (0, import_react14.useEffect)(() => {
+  (0, import_react16.useEffect)(() => {
     let scrollState = null;
     if (viewerRef.current) {
       scrollState = watchScroll(viewerRef.current, scrollHandler);
@@ -4273,8 +4364,8 @@ var PDFViewer = ({
     style: { height, width },
     ref: viewerRef,
     children: [
-      thumbnail && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(sidebar_default, {
-        children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(thumbnail_default, {
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(sidebar_default, {
+        children: thumbnail && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(thumbnail_default, {
           currentPage,
           pdfDoc
         })

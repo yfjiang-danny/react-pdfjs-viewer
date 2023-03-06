@@ -15,6 +15,8 @@ interface PDFViewerState {
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     totalPage: number;
     setTotalPage: React.Dispatch<React.SetStateAction<number>>;
+    sidebarVisible: boolean;
+    setSidebarVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 declare function usePDFViewer(): PDFViewerState;
 interface PDFViewerProviderProps {

@@ -1,8 +1,8 @@
-import { PDFPageProxy, TextContent } from "pdfjs-dist/types/display/api";
+import { PDFPageProxy } from "pdfjs-dist/types/display/api";
 import { TextLayerRenderTask } from "pdfjs-dist/types/display/text_layer";
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { PDFLib } from "../vendors/lib";
+import React, { FunctionComponent, useEffect, useRef } from "react";
 import "../styles/text-layer.less";
+import { PDFLib } from "../vendors/lib";
 
 interface TextLayerProps {
   pageDoc: PDFPageProxy;
@@ -25,15 +25,20 @@ const TextLayer: FunctionComponent<TextLayerProps> = (props) => {
     if (textContainerRef.current) {
       const viewport = pageDoc.getViewport({ scale });
 
-      pageDoc.getTextContent().then((textContent) => {
-        if (textContent && textContainerRef.current) {
-          renderTask.current = PDFLib.renderTextLayer({
-            container: textContainerRef.current,
-            viewport: viewport,
-            textContent: textContent,
-          });
-        }
-      });
+      pageDoc
+        .getTextContent()
+        .then((textContent) => {
+          if (textContent && textContainerRef.current) {
+            renderTask.current = PDFLib.renderTextLayer({
+              container: textContainerRef.current,
+              viewport: viewport,
+              textContent: textContent,
+            });
+          }
+        })
+        .catch((err) => {
+          renderTask.current?.cancel();
+        });
     }
 
     return () => {

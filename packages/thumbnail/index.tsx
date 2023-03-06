@@ -1,7 +1,9 @@
 import { range } from "lodash";
 import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
+import { usePDFViewer } from "../provider";
 import "../styles/thumbnail.less";
+import { scrollIntoViewByID } from "../utils";
 import ThumbnailItem from "./item";
 
 interface ThumbnailProps {
@@ -10,6 +12,12 @@ interface ThumbnailProps {
 }
 
 const Thumbnail: FC<ThumbnailProps> = ({ pdfDoc, currentPage }) => {
+  const { sidebarVisible } = usePDFViewer();
+
+  useEffect(() => {
+    sidebarVisible && scrollIntoViewByID(`thumbnail_page_${currentPage}`);
+  }, [currentPage, sidebarVisible]);
+
   return (
     <div id="__thumbnail__">
       {!pdfDoc

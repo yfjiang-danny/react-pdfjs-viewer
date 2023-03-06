@@ -1,4 +1,32 @@
 /**
+ * Check if element is in viewport
+ * @param el
+ * @returns
+ */
+function isInViewport(el: HTMLElement): boolean {
+  const rect = el.getBoundingClientRect();
+  return (
+    rect.top > 0 &&
+    rect.top + rect.height / 2 < document.documentElement.clientHeight
+  );
+}
+
+/**
+ * Scrolls specified element into view of its parent by element id.
+ * @param id
+ */
+function scrollIntoViewByID(id: string) {
+  const el = document.getElementById(id);
+
+  if (el) {
+    if (isInViewport(el)) {
+      return;
+    }
+    scrollIntoView(el);
+  }
+}
+
+/**
  * Scrolls specified element into view of its parent.
  * @param {Object} element - The element to be visible.
  * @param {Object} spot - An object with optional top and left properties,
@@ -187,6 +215,7 @@ export {
   approximateFraction,
   watchScroll,
   scrollIntoView,
+  scrollIntoViewByID,
   ScrollState,
   scrollToPageIndex,
 };

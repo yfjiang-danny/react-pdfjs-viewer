@@ -152,6 +152,9 @@ var TextLayer = (props) => {
             textContent
           });
         }
+      }).catch((err) => {
+        var _a;
+        (_a = renderTask.current) == null ? void 0 : _a.cancel();
       });
     }
     return () => {
@@ -172,7 +175,7 @@ var TextLayer = (props) => {
 var text_layer_default = TextLayer;
 
 // packages/provider/index.tsx
-import React4, { useState as useState2 } from "react";
+import React4, { useState } from "react";
 
 // packages/provider/internal.ts
 import React3, { useRef as useRef3 } from "react";
@@ -198,12 +201,13 @@ function usePDFViewerHook(initialState = {
   page: 1,
   pdfURI: ""
 }) {
-  const [pdfURI, setPdfURI] = useState2(initialState.pdfURI);
-  const [scale, setScale] = useState2(initialState.scale || "auto");
-  const [currentPage, setCurrentPage] = useState2(
+  const [pdfURI, setPdfURI] = useState(initialState.pdfURI);
+  const [scale, setScale] = useState(initialState.scale || "auto");
+  const [currentPage, setCurrentPage] = useState(
     initialState.page || 1
   );
-  const [totalPage, setTotalPage] = useState2(0);
+  const [totalPage, setTotalPage] = useState(0);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   return {
     pdfURI,
     setPdfURI,
@@ -212,7 +216,9 @@ function usePDFViewerHook(initialState = {
     currentPage,
     setCurrentPage,
     totalPage,
-    setTotalPage
+    setTotalPage,
+    sidebarVisible,
+    setSidebarVisible
   };
 }
 var PDFViewerContext = React4.createContext(null);
@@ -237,18 +243,49 @@ var PDFViewerProvider = (props) => {
 
 // packages/thumbnail/index.tsx
 import { range } from "lodash";
-
-// packages/thumbnail/item.tsx
-import { useEffect as useEffect3, useRef as useRef4, useState as useState3 } from "react";
-
-// packages/types/constant.ts
-var MIN_SCALE = 0.1;
-var MAX_SCALE = 10;
-var VERTICAL_PADDING = 16;
-var HORIZONTAL_PADDING = 24;
-var THUMBNAIL_WIDTH = 98;
+import { useEffect as useEffect4 } from "react";
 
 // packages/utils/index.ts
+function isInViewport(el) {
+  const rect = el.getBoundingClientRect();
+  return rect.top > 0 && rect.top + rect.height / 2 < document.documentElement.clientHeight;
+}
+function scrollIntoViewByID(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    if (isInViewport(el)) {
+      return;
+    }
+    scrollIntoView(el);
+  }
+}
+function scrollIntoView(element, spot = { top: 0, left: 0 }, scrollMatches = false) {
+  let parent = element.offsetParent;
+  if (!parent) {
+    console.error("offsetParent is not set -- cannot scroll");
+    return;
+  }
+  let offsetY = element.offsetTop + element.clientTop;
+  let offsetX = element.offsetLeft + element.clientLeft;
+  while (parent.clientHeight === parent.scrollHeight && parent.clientWidth === parent.scrollWidth || scrollMatches && (parent.classList.contains("markedContent") || getComputedStyle(parent).overflow === "hidden")) {
+    offsetY += parent.offsetTop;
+    offsetX += parent.offsetLeft;
+    parent = parent.offsetParent;
+    if (!parent) {
+      return;
+    }
+  }
+  if (spot) {
+    if (spot.top !== void 0) {
+      offsetY += spot.top;
+    }
+    if (spot.left !== void 0) {
+      offsetX += spot.left;
+      parent.scrollLeft = offsetX;
+    }
+  }
+  parent.scrollTop = offsetY;
+}
 function watchScroll(viewAreaElement, callback) {
   const debounceScroll = function(evt) {
     if (rAF) {
@@ -295,6 +332,16 @@ function scrollToPageIndex(index2) {
   }
 }
 
+// packages/thumbnail/item.tsx
+import { useEffect as useEffect3, useRef as useRef4, useState as useState2 } from "react";
+
+// packages/types/constant.ts
+var MIN_SCALE = 0.1;
+var MAX_SCALE = 10;
+var VERTICAL_PADDING = 16;
+var HORIZONTAL_PADDING = 24;
+var THUMBNAIL_WIDTH = 98;
+
 // packages/thumbnail/util.ts
 var _tempCanvas;
 var TempImageFactory = class {
@@ -324,13 +371,13 @@ _tempCanvas = new WeakMap();
 __privateAdd(TempImageFactory, _tempCanvas, null);
 
 // packages/thumbnail/item.tsx
-import { jsx as jsx5 } from "react/jsx-runtime";
+import { jsx as jsx5, jsxs } from "react/jsx-runtime";
 var ThumbnailItem = ({ pdfDoc, pageIndex }) => {
   const { currentPage, setCurrentPage } = usePDFViewer();
-  const [pageDoc, setPageDoc] = useState3();
+  const [pageDoc, setPageDoc] = useState2();
   const rootRef = useRef4(null);
   const renderTask = useRef4(null);
-  const [imgURI, setImgURI] = useState3();
+  const [imgURI, setImgURI] = useState2();
   useEffect3(() => {
     pdfDoc.getPage(pageIndex).then((pageDoc2) => {
       setPageDoc(pageDoc2);
@@ -399,16 +446,24 @@ var ThumbnailItem = ({ pdfDoc, pageIndex }) => {
       }
     }
   }, [currentPage, pageIndex]);
-  return /* @__PURE__ */ jsx5("div", {
+  return /* @__PURE__ */ jsxs("div", {
     ref: rootRef,
+    id: `thumbnail_page_${pageIndex}`,
     className: `thumbnail-item`,
     onClick: () => {
       setCurrentPage(pageIndex);
       scrollToPageIndex(pageIndex);
     },
-    children: imgURI ? /* @__PURE__ */ jsx5("img", {
-      src: imgURI
-    }) : null
+    children: [
+      imgURI ? /* @__PURE__ */ jsx5("img", {
+        src: imgURI
+      }) : null,
+      /* @__PURE__ */ jsx5("div", {
+        className: "thumbnail-item-page-mask",
+        title: `\u7B2C${pageIndex}\u9875`,
+        "data-num": pageIndex
+      })
+    ]
   });
 };
 var item_default = ThumbnailItem;
@@ -416,6 +471,10 @@ var item_default = ThumbnailItem;
 // packages/thumbnail/index.tsx
 import { jsx as jsx6 } from "react/jsx-runtime";
 var Thumbnail = ({ pdfDoc, currentPage }) => {
+  const { sidebarVisible } = usePDFViewer();
+  useEffect4(() => {
+    sidebarVisible && scrollIntoViewByID(`thumbnail_page_${currentPage}`);
+  }, [currentPage, sidebarVisible]);
   return /* @__PURE__ */ jsx6("div", {
     id: "__thumbnail__",
     children: !pdfDoc ? null : range(0, pdfDoc.numPages).map((index2) => {
@@ -432,9 +491,9 @@ var thumbnail_default = Thumbnail;
 
 // packages/toolbar/index.tsx
 import {
-  useEffect as useEffect5,
+  useEffect as useEffect6,
   useRef as useRef7,
-  useState as useState5
+  useState as useState4
 } from "react";
 
 // node_modules/@popperjs/core/lib/enums.js
@@ -3278,7 +3337,7 @@ tippy.setDefaultProps({
 var tippy_esm_default = tippy;
 
 // node_modules/@tippyjs/react/dist/tippy-react.esm.js
-import React6, { useLayoutEffect, useEffect as useEffect4, useRef as useRef5, useState as useState4, cloneElement, useMemo, forwardRef as forwardRef$1 } from "react";
+import React7, { useLayoutEffect, useEffect as useEffect5, useRef as useRef5, useState as useState3, cloneElement, useMemo, forwardRef as forwardRef$1 } from "react";
 import { createPortal } from "react-dom";
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null)
@@ -3360,7 +3419,7 @@ function deepPreserveProps(instanceProps, componentProps) {
     })
   });
 }
-var useIsomorphicLayoutEffect = isBrowser2 ? useLayoutEffect : useEffect4;
+var useIsomorphicLayoutEffect = isBrowser2 ? useLayoutEffect : useEffect5;
 function useMutableBox(initialValue) {
   var ref = useRef5();
   if (!ref.current) {
@@ -3410,9 +3469,9 @@ function TippyGenerator(tippy2) {
     var children = _ref.children, content = _ref.content, visible = _ref.visible, singleton = _ref.singleton, render2 = _ref.render, reference2 = _ref.reference, _ref$disabled = _ref.disabled, disabled = _ref$disabled === void 0 ? false : _ref$disabled, _ref$ignoreAttributes = _ref.ignoreAttributes, ignoreAttributes = _ref$ignoreAttributes === void 0 ? true : _ref$ignoreAttributes, __source = _ref.__source, __self = _ref.__self, restOfNativeProps = _objectWithoutPropertiesLoose(_ref, ["children", "content", "visible", "singleton", "render", "reference", "disabled", "ignoreAttributes", "__source", "__self"]);
     var isControlledMode = visible !== void 0;
     var isSingletonMode = singleton !== void 0;
-    var _useState = useState4(false), mounted = _useState[0], setMounted = _useState[1];
-    var _useState2 = useState4({}), attrs = _useState2[0], setAttrs = _useState2[1];
-    var _useState3 = useState4(), singletonContent = _useState3[0], setSingletonContent = _useState3[1];
+    var _useState = useState3(false), mounted = _useState[0], setMounted = _useState[1];
+    var _useState2 = useState3({}), attrs = _useState2[0], setAttrs = _useState2[1];
+    var _useState3 = useState3(), singletonContent = _useState3[0], setSingletonContent = _useState3[1];
     var mutableBox = useMutableBox(function() {
       return {
         container: ssrSafeCreateDiv(),
@@ -3556,7 +3615,7 @@ function TippyGenerator(tippy2) {
         })
       });
     }, [attrs.placement, attrs.referenceHidden, attrs.escaped].concat(deps));
-    return /* @__PURE__ */ React6.createElement(React6.Fragment, null, children ? /* @__PURE__ */ cloneElement(children, {
+    return /* @__PURE__ */ React7.createElement(React7.Fragment, null, children ? /* @__PURE__ */ cloneElement(children, {
       ref: function ref(node) {
         mutableBox.ref = node;
         preserveRef(children.ref, node);
@@ -3568,7 +3627,7 @@ function TippyGenerator(tippy2) {
 var forwardRef = function(Tippy, defaultProps2) {
   return /* @__PURE__ */ forwardRef$1(function TippyWrapper(_ref, _ref2) {
     var children = _ref.children, props = _objectWithoutPropertiesLoose(_ref, ["children"]);
-    return /* @__PURE__ */ React6.createElement(Tippy, Object.assign({}, defaultProps2, props), children ? /* @__PURE__ */ cloneElement(children, {
+    return /* @__PURE__ */ React7.createElement(Tippy, Object.assign({}, defaultProps2, props), children ? /* @__PURE__ */ cloneElement(children, {
       ref: function ref(node) {
         preserveRef(_ref2, node);
         preserveRef(children.ref, node);
@@ -3583,7 +3642,7 @@ var tippy_react_esm_default = index;
 import { useMemo as useMemo2, useRef as useRef6 } from "react";
 
 // packages/assets/svg/arrow-drop-down.tsx
-import React7 from "react";
+import React8 from "react";
 import { jsx as jsx7 } from "react/jsx-runtime";
 function SvgArrowDropDown(props, svgRef) {
   return /* @__PURE__ */ jsx7("svg", __spreadProps(__spreadValues({
@@ -3595,11 +3654,11 @@ function SvgArrowDropDown(props, svgRef) {
     })
   }));
 }
-var ForwardRef = React7.forwardRef(SvgArrowDropDown);
+var ForwardRef = React8.forwardRef(SvgArrowDropDown);
 var arrow_drop_down_default = ForwardRef;
 
 // packages/toolbar/scale-selector/index.tsx
-import { jsx as jsx8, jsxs } from "react/jsx-runtime";
+import { jsx as jsx8, jsxs as jsxs2 } from "react/jsx-runtime";
 var ScaleSelector = () => {
   const options = useMemo2(() => {
     return [
@@ -3719,7 +3778,7 @@ var ScaleSelector = () => {
       ]
     },
     hideOnClick: true,
-    children: /* @__PURE__ */ jsxs("div", {
+    children: /* @__PURE__ */ jsxs2("div", {
       className: "scale-reference",
       ref: rootRef,
       children: [
@@ -3734,15 +3793,26 @@ var ScaleSelector = () => {
 var scale_selector_default = ScaleSelector;
 
 // packages/toolbar/index.tsx
-import { jsx as jsx9, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx9, jsxs as jsxs3 } from "react/jsx-runtime";
 var Toolbar = (props) => {
-  const { setPdfURI, currentPage, setCurrentPage, setScale, totalPage } = usePDFViewer();
+  const {
+    setPdfURI,
+    currentPage,
+    setCurrentPage,
+    setScale,
+    totalPage,
+    sidebarVisible,
+    setSidebarVisible
+  } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [inputPageIndex, setInputPageIndex] = useState5(currentPage);
+  const [inputPageIndex, setInputPageIndex] = useState4(currentPage);
   const fileInputRef = useRef7(null);
-  useEffect5(() => {
+  useEffect6(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
+  function onSidebarButtonClick() {
+    setSidebarVisible((pre) => !pre);
+  }
   function onPreviousButtonClick() {
     setCurrentPage((pre) => {
       const res = pre > 1 ? pre - 1 : 1;
@@ -3802,12 +3872,20 @@ var Toolbar = (props) => {
       setPdfURI(url);
     }
   }
-  return /* @__PURE__ */ jsxs2("div", {
+  return /* @__PURE__ */ jsxs3("div", {
     className: "toolbar",
     children: [
-      /* @__PURE__ */ jsxs2("div", {
+      /* @__PURE__ */ jsxs3("div", {
         className: "toolbar-left",
         children: [
+          /* @__PURE__ */ jsx9("button", {
+            className: `common-button has-before sidebar ${sidebarVisible ? "active" : ""}`,
+            onClick: onSidebarButtonClick,
+            children: /* @__PURE__ */ jsx9("span", {
+              className: "button-label",
+              children: "\u5207\u6362\u4FA7\u8FB9\u680F"
+            })
+          }),
           /* @__PURE__ */ jsx9("button", {
             className: "common-button has-before search",
             children: /* @__PURE__ */ jsx9("span", {
@@ -3831,7 +3909,7 @@ var Toolbar = (props) => {
               children: "\u4E0B\u4E00\u9875"
             })
           }),
-          /* @__PURE__ */ jsxs2("div", {
+          /* @__PURE__ */ jsxs3("div", {
             className: "page-input-wrapper",
             children: [
               /* @__PURE__ */ jsx9("input", {
@@ -3853,10 +3931,10 @@ var Toolbar = (props) => {
           })
         ]
       }),
-      /* @__PURE__ */ jsxs2("div", {
+      /* @__PURE__ */ jsxs3("div", {
         className: "toolbar-center",
         children: [
-          /* @__PURE__ */ jsxs2("div", {
+          /* @__PURE__ */ jsxs3("div", {
             className: "zoom-button-wrapper",
             children: [
               /* @__PURE__ */ jsx9("button", {
@@ -3883,7 +3961,7 @@ var Toolbar = (props) => {
           /* @__PURE__ */ jsx9(scale_selector_default, {})
         ]
       }),
-      /* @__PURE__ */ jsxs2("div", {
+      /* @__PURE__ */ jsxs3("div", {
         className: "toolbar-right",
         children: [
           /* @__PURE__ */ jsx9("button", {
@@ -3934,19 +4012,19 @@ var toolbar_default = Toolbar;
 import { range as range2 } from "lodash";
 import {
   useCallback,
-  useEffect as useEffect9,
-  useRef as useRef9,
-  useState as useState9
+  useEffect as useEffect10,
+  useRef as useRef10,
+  useState as useState8
 } from "react";
 
 // packages/hooks/usePageResize.ts
-import { useEffect as useEffect7, useState as useState7 } from "react";
+import { useEffect as useEffect8, useState as useState6 } from "react";
 
 // packages/hooks/useRectObserver.ts
-import { useEffect as useEffect6, useRef as useRef8, useState as useState6 } from "react";
+import { useEffect as useEffect7, useRef as useRef8, useState as useState5 } from "react";
 function useRectObserver({ elRef }) {
-  const [width, setWidth] = useState6(0);
-  const [height, setHeight] = useState6(0);
+  const [width, setWidth] = useState5(0);
+  const [height, setHeight] = useState5(0);
   const observer = useRef8(null);
   function resizeObserver(entries) {
     for (const entry of entries) {
@@ -3955,7 +4033,7 @@ function useRectObserver({ elRef }) {
       setHeight(height2);
     }
   }
-  useEffect6(() => {
+  useEffect7(() => {
     if (elRef.current) {
       observer.current = new ResizeObserver(resizeObserver);
       observer.current.observe(elRef.current);
@@ -3975,7 +4053,7 @@ function useRectObserver({ elRef }) {
 
 // packages/hooks/usePageResize.ts
 function usePageResizes({ resizesRef, doc, scale }) {
-  const [pageSize, setPageSize] = useState7({
+  const [pageSize, setPageSize] = useState6({
     width: 0,
     height: 0,
     scale: 1
@@ -3983,7 +4061,7 @@ function usePageResizes({ resizesRef, doc, scale }) {
   const { width, height } = useRectObserver({
     elRef: resizesRef
   });
-  useEffect7(() => {
+  useEffect8(() => {
     if (!doc) {
       return;
     }
@@ -4050,8 +4128,8 @@ var loading_layer_default = LoadingLayer;
 
 // packages/layers/page-layer.tsx
 import {
-  useEffect as useEffect8,
-  useState as useState8
+  useEffect as useEffect9,
+  useState as useState7
 } from "react";
 import { Fragment as Fragment2, jsx as jsx11 } from "react/jsx-runtime";
 var PageLayer = ({
@@ -4062,8 +4140,8 @@ var PageLayer = ({
   children,
   scrollMode
 }) => {
-  const [pageDoc, setPageDoc] = useState8();
-  useEffect8(() => {
+  const [pageDoc, setPageDoc] = useState7();
+  useEffect9(() => {
     doc.getPage(pageIndex).then((pageDoc2) => {
       setPageDoc(pageDoc2);
     });
@@ -4083,17 +4161,30 @@ var PageLayer = ({
 var page_layer_default = PageLayer;
 
 // packages/sidebar/index.tsx
-import { jsx as jsx12 } from "react/jsx-runtime";
+import { useRef as useRef9 } from "react";
+import { jsx as jsx12, jsxs as jsxs4 } from "react/jsx-runtime";
 var Sidebar = ({ children }) => {
-  return /* @__PURE__ */ jsx12("div", {
+  const { sidebarVisible } = usePDFViewer();
+  const resizerRef = useRef9(null);
+  return /* @__PURE__ */ jsxs4("div", {
     id: "__sidebar__",
-    children
+    className: `${sidebarVisible ? "" : "hidden"}`,
+    children: [
+      /* @__PURE__ */ jsx12("div", {
+        id: "__sidebar_content__",
+        children
+      }),
+      /* @__PURE__ */ jsx12("div", {
+        id: "__sidebar_resizer__",
+        ref: resizerRef
+      })
+    ]
   });
 };
 var sidebar_default = Sidebar;
 
 // packages/viewer/index.tsx
-import { jsx as jsx13, jsxs as jsxs3 } from "react/jsx-runtime";
+import { jsx as jsx13, jsxs as jsxs5 } from "react/jsx-runtime";
 import { createElement } from "react";
 var PDFViewer = ({
   loadingComponent,
@@ -4112,26 +4203,26 @@ var PDFViewer = ({
     setTotalPage
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [loading, setLoading] = useState9(false);
-  const [loadingProgress, setLoadingProgress] = useState9(-1);
-  const [pdfDoc, setPDFDoc] = useState9();
-  const [errorReason, setErrorReason] = useState9();
-  const loadingTask = useRef9(null);
-  const viewerRef = useRef9(null);
-  const [renderingPageIndex, setRenderingPageIndex] = useState9(1);
-  const [renderMap, setRenderMap] = useState9({});
+  const [loading, setLoading] = useState8(false);
+  const [loadingProgress, setLoadingProgress] = useState8(-1);
+  const [pdfDoc, setPDFDoc] = useState8();
+  const [errorReason, setErrorReason] = useState8();
+  const loadingTask = useRef10(null);
+  const viewerRef = useRef10(null);
+  const [renderingPageIndex, setRenderingPageIndex] = useState8(1);
+  const [renderMap, setRenderMap] = useState8({});
   const pageSize = usePageResizes({
     resizesRef: viewerRef,
     doc: pdfDoc,
     scale
   });
-  useEffect9(() => {
+  useEffect10(() => {
     scaleNumberRef.current = pageSize.scale;
   }, [pageSize, scaleNumberRef]);
-  useEffect9(() => {
+  useEffect10(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
-  useEffect9(() => {
+  useEffect10(() => {
     if (pdfURI) {
       setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
@@ -4183,7 +4274,7 @@ var PDFViewer = ({
     },
     [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
   );
-  useEffect9(() => {
+  useEffect10(() => {
     let scrollState = null;
     if (viewerRef.current) {
       scrollState = watchScroll(viewerRef.current, scrollHandler);
@@ -4242,14 +4333,14 @@ var PDFViewer = ({
       })
     });
   }
-  return /* @__PURE__ */ jsxs3("div", {
+  return /* @__PURE__ */ jsxs5("div", {
     id: "pdf_viewer_container",
     className: "viewer",
     style: { height, width },
     ref: viewerRef,
     children: [
-      thumbnail && /* @__PURE__ */ jsx13(sidebar_default, {
-        children: /* @__PURE__ */ jsx13(thumbnail_default, {
+      /* @__PURE__ */ jsx13(sidebar_default, {
+        children: thumbnail && /* @__PURE__ */ jsx13(thumbnail_default, {
           currentPage,
           pdfDoc
         })

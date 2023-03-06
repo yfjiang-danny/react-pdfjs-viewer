@@ -1,4 +1,9 @@
 /**
+ * Scrolls specified element into view of its parent by element id.
+ * @param id
+ */
+declare function scrollIntoViewByID(id: string): void;
+/**
  * Scrolls specified element into view of its parent.
  * @param {Object} element - The element to be visible.
  * @param {Object} spot - An object with optional top and left properties,
@@ -40,4 +45,4 @@ declare function approximateFraction(x: number): number[];
  */
 declare function roundToDivide(x: number, div: number): number;
 declare function scrollToPageIndex(index: number): void;
-export { roundToDivide, approximateFraction, watchScroll, scrollIntoView, ScrollState, scrollToPageIndex, };
+export { roundToDivide, approximateFraction, watchScroll, scrollIntoView, scrollIntoViewByID, ScrollState, scrollToPageIndex, };

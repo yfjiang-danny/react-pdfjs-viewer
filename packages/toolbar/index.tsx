@@ -17,8 +17,15 @@ export const TOOLBAR_HEIGHT = 48;
 interface ToolbarProps {}
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
-  const { setPdfURI, currentPage, setCurrentPage, setScale, totalPage } =
-    usePDFViewer();
+  const {
+    setPdfURI,
+    currentPage,
+    setCurrentPage,
+    setScale,
+    totalPage,
+    sidebarVisible,
+    setSidebarVisible,
+  } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
   const [inputPageIndex, setInputPageIndex] = useState(currentPage);
@@ -28,6 +35,10 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   useEffect(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
+
+  function onSidebarButtonClick() {
+    setSidebarVisible((pre) => !pre);
+  }
 
   function onPreviousButtonClick(): void {
     setCurrentPage((pre) => {
@@ -108,6 +119,14 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   return (
     <div className="toolbar">
       <div className="toolbar-left">
+        <button
+          className={`common-button has-before sidebar ${
+            sidebarVisible ? "active" : ""
+          }`}
+          onClick={onSidebarButtonClick}
+        >
+          <span className="button-label">切换侧边栏</span>
+        </button>
         <button className="common-button has-before search">
           <span className="button-label">查找</span>
         </button>

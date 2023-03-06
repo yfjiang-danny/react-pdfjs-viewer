@@ -10,6 +10,13 @@
     display: flex;
     flex: 1;
 
+    .sidebar {
+      &::before {
+        -webkit-mask-image: var(--toolbarButton-sidebarToggle-icon);
+        mask-image: var(--toolbarButton-sidebarToggle-icon);
+      }
+    }
+
     .search {
       &::before {
         -webkit-mask-image: var(--toolbarButton-search-icon);
@@ -189,6 +196,11 @@
 
     &:hover {
       background-color: rgba(221, 222, 223, 1);
+    }
+
+    &.active {
+      background-color: var(--toggled-btn-bg-color);
+      color: var(--toggled-btn-color);
     }
 
     &.has-before {
