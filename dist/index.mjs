@@ -323,7 +323,7 @@ function watchScroll(viewAreaElement, callback) {
   return state;
 }
 function scrollToPageIndex(index2) {
-  const scrollEl = document.getElementById("pdf_viewer_container");
+  const scrollEl = document.getElementById("__pdf_viewer_container__");
   if (scrollEl) {
     const el = document.getElementById(`__page_${index2}__`);
     el && scrollEl.scrollTo({
@@ -341,6 +341,8 @@ var MAX_SCALE = 10;
 var VERTICAL_PADDING = 16;
 var HORIZONTAL_PADDING = 24;
 var THUMBNAIL_WIDTH = 98;
+var SIDEBAR_MIN = 200;
+var SIDEBAR_MAX_PERCENT = 0.5;
 
 // packages/thumbnail/util.ts
 var _tempCanvas;
@@ -4012,7 +4014,7 @@ var toolbar_default = Toolbar;
 import { range as range2 } from "lodash";
 import {
   useCallback,
-  useEffect as useEffect10,
+  useEffect as useEffect11,
   useRef as useRef10,
   useState as useState8
 } from "react";
@@ -4161,11 +4163,216 @@ var PageLayer = ({
 var page_layer_default = PageLayer;
 
 // packages/sidebar/index.tsx
-import { useRef as useRef9 } from "react";
+import { useEffect as useEffect10, useMemo as useMemo3, useRef as useRef9 } from "react";
+
+// packages/types/types.ts
+var isBrowser3 = !!(typeof window !== "undefined" && window.document && window.document.createElement);
+function getTargetElement(target, defaultElement) {
+  if (!isBrowser3) {
+    return void 0;
+  }
+  if (!target) {
+    return defaultElement;
+  }
+  let targetElement;
+  if (typeof target === "function") {
+    targetElement = target();
+  } else if ("current" in target) {
+    targetElement = target.current;
+  } else {
+    targetElement = target;
+  }
+  return targetElement;
+}
+
+// packages/services/drag-service.ts
+var DragService = class {
+  constructor(ops) {
+    this.dragSources = [];
+    this.dragFinishedFunctions = [];
+    this.currentDragParams = void 0;
+    this.dragging = false;
+    this.mouseStartEvent = null;
+    this.getDocument = void 0;
+    this.getDocument = ops.getDocument;
+    if (true) {
+      console.log("Create DragService");
+    }
+  }
+  getContainer() {
+    return typeof this.getDocument == "function" ? this.getDocument() : this.getDocument ? this.getDocument : document.body;
+  }
+  addDragSource(params) {
+    const el = getTargetElement(params.element);
+    if (el) {
+      const mouseDownListener = this.onMouseDown.bind(this, params);
+      el.addEventListener("mousedown", mouseDownListener);
+      this.dragSources.push(__spreadProps(__spreadValues({}, params), {
+        mouseDownListener
+      }));
+    }
+  }
+  removeDragSource(params) {
+    const findIndex = this.dragSources.findIndex((d) => {
+      return d.element === params.element;
+    });
+    if (findIndex != -1) {
+      const dragSource = this.dragSources[findIndex];
+      const el = getTargetElement(dragSource.element);
+      if (el) {
+        el.removeEventListener(
+          "mousedown",
+          dragSource.mouseDownListener
+        );
+        this.dragSources.splice(findIndex, 1);
+      }
+    }
+  }
+  hasDragSource(source) {
+    return !!this.dragSources.find((v) => v.element === source.element);
+  }
+  destroy() {
+    const dragSource = this.dragSources.pop();
+    const el = getTargetElement(dragSource == null ? void 0 : dragSource.element);
+    if (dragSource && el) {
+      el.removeEventListener(
+        "mousedown",
+        dragSource.mouseDownListener
+      );
+    }
+  }
+  isDragging() {
+    return this.dragging;
+  }
+  onMouseDown(params, event) {
+    const _this = this;
+    const ev = event;
+    if (this.dragging) {
+      return;
+    }
+    if (ev.button !== 0) {
+      return;
+    }
+    this.currentDragParams = params;
+    this.dragging = false;
+    this.mouseStartEvent = ev;
+    const doc = this.getContainer();
+    const mouseMoveEvent = function(event2) {
+      const el = getTargetElement(params.element);
+      if (el) {
+        return _this.onMouseMove(event2, el);
+      }
+    };
+    const mouseUpEvent = function(event2) {
+      const el = getTargetElement(params.element);
+      if (el) {
+        return _this.onMouseUp(event2, el);
+      }
+    };
+    const target = doc;
+    const events = [
+      { target, type: "mousemove", listener: mouseMoveEvent },
+      { target, type: "mouseup", listener: mouseUpEvent }
+    ];
+    this.addTemporaryEvents(events);
+    doc.style.userSelect = "none";
+  }
+  onMouseMove(event, el) {
+    this.dragging = true;
+    this.onDragging(event, el);
+  }
+  onCancel() {
+    var _a;
+    if (!this.dragging) {
+      return;
+    }
+    this.dragging = false;
+    this.mouseStartEvent = null;
+    while (this.dragFinishedFunctions.length > 0) {
+      (_a = this.dragFinishedFunctions.pop()) == null ? void 0 : _a();
+    }
+    const doc = this.getContainer();
+    doc.style.userSelect = "initial";
+  }
+  onMouseUp(event, el) {
+    var _a;
+    if (this.dragging) {
+      this.onDraggingEnd(event, el);
+      this.dragging = false;
+    }
+    this.mouseStartEvent = null;
+    while (this.dragFinishedFunctions.length > 0) {
+      (_a = this.dragFinishedFunctions.pop()) == null ? void 0 : _a();
+    }
+    const doc = this.getContainer();
+    doc.style.userSelect = "initial";
+  }
+  onDragging(event, el) {
+  }
+  onDraggingEnd(event, el) {
+  }
+  addTemporaryEvents(events) {
+    events.forEach(function(currentEvent) {
+      const target = currentEvent.target, type = currentEvent.type, listener = currentEvent.listener, options = currentEvent.options;
+      target.addEventListener(type, listener, options);
+    });
+    this.dragFinishedFunctions.push(function() {
+      events.forEach(function(currentEvent) {
+        const target = currentEvent.target, type = currentEvent.type, listener = currentEvent.listener, options = currentEvent.options;
+        target.removeEventListener(type, listener, options);
+      });
+    });
+  }
+};
+
+// packages/sidebar/resizer.ts
+var SidebarResizer = class extends DragService {
+  constructor(ops) {
+    super(ops);
+    this.sidebarWidth = 0;
+  }
+  onMouseDown(params, event) {
+    super.onMouseDown(params, event);
+    const sidebar = document.getElementById("__sidebar__");
+    if (sidebar) {
+      this.sidebarWidth = sidebar.offsetWidth;
+    }
+  }
+  onDragging(event, el) {
+    if (this.mouseStartEvent) {
+      const offsetX = event.pageX - this.mouseStartEvent.pageX;
+      const wd = Math.max(
+        Math.min(
+          this.sidebarWidth + offsetX,
+          SIDEBAR_MAX_PERCENT * this.getContainer().clientWidth
+        ),
+        SIDEBAR_MIN
+      );
+      const htmlEl = document.getElementsByTagName("html")[0];
+      htmlEl.style.setProperty("--sidebar-width", wd + "px");
+    }
+  }
+};
+
+// packages/sidebar/index.tsx
 import { jsx as jsx12, jsxs as jsxs4 } from "react/jsx-runtime";
 var Sidebar = ({ children }) => {
   const { sidebarVisible } = usePDFViewer();
   const resizerRef = useRef9(null);
+  const dragService = useMemo3(() => {
+    return new SidebarResizer({});
+  }, []);
+  useEffect10(() => {
+    console.log("dragService", dragService);
+    dragService == null ? void 0 : dragService.addDragSource({
+      element: resizerRef
+    });
+    return () => {
+      dragService == null ? void 0 : dragService.removeDragSource({
+        element: resizerRef
+      });
+    };
+  }, [dragService, resizerRef]);
   return /* @__PURE__ */ jsxs4("div", {
     id: "__sidebar__",
     className: `${sidebarVisible ? "" : "hidden"}`,
@@ -4200,7 +4407,8 @@ var PDFViewer = ({
     totalPage,
     currentPage,
     setCurrentPage,
-    setTotalPage
+    setTotalPage,
+    sidebarVisible
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
   const [loading, setLoading] = useState8(false);
@@ -4209,6 +4417,7 @@ var PDFViewer = ({
   const [errorReason, setErrorReason] = useState8();
   const loadingTask = useRef10(null);
   const viewerRef = useRef10(null);
+  const scrollElRef = useRef10(null);
   const [renderingPageIndex, setRenderingPageIndex] = useState8(1);
   const [renderMap, setRenderMap] = useState8({});
   const pageSize = usePageResizes({
@@ -4216,13 +4425,13 @@ var PDFViewer = ({
     doc: pdfDoc,
     scale
   });
-  useEffect10(() => {
+  useEffect11(() => {
     scaleNumberRef.current = pageSize.scale;
   }, [pageSize, scaleNumberRef]);
-  useEffect10(() => {
+  useEffect11(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
-  useEffect10(() => {
+  useEffect11(() => {
     if (pdfURI) {
       setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
@@ -4274,10 +4483,10 @@ var PDFViewer = ({
     },
     [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
   );
-  useEffect10(() => {
+  useEffect11(() => {
     let scrollState = null;
-    if (viewerRef.current) {
-      scrollState = watchScroll(viewerRef.current, scrollHandler);
+    if (scrollElRef.current) {
+      scrollState = watchScroll(scrollElRef.current, scrollHandler);
     }
     return () => {
       scrollState && scrollState.remove();
@@ -4297,6 +4506,9 @@ var PDFViewer = ({
       return "Loading error";
     }
     return /* @__PURE__ */ jsx13("div", {
+      id: "__pdf_viewer_container__",
+      className: "viewer",
+      ref: scrollElRef,
       children: pageSize.width == 0 ? null : range2(0, pdfDoc.numPages).map((index2) => {
         const pageIndex = index2 + 1;
         return /* @__PURE__ */ jsx13(page_layer_default, __spreadProps(__spreadValues({
@@ -4334,10 +4546,10 @@ var PDFViewer = ({
     });
   }
   return /* @__PURE__ */ jsxs5("div", {
-    id: "pdf_viewer_container",
-    className: "viewer",
+    id: "__outer_container__",
     style: { height, width },
     ref: viewerRef,
+    className: sidebarVisible ? "sidebar-visible" : "",
     children: [
       /* @__PURE__ */ jsx13(sidebar_default, {
         children: thumbnail && /* @__PURE__ */ jsx13(thumbnail_default, {

@@ -12,7 +12,9 @@ interface DragEvent {
 }
 
 interface DragSourceParameter<T> {
+  // Drag element reference
   element: BasicTarget<HTMLElement>;
+  // Drag parameter
   parameter?: T;
 }
 
@@ -24,6 +26,20 @@ interface DragSource<T> extends DragSourceParameter<T> {
 /**
  * DragService
  *
+ * @description
+ * Usage:
+ * 1. Define a new class to extends DragService
+ * 2. Implement onDragging function with adding dragging logic
+ * 3. Implement onDragend function to release sources
+ *
+ * @example
+ * const service = useMemo(() => { return new CustomDragService({}); },[])
+ * useEffect(() => {
+ *    service.addDragSource({ element: el, parameter: {a:1}});
+ *    return () => {
+ *       service.addDragSource({ element: el, parameter: {a:1}});
+ *    }
+ * }, [])
  *
  */
 class DragService<T> {
@@ -46,8 +62,17 @@ class DragService<T> {
     }
   }
 
+  getContainer(): HTMLElement {
+    return typeof this.getDocument == "function"
+      ? this.getDocument()
+      : this.getDocument
+      ? this.getDocument
+      : document.body;
+  }
+
   addDragSource(params: DragSourceParameter<T>): void {
     const el = getTargetElement(params.element);
+
     if (el) {
       const mouseDownListener = this.onMouseDown.bind(this, params);
       el.addEventListener("mousedown", mouseDownListener);
@@ -116,15 +141,11 @@ class DragService<T> {
     this.dragging = false;
     this.mouseStartEvent = ev;
 
-    const doc =
-      typeof this.getDocument == "function"
-        ? this.getDocument()
-        : this.getDocument
-        ? this.getDocument
-        : document.body;
+    const doc = this.getContainer();
 
     const mouseMoveEvent = function (event: MouseEvent) {
       const el = getTargetElement(params.element);
+
       if (el) {
         return _this.onMouseMove(event, el);
       }
@@ -138,6 +159,7 @@ class DragService<T> {
     };
 
     const target = doc;
+
     const events: DragEvent[] = [
       { target: target, type: "mousemove", listener: mouseMoveEvent },
       { target: target, type: "mouseup", listener: mouseUpEvent },
@@ -150,6 +172,7 @@ class DragService<T> {
 
   protected onMouseMove(event: MouseEvent, el: HTMLElement): void {
     this.dragging = true;
+
     this.onDragging(event, el);
   }
 
@@ -163,12 +186,7 @@ class DragService<T> {
       this.dragFinishedFunctions.pop()?.();
     }
 
-    const doc =
-      typeof this.getDocument == "function"
-        ? this.getDocument()
-        : this.getDocument
-        ? this.getDocument
-        : document.body;
+    const doc = this.getContainer();
     doc.style.userSelect = "initial";
   }
 
@@ -182,12 +200,7 @@ class DragService<T> {
       this.dragFinishedFunctions.pop()?.();
     }
 
-    const doc =
-      typeof this.getDocument == "function"
-        ? this.getDocument()
-        : this.getDocument
-        ? this.getDocument
-        : document.body;
+    const doc = this.getContainer();
     doc.style.userSelect = "initial";
   }
 

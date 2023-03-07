@@ -199,7 +199,7 @@ function roundToDivide(x: number, div: number) {
 }
 
 function scrollToPageIndex(index: number) {
-  const scrollEl = document.getElementById("pdf_viewer_container");
+  const scrollEl = document.getElementById("__pdf_viewer_container__");
   if (scrollEl) {
     const el = document.getElementById(`__page_${index}__`);
 

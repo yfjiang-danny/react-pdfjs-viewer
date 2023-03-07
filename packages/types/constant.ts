@@ -11,3 +11,6 @@ export const HORIZONTAL_PADDING = 24;
 
 export const THUMBNAIL_CANVAS_BORDER_WIDTH = 1; // px
 export const THUMBNAIL_WIDTH = 98; // px
+
+export const SIDEBAR_MIN = 200;
+export const SIDEBAR_MAX_PERCENT = 0.5;

@@ -51,6 +51,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
     currentPage,
     setCurrentPage,
     setTotalPage,
+    sidebarVisible,
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
@@ -60,6 +61,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
   const [errorReason, setErrorReason] = useState<any>();
   const loadingTask = useRef<PDFDocumentLoadingTask | null>(null);
   const viewerRef = useRef<HTMLDivElement | null>(null);
+  const scrollElRef = useRef<HTMLDivElement | null>(null);
   const [renderingPageIndex, setRenderingPageIndex] = useState(1);
   const [renderMap, setRenderMap] = useState<{ [key: number]: boolean }>({});
 
@@ -143,8 +145,8 @@ const PDFViewer: FC<PDFViewerProps> = ({
 
   useEffect(() => {
     let scrollState: ScrollState | null = null;
-    if (viewerRef.current) {
-      scrollState = watchScroll(viewerRef.current, scrollHandler);
+    if (scrollElRef.current) {
+      scrollState = watchScroll(scrollElRef.current, scrollHandler);
     }
     return () => {
       scrollState && scrollState.remove();
@@ -173,7 +175,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
     }
 
     return (
-      <div>
+      <div id="__pdf_viewer_container__" className="viewer" ref={scrollElRef}>
         {pageSize.width == 0
           ? null
           : range(0, pdfDoc.numPages).map((index) => {
@@ -231,10 +233,10 @@ const PDFViewer: FC<PDFViewerProps> = ({
 
   return (
     <div
-      id="pdf_viewer_container"
-      className="viewer"
+      id="__outer_container__"
       style={{ height: height, width: width }}
       ref={viewerRef}
+      className={sidebarVisible ? "sidebar-visible" : ""}
     >
       <Sidebar>
         {thumbnail && <Thumbnail currentPage={currentPage} pdfDoc={pdfDoc} />}

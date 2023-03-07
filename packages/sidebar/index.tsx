@@ -1,7 +1,7 @@
-import React, { FC, useMemo, useRef } from "react";
+import React, { FC, useEffect, useMemo, useRef } from "react";
 import { usePDFViewer } from "../provider";
-import { DragService } from "../services/drag-service";
 import "../styles/sidebar.less";
+import { SidebarResizer } from "./resizer";
 
 interface SidebarProps {}
 
@@ -11,8 +11,22 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
   const resizerRef = useRef<HTMLDivElement | null>(null);
 
   const dragService = useMemo(() => {
-    return new DragService({});
+    return new SidebarResizer({});
   }, []);
+
+  useEffect(() => {
+    console.log("dragService", dragService);
+
+    dragService?.addDragSource({
+      element: resizerRef,
+    });
+
+    return () => {
+      dragService?.removeDragSource({
+        element: resizerRef,
+      });
+    };
+  }, [dragService, resizerRef]);
 
   return (
     <div id="__sidebar__" className={`${sidebarVisible ? "" : "hidden"}`}>
