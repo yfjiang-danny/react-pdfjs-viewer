@@ -8,6 +8,7 @@ import React, {
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
 import { MAX_SCALE, MIN_SCALE } from "../types/constant";
+import { scrollToPageIndex } from "../utils";
 import "./index.less";
 import ScaleSelector from "./scale-selector";
 
@@ -15,9 +16,16 @@ export const TOOLBAR_HEIGHT = 48;
 
 interface ToolbarProps {}
 
-const Toolbar: FunctionComponent<ToolbarProps> = () => {
-  const { setPdfURI, currentPage, setCurrentPage, setScale, totalPage } =
-    usePDFViewer();
+const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
+  const {
+    setPdfURI,
+    currentPage,
+    setCurrentPage,
+    setScale,
+    totalPage,
+    sidebarVisible,
+    setSidebarVisible,
+  } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
   const [inputPageIndex, setInputPageIndex] = useState(currentPage);
@@ -27,6 +35,10 @@ const Toolbar: FunctionComponent<ToolbarProps> = () => {
   useEffect(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
+
+  function onSidebarButtonClick() {
+    setSidebarVisible((pre) => !pre);
+  }
 
   function onPreviousButtonClick(): void {
     setCurrentPage((pre) => {
@@ -51,20 +63,6 @@ const Toolbar: FunctionComponent<ToolbarProps> = () => {
   function onPageInputChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const v = ev.target.value;
     setInputPageIndex(parseInt(v));
-  }
-
-  function scrollToPageIndex(index: number) {
-    console.log("scrollToPageIndex", index);
-
-    const scrollEl = document.getElementById("pdf_viewer_container");
-    if (scrollEl) {
-      const el = document.getElementById(`__page_${index}__`);
-
-      el &&
-        scrollEl.scrollTo({
-          top: el.offsetTop,
-        });
-    }
   }
 
   function onPageInputKeyDown(ev: React.KeyboardEvent): void {
@@ -121,6 +119,14 @@ const Toolbar: FunctionComponent<ToolbarProps> = () => {
   return (
     <div className="toolbar">
       <div className="toolbar-left">
+        <button
+          className={`common-button has-before sidebar ${
+            sidebarVisible ? "active" : ""
+          }`}
+          onClick={onSidebarButtonClick}
+        >
+          <span className="button-label">切换侧边栏</span>
+        </button>
         <button className="common-button has-before search">
           <span className="button-label">查找</span>
         </button>

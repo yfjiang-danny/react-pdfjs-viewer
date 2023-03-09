@@ -11,7 +11,11 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
-      <PDFViewerProvider>
+      <PDFViewerProvider
+        initialState={{
+          pdfURI: "./compressed.tracemonkey-pldi-09.pdf",
+        }}
+      >
         <Toolbar />
         <PDFWorker workerDir="https://unpkg.com/pdfjs-dist@2.8.335/build/pdf.worker.js">
           <PDFViewer

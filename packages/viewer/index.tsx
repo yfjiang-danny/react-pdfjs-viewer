@@ -19,8 +19,10 @@ import PageLayer from "../layers/page-layer";
 import TextLayer from "../layers/text-layer";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
+import Sidebar from "../sidebar";
 import "../styles/index.less";
 import "../styles/viewer.less";
+import Thumbnail from "../thumbnail";
 import { ScrollMode } from "../types";
 import { ScrollState, watchScroll } from "../utils";
 import { PDFLib } from "../vendors/lib";
@@ -31,6 +33,7 @@ interface PDFViewerProps {
   width: string | number;
   height: string | number;
   scrollMode?: ScrollMode;
+  thumbnail?: boolean;
 }
 
 const PDFViewer: FC<PDFViewerProps> = ({
@@ -39,9 +42,17 @@ const PDFViewer: FC<PDFViewerProps> = ({
   width,
   height,
   scrollMode = "vertical",
+  thumbnail = true,
 }) => {
-  const { pdfURI, scale, totalPage, setCurrentPage, setTotalPage } =
-    usePDFViewer();
+  const {
+    pdfURI,
+    scale,
+    totalPage,
+    currentPage,
+    setCurrentPage,
+    setTotalPage,
+    sidebarVisible,
+  } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
   const [loading, setLoading] = useState(false);
@@ -50,6 +61,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
   const [errorReason, setErrorReason] = useState<any>();
   const loadingTask = useRef<PDFDocumentLoadingTask | null>(null);
   const viewerRef = useRef<HTMLDivElement | null>(null);
+  const scrollElRef = useRef<HTMLDivElement | null>(null);
   const [renderingPageIndex, setRenderingPageIndex] = useState(1);
   const [renderMap, setRenderMap] = useState<{ [key: number]: boolean }>({});
 
@@ -61,7 +73,6 @@ const PDFViewer: FC<PDFViewerProps> = ({
 
   useEffect(() => {
     scaleNumberRef.current = pageSize.scale;
-    console.log("pageSize", pageSize);
   }, [pageSize, scaleNumberRef]);
 
   useEffect(() => {
@@ -74,14 +85,11 @@ const PDFViewer: FC<PDFViewerProps> = ({
       loadingTask.current = PDFLib.getDocument(pdfURI);
 
       loadingTask.current.onProgress = (progress: number) => {
-        console.log("onProgress", progress);
         setLoadingProgress(progress);
       };
 
       loadingTask.current.promise
         .then((pdf: PDFDocumentProxy) => {
-          console.log("promise", pdf);
-
           setPDFDoc(pdf);
           setTotalPage(pdf.numPages);
         })
@@ -123,6 +131,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
       const r = state.lastX % pageSize.width;
       const d = Math.floor(state.lastX / pageSize.width) + 1;
       const page = r > pageSize.height / 2 ? Math.min(d + 1, totalPage) : d;
+
       setCurrentPage((pre) => {
         if (pre == page) {
           return pre;
@@ -137,8 +146,8 @@ const PDFViewer: FC<PDFViewerProps> = ({
 
   useEffect(() => {
     let scrollState: ScrollState | null = null;
-    if (viewerRef.current) {
-      scrollState = watchScroll(viewerRef.current, scrollHandler);
+    if (scrollElRef.current) {
+      scrollState = watchScroll(scrollElRef.current, scrollHandler);
     }
     return () => {
       scrollState && scrollState.remove();
@@ -167,7 +176,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
     }
 
     return (
-      <div>
+      <div id="__pdf_viewer_container__" className="viewer" ref={scrollElRef}>
         {pageSize.width == 0
           ? null
           : range(0, pdfDoc.numPages).map((index) => {
@@ -225,11 +234,14 @@ const PDFViewer: FC<PDFViewerProps> = ({
 
   return (
     <div
-      id="pdf_viewer_container"
-      className="viewer"
+      id="__outer_container__"
       style={{ height: height, width: width }}
       ref={viewerRef}
+      className={sidebarVisible ? "sidebar-visible" : ""}
     >
+      <Sidebar>
+        {thumbnail && <Thumbnail currentPage={currentPage} pdfDoc={pdfDoc} />}
+      </Sidebar>
       {contentComponent()}
     </div>
   );

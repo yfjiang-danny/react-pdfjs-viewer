@@ -1,6 +1,8 @@
 .toolbar {
   font-size: 14px;
   height: 48px;
+  padding-left: 4px;
+  padding-right: 4px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -9,6 +11,13 @@
   .toolbar-left {
     display: flex;
     flex: 1;
+
+    .sidebar {
+      &::before {
+        -webkit-mask-image: var(--toolbarButton-sidebarToggle-icon);
+        mask-image: var(--toolbarButton-sidebarToggle-icon);
+      }
+    }
 
     .search {
       &::before {
@@ -189,6 +198,11 @@
 
     &:hover {
       background-color: rgba(221, 222, 223, 1);
+    }
+
+    &.active {
+      background-color: var(--toggled-btn-bg-color);
+      color: var(--toggled-btn-color);
     }
 
     &.has-before {

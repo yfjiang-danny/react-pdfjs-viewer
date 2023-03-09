@@ -18,6 +18,8 @@ interface PDFViewerState {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   totalPage: number;
   setTotalPage: React.Dispatch<React.SetStateAction<number>>;
+  sidebarVisible: boolean;
+  setSidebarVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function usePDFViewerHook(
@@ -34,6 +36,8 @@ function usePDFViewerHook(
   );
   const [totalPage, setTotalPage] = useState<number>(0);
 
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+
   return {
     pdfURI,
     setPdfURI,
@@ -43,6 +47,8 @@ function usePDFViewerHook(
     setCurrentPage,
     totalPage,
     setTotalPage,
+    sidebarVisible,
+    setSidebarVisible,
   };
 }
 
