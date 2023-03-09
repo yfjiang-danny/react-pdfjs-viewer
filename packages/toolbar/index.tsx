@@ -15,7 +15,7 @@ export const TOOLBAR_HEIGHT = 48;
 
 interface ToolbarProps {}
 
-const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
+const Toolbar: FunctionComponent<ToolbarProps> = () => {
   const { setPdfURI, currentPage, setCurrentPage, setScale, totalPage } =
     usePDFViewer();
   const { scaleNumberRef } = useInternalState();

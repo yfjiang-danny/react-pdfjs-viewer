@@ -89,6 +89,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
           setErrorReason(reason);
         })
         .finally(() => {
+          setCurrentPage(1);
           setLoading(false);
         });
     }

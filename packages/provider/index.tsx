@@ -23,14 +23,14 @@ interface PDFViewerState {
 function usePDFViewerHook(
   initialState: PDFViewerInitialState = {
     scale: "auto",
-    page: 1,
+    page: 0,
     pdfURI: "",
   }
 ): PDFViewerState {
   const [pdfURI, setPdfURI] = useState<string>(initialState.pdfURI);
   const [scale, setScale] = useState<ScaleType>(initialState.scale || "auto");
   const [currentPage, setCurrentPage] = useState<number>(
-    initialState.page || 1
+    initialState.page || 0
   );
   const [totalPage, setTotalPage] = useState<number>(0);
 
