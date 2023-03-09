@@ -110,10 +110,27 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     const file = evt.currentTarget.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      console.log("onFileInputChanged", url);
 
       setPdfURI(url);
     }
+  }
+
+  function onPrintButtonClick(): void {
+    const id = "__print_container__";
+    const container =
+      document.getElementById(id) || document.createElement("div");
+
+    container.id = id;
+
+    const pageStyleSheet = document.createElement("style");
+    pageStyleSheet.textContent = "@page { size: " + 594 + "pt " + 792 + "pt;}";
+    container.append(pageStyleSheet);
+    document.body.append(container);
+    window.print();
+  }
+
+  function downloadButtonClick(): void {
+    //
   }
 
   return (
@@ -183,10 +200,16 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
         >
           <span className="button-label">打开</span>
         </button>
-        <button className="common-button has-before print">
+        <button
+          className="common-button has-before print"
+          onClick={onPrintButtonClick}
+        >
           <span className="button-label">打印</span>
         </button>
-        <button className="common-button has-before  download">
+        <button
+          className="common-button has-before  download"
+          onClick={downloadButtonClick}
+        >
           <span className="button-label">保存</span>
         </button>
         <button className="common-button has-before draw">

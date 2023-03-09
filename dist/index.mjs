@@ -3874,6 +3874,16 @@ var Toolbar = (props) => {
       setPdfURI(url);
     }
   }
+  function onPrintButtonClick() {
+    const id = "__print_container__";
+    const container = document.getElementById(id) || document.createElement("div");
+    container.id = id;
+    const pageStyleSheet = document.createElement("style");
+    pageStyleSheet.textContent = "@page { size: " + 594 + "pt " + 792 + "pt;}";
+    container.append(pageStyleSheet);
+    document.body.append(container);
+    window.print();
+  }
   return /* @__PURE__ */ jsxs3("div", {
     className: "toolbar",
     children: [
@@ -3976,6 +3986,7 @@ var Toolbar = (props) => {
           }),
           /* @__PURE__ */ jsx9("button", {
             className: "common-button has-before print",
+            onClick: onPrintButtonClick,
             children: /* @__PURE__ */ jsx9("span", {
               className: "button-label",
               children: "\u6253\u5370"
