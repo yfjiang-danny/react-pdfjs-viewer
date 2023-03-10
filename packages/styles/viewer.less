@@ -30,3 +30,23 @@
     }
   }
 }
+
+#__print_container__ {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  body {
+    & > * {
+      display: none;
+    }
+
+    #__print_container__ {
+      display: block;
+    }
+  }
+}

@@ -493,4 +493,18 @@ select {
 #__outer_container__.sidebar-visible #__sidebar__ {
   inset-inline-start: 0;
 }
+#__print_container__ {
+  display: none;
+}
+@media print {
+  @page {
+    margin: 0;
+  }
+  body > * {
+    display: none;
+  }
+  body #__print_container__ {
+    display: block;
+  }
+}
 /*# sourceMappingURL=index.css.map */

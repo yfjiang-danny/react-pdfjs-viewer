@@ -72,7 +72,9 @@ interface PDFViewerProviderProps {
  * @returns
  */
 const PDFViewerProvider: FC<PDFViewerProviderProps> = (props) => {
+  // const [value] = useState(usePDFViewerHook(props.initialState));
   const value = usePDFViewerHook(props.initialState);
+  // const [internalState] = useState(useInternalStateHook());
   const internalState = useInternalStateHook();
 
   return (

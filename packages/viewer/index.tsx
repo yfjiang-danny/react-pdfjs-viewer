@@ -17,6 +17,7 @@ import CanvasLayer from "../layers/canvas-layer";
 import LoadingLayer from "../layers/loading-layer";
 import PageLayer from "../layers/page-layer";
 import TextLayer from "../layers/text-layer";
+import Print from "../print";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
 import Sidebar from "../sidebar";
@@ -227,6 +228,11 @@ const PDFViewer: FC<PDFViewerProps> = ({
                 </PageLayer>
               );
             })}
+        <Print
+          height={pageSize.height}
+          width={pageSize.width}
+          pdfDoc={pdfDoc}
+        />
       </div>
     );
   }
