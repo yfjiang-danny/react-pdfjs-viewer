@@ -172,7 +172,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
           ? errorComponent(errorReason)
           : errorComponent ?? errorReason.toString();
       }
-      return "Loading error";
+      return "Waiting...";
     }
 
     return (
@@ -228,11 +228,13 @@ const PDFViewer: FC<PDFViewerProps> = ({
                 </PageLayer>
               );
             })}
-        <Print
-          height={pageSize.height}
-          width={pageSize.width}
-          pdfDoc={pdfDoc}
-        />
+        {pageSize.width != 0 && pageSize.height != 0 && (
+          <Print
+            height={pageSize.height}
+            width={pageSize.width}
+            pdfDoc={pdfDoc}
+          />
+        )}
       </div>
     );
   }

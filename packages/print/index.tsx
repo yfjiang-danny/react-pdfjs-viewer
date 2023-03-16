@@ -13,7 +13,7 @@ interface PrintProps {
 const Print: FC<PrintProps> = ({ pdfDoc, width, height }) => {
   const container = React.useMemo(() => {
     const id = "__print_container__";
-    let containerEl = document.getElementById(`#${id}`);
+    let containerEl = document.getElementById(`${id}`);
     if (containerEl) {
       return containerEl;
     }

@@ -116,16 +116,6 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   }
 
   function onPrintButtonClick(): void {
-    const id = "__print_container__";
-    const container =
-      document.getElementById(id) || document.createElement("div");
-
-    container.id = id;
-
-    const pageStyleSheet = document.createElement("style");
-    pageStyleSheet.textContent = "@page { size: " + 594 + "pt " + 792 + "pt;}";
-    container.append(pageStyleSheet);
-    document.body.append(container);
     window.print();
   }
 

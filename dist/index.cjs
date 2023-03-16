@@ -388,6 +388,8 @@ var TempImageFactory = class {
     const tempCanvas = __privateGet(this, _tempCanvas) || __privateSet(this, _tempCanvas, document.createElement("canvas"));
     tempCanvas.width = width;
     tempCanvas.height = height;
+    tempCanvas.style.width = `${Math.floor(width)}px`;
+    tempCanvas.style.height = `${Math.floor(height)}px`;
     const ctx = tempCanvas.getContext("2d", { alpha: false });
     if (ctx) {
       ctx.save();
@@ -3907,13 +3909,6 @@ var Toolbar = (props) => {
     }
   }
   function onPrintButtonClick() {
-    const id = "__print_container__";
-    const container = document.getElementById(id) || document.createElement("div");
-    container.id = id;
-    const pageStyleSheet = document.createElement("style");
-    pageStyleSheet.textContent = "@page { size: " + 594 + "pt " + 792 + "pt;}";
-    container.append(pageStyleSheet);
-    document.body.append(container);
     window.print();
   }
   function downloadButtonClick() {
@@ -4230,10 +4225,10 @@ var ThumbnailItem2 = ({
     const canvasEl = document.createElement("canvas");
     const context = canvasEl.getContext("2d");
     const outputScale = window.devicePixelRatio || 1;
-    canvasEl.height = Math.floor(viewport2.height * outputScale);
-    canvasEl.width = Math.floor(viewport2.width * outputScale);
-    canvasEl.style.width = `${Math.floor(viewport2.width)}px`;
-    canvasEl.style.height = `${Math.floor(viewport2.height)}px`;
+    canvasEl.height = Math.floor(height * outputScale);
+    canvasEl.width = Math.floor(width * outputScale);
+    canvasEl.style.width = `${Math.floor(width)}px`;
+    canvasEl.style.height = `${Math.floor(height)}px`;
     const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
     const pageWidth = viewport2.width, pageHeight = viewport2.height, pageRatio = pageWidth / pageHeight;
     const thumbWidth = width;
@@ -4242,16 +4237,13 @@ var ThumbnailItem2 = ({
       renderTask.current = pageDoc.render({
         canvasContext: context,
         viewport: viewport2,
+        intent: "print",
         transform
       });
       renderTask.current.promise.then(
         () => {
-          const [canvas, ctx] = TempImageFactory.getCanvas(
-            thumbWidth,
-            thumbHeight
-          );
-          if (ctx) {
-            ctx.drawImage(
+          if (context) {
+            context.drawImage(
               canvasEl,
               0,
               0,
@@ -4259,11 +4251,11 @@ var ThumbnailItem2 = ({
               viewport2.height,
               0,
               0,
-              thumbWidth,
-              thumbHeight
+              width * outputScale,
+              height * outputScale
             );
           }
-          setImgURI(canvas.toDataURL());
+          setImgURI(canvasEl.toDataURL());
         },
         () => {
         }
@@ -4292,7 +4284,7 @@ var import_jsx_runtime = require("react/jsx-runtime");
 var Print = ({ pdfDoc, width, height }) => {
   const container = import_react16.default.useMemo(() => {
     const id = "__print_container__";
-    let containerEl = document.getElementById(`#${id}`);
+    let containerEl = document.getElementById(`${id}`);
     if (containerEl) {
       return containerEl;
     }
@@ -4669,7 +4661,7 @@ var PDFViewer = ({
       if (errorReason) {
         return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent != null ? errorComponent : errorReason.toString();
       }
-      return "Loading error";
+      return "Waiting...";
     }
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
       id: "__pdf_viewer_container__",
@@ -4710,7 +4702,7 @@ var PDFViewer = ({
             ]
           }), index2);
         }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(print_default, {
+        pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(print_default, {
           height: pageSize.height,
           width: pageSize.width,
           pdfDoc

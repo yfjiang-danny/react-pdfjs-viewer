@@ -1,6 +1,5 @@
 import { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/types/display/api";
 import React, { FC, useEffect, useRef, useState } from "react";
-import { TempImageFactory } from "../thumbnail/util";
 
 interface ThumbnailItemProps {
   pdfDoc: PDFDocumentProxy;
@@ -35,10 +34,10 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
 
     // Support HiDPI-screens.
     const outputScale = window.devicePixelRatio || 1;
-    canvasEl.height = Math.floor(viewport.height * outputScale);
-    canvasEl.width = Math.floor(viewport.width * outputScale);
-    canvasEl.style.width = `${Math.floor(viewport.width)}px`;
-    canvasEl.style.height = `${Math.floor(viewport.height)}px`;
+    canvasEl.height = Math.floor(height * outputScale);
+    canvasEl.width = Math.floor(width * outputScale);
+    canvasEl.style.width = `${Math.floor(width)}px`;
+    canvasEl.style.height = `${Math.floor(height)}px`;
 
     const transform =
       outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined;
@@ -54,17 +53,14 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
       renderTask.current = pageDoc.render({
         canvasContext: context,
         viewport: viewport,
+        intent: "print",
         transform: transform,
       });
 
       renderTask.current.promise.then(
         () => {
-          const [canvas, ctx] = TempImageFactory.getCanvas(
-            thumbWidth,
-            thumbHeight
-          );
-          if (ctx) {
-            ctx.drawImage(
+          if (context) {
+            context.drawImage(
               canvasEl,
               0,
               0,
@@ -72,11 +68,11 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
               viewport.height,
               0,
               0,
-              thumbWidth,
-              thumbHeight
+              width * outputScale,
+              height * outputScale
             );
           }
-          setImgURI(canvas.toDataURL());
+          setImgURI(canvasEl.toDataURL());
           // onCompleted?.();
         },
         () => {

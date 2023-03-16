@@ -499,12 +499,16 @@ select {
 @media print {
   @page {
     margin: 0;
+    padding: 0;
   }
   body > * {
     display: none;
   }
   body #__print_container__ {
     display: block;
+  }
+  body .print-item {
+    text-align: center;
   }
 }
 /*# sourceMappingURL=index.css.map */
