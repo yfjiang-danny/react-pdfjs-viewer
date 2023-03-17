@@ -3,6 +3,7 @@ import { FC } from "react";
 interface PrintProps {
     width: number;
     height: number;
+    scale: number;
     pdfDoc: PDFDocumentProxy;
 }
 declare const Print: FC<PrintProps>;

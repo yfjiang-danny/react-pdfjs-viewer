@@ -6,6 +6,7 @@ interface ThumbnailItemProps {
   pageIndex: number;
   width: number;
   height: number;
+  scale: number;
 }
 
 const ThumbnailItem: FC<ThumbnailItemProps> = ({
@@ -13,6 +14,7 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
   pageIndex,
   width,
   height,
+  scale,
 }) => {
   const [pageDoc, setPageDoc] = useState<PDFPageProxy>();
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -28,7 +30,7 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
   useEffect(() => {
     if (!pageDoc) return;
 
-    const viewport = pageDoc.getViewport({ scale: 1 });
+    const viewport = pageDoc.getViewport({ scale: scale });
     const canvasEl = document.createElement("canvas");
     const context = canvasEl.getContext("2d");
 
@@ -36,8 +38,8 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
     const outputScale = window.devicePixelRatio || 1;
     canvasEl.height = Math.floor(height * outputScale);
     canvasEl.width = Math.floor(width * outputScale);
-    canvasEl.style.width = `${Math.floor(width)}px`;
-    canvasEl.style.height = `${Math.floor(height)}px`;
+    canvasEl.style.width = `${Math.floor(width * outputScale)}px`;
+    canvasEl.style.height = `${Math.floor(height * outputScale)}px`;
 
     const transform =
       outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined;

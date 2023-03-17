@@ -4182,7 +4182,8 @@ var ThumbnailItem2 = ({
   pdfDoc,
   pageIndex,
   width,
-  height
+  height,
+  scale
 }) => {
   const [pageDoc, setPageDoc] = useState8();
   const rootRef = useRef9(null);
@@ -4196,14 +4197,14 @@ var ThumbnailItem2 = ({
   useEffect10(() => {
     if (!pageDoc)
       return;
-    const viewport2 = pageDoc.getViewport({ scale: 1 });
+    const viewport2 = pageDoc.getViewport({ scale });
     const canvasEl = document.createElement("canvas");
     const context = canvasEl.getContext("2d");
     const outputScale = window.devicePixelRatio || 1;
     canvasEl.height = Math.floor(height * outputScale);
     canvasEl.width = Math.floor(width * outputScale);
-    canvasEl.style.width = `${Math.floor(width)}px`;
-    canvasEl.style.height = `${Math.floor(height)}px`;
+    canvasEl.style.width = `${Math.floor(width * outputScale)}px`;
+    canvasEl.style.height = `${Math.floor(height * outputScale)}px`;
     const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
     const pageWidth = viewport2.width, pageHeight = viewport2.height, pageRatio = pageWidth / pageHeight;
     const thumbWidth = width;
@@ -4256,7 +4257,7 @@ var item_default2 = ThumbnailItem2;
 
 // packages/print/index.tsx
 import { Fragment as Fragment3, jsx as jsx13, jsxs as jsxs4 } from "react/jsx-runtime";
-var Print = ({ pdfDoc, width, height }) => {
+var Print = ({ pdfDoc, width, height, scale }) => {
   const container = React13.useMemo(() => {
     const id = "__print_container__";
     let containerEl = document.getElementById(`${id}`);
@@ -4279,7 +4280,8 @@ var Print = ({ pdfDoc, width, height }) => {
               pdfDoc,
               pageIndex,
               width,
-              height
+              height,
+              scale
             }, pageIndex);
           })
         }),
@@ -4680,7 +4682,8 @@ var PDFViewer = ({
         pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ jsx15(print_default, {
           height: pageSize.height,
           width: pageSize.width,
-          pdfDoc
+          pdfDoc,
+          scale: pageSize.scale
         })
       ]
     });

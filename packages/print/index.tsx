@@ -7,10 +7,11 @@ import ThumbnailItem from "./item";
 interface PrintProps {
   width: number;
   height: number;
+  scale: number;
   pdfDoc: PDFDocumentProxy;
 }
 
-const Print: FC<PrintProps> = ({ pdfDoc, width, height }) => {
+const Print: FC<PrintProps> = ({ pdfDoc, width, height, scale }) => {
   const container = React.useMemo(() => {
     const id = "__print_container__";
     let containerEl = document.getElementById(`${id}`);
@@ -39,6 +40,7 @@ const Print: FC<PrintProps> = ({ pdfDoc, width, height }) => {
                   pageIndex={pageIndex}
                   width={width}
                   height={height}
+                  scale={scale}
                 />
               );
             })}

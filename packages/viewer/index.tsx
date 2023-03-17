@@ -233,6 +233,7 @@ const PDFViewer: FC<PDFViewerProps> = ({
             height={pageSize.height}
             width={pageSize.width}
             pdfDoc={pdfDoc}
+            scale={pageSize.scale}
           />
         )}
       </div>

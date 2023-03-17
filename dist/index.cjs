@@ -4207,7 +4207,8 @@ var ThumbnailItem2 = ({
   pdfDoc,
   pageIndex,
   width,
-  height
+  height,
+  scale
 }) => {
   const [pageDoc, setPageDoc] = (0, import_react15.useState)();
   const rootRef = (0, import_react15.useRef)(null);
@@ -4221,14 +4222,14 @@ var ThumbnailItem2 = ({
   (0, import_react15.useEffect)(() => {
     if (!pageDoc)
       return;
-    const viewport2 = pageDoc.getViewport({ scale: 1 });
+    const viewport2 = pageDoc.getViewport({ scale });
     const canvasEl = document.createElement("canvas");
     const context = canvasEl.getContext("2d");
     const outputScale = window.devicePixelRatio || 1;
     canvasEl.height = Math.floor(height * outputScale);
     canvasEl.width = Math.floor(width * outputScale);
-    canvasEl.style.width = `${Math.floor(width)}px`;
-    canvasEl.style.height = `${Math.floor(height)}px`;
+    canvasEl.style.width = `${Math.floor(width * outputScale)}px`;
+    canvasEl.style.height = `${Math.floor(height * outputScale)}px`;
     const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
     const pageWidth = viewport2.width, pageHeight = viewport2.height, pageRatio = pageWidth / pageHeight;
     const thumbWidth = width;
@@ -4281,7 +4282,7 @@ var item_default2 = ThumbnailItem2;
 
 // packages/print/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
-var Print = ({ pdfDoc, width, height }) => {
+var Print = ({ pdfDoc, width, height, scale }) => {
   const container = import_react16.default.useMemo(() => {
     const id = "__print_container__";
     let containerEl = document.getElementById(`${id}`);
@@ -4304,7 +4305,8 @@ var Print = ({ pdfDoc, width, height }) => {
               pdfDoc,
               pageIndex,
               width,
-              height
+              height,
+              scale
             }, pageIndex);
           })
         }),
@@ -4705,7 +4707,8 @@ var PDFViewer = ({
         pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(print_default, {
           height: pageSize.height,
           width: pageSize.width,
-          pdfDoc
+          pdfDoc,
+          scale: pageSize.scale
         })
       ]
     });
