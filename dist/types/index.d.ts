@@ -6,6 +6,8 @@ interface OptionModel {
 }
 declare type ScrollMode = "vertical" | "horizontal";
 interface PageSize {
+    vWidth: number;
+    vHeight: number;
     width: number;
     height: number;
     scale: number;

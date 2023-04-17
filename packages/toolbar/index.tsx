@@ -3,7 +3,7 @@ import React, {
   FunctionComponent,
   useEffect,
   useRef,
-  useState,
+  useState
 } from "react";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
@@ -14,7 +14,7 @@ import ScaleSelector from "./scale-selector";
 
 export const TOOLBAR_HEIGHT = 48;
 
-interface ToolbarProps {}
+interface ToolbarProps { }
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   const {
@@ -127,9 +127,8 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     <div className="toolbar">
       <div className="toolbar-left">
         <button
-          className={`common-button has-before sidebar ${
-            sidebarVisible ? "active" : ""
-          }`}
+          className={`common-button has-before sidebar ${sidebarVisible ? "active" : ""
+            }`}
           onClick={onSidebarButtonClick}
         >
           <span className="button-label">切换侧边栏</span>

@@ -15,9 +15,9 @@ A React component to view PDF document. It is base on [mozilla/pdf.js](https://g
 - [ ] Full screen
 - [x] Open file from local
 - [ ] Download
-- [ ] Print
-- [ ] Customize Theme
-- [ ] Customize toolbar
+- [x] Print
+- [ ] Customize theme
+- [x] Customize toolbar
 
 ## 🖥 Environment Support
 

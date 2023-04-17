@@ -17,6 +17,8 @@ interface PageResizesProps {
 
 function usePageResizes({ resizesRef, doc, scale }: PageResizesProps) {
   const [pageSize, setPageSize] = useState<PageSize>({
+    vWidth: 0,
+    vHeight: 0,
     width: 0,
     height: 0,
     scale: 1,
@@ -68,6 +70,8 @@ function usePageResizes({ resizesRef, doc, scale }: PageResizesProps) {
         h = viewport.height * pageScale;
       }
       const newPageSize = {
+        vWidth: viewport.width,
+        vHeight: viewport.height,
         height: Math.floor(h),
         width: Math.floor(w),
         scale: pageScale,

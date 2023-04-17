@@ -6,7 +6,6 @@ interface ThumbnailItemProps {
   pageIndex: number;
   width: number;
   height: number;
-  scale: number;
 }
 
 const ThumbnailItem: FC<ThumbnailItemProps> = ({
@@ -14,7 +13,6 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
   pageIndex,
   width,
   height,
-  scale,
 }) => {
   const [pageDoc, setPageDoc] = useState<PDFPageProxy>();
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -30,28 +28,25 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
   useEffect(() => {
     if (!pageDoc) return;
 
-    const viewport = pageDoc.getViewport({ scale: scale });
+    const viewport = pageDoc.getViewport({ scale: 1 });
     const canvasEl = document.createElement("canvas");
     const context = canvasEl.getContext("2d");
 
     // Support HiDPI-screens.
-    const outputScale = window.devicePixelRatio || 1;
-    canvasEl.height = Math.floor(height * outputScale);
-    canvasEl.width = Math.floor(width * outputScale);
-    canvasEl.style.width = `${Math.floor(width * outputScale)}px`;
-    canvasEl.style.height = `${Math.floor(height * outputScale)}px`;
+    const printUnits = 150 / 72;
+    canvasEl.height = Math.floor(height * printUnits);
+    canvasEl.width = Math.floor(width * printUnits);
 
     const transform =
-      outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined;
+      printUnits !== 1 ? [printUnits, 0, 0, printUnits, 0, 0] : undefined;
 
-    const pageWidth = viewport.width,
-      pageHeight = viewport.height,
-      pageRatio = pageWidth / pageHeight;
-
-    const thumbWidth = width;
-    const thumbHeight = width * pageRatio;
 
     if (context) {
+      context.save();
+      context.fillStyle = "rgb(255, 255, 255)";
+      context.fillRect(0, 0, canvasEl.width, canvasEl.height);
+      context.restore();
+
       renderTask.current = pageDoc.render({
         canvasContext: context,
         viewport: viewport,
@@ -61,21 +56,13 @@ const ThumbnailItem: FC<ThumbnailItemProps> = ({
 
       renderTask.current.promise.then(
         () => {
-          if (context) {
-            context.drawImage(
-              canvasEl,
-              0,
-              0,
-              viewport.width,
-              viewport.height,
-              0,
-              0,
-              width * outputScale,
-              height * outputScale
-            );
+          if ('toBlob' in canvasEl && 'createObjectURL' in URL) {
+            canvasEl.toBlob((blob) => {
+              blob && setImgURI(URL.createObjectURL(blob));
+            });
+          } else {
+            setImgURI(canvasEl.toDataURL());
           }
-          setImgURI(canvasEl.toDataURL());
-          // onCompleted?.();
         },
         () => {
           // onCompleted?.();

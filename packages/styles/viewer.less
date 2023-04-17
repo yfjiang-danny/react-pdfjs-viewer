@@ -25,6 +25,7 @@
     #__pdf_viewer_container__ {
       inset-inline-start: var(--sidebar-width);
     }
+
     #__sidebar__ {
       inset-inline-start: 0;
     }
@@ -33,6 +34,11 @@
 
 #__print_container__ {
   display: none;
+  text-align: center;
+
+  .print-item {
+    text-align: center;
+  }
 }
 
 @media print {
@@ -42,16 +48,35 @@
   }
 
   body {
-    & > * {
+    &>div {
       display: none;
     }
 
     #__print_container__ {
       display: block;
+      text-align: center;
     }
 
     .print-item {
-      text-align: center;
+      page-break-after: always;
+      page-break-inside: avoid;
+
+      /* The wrapper always cover the whole page. */
+      height: 100%;
+      width: 100%;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      img {
+        display: block;
+        /* The intrinsic canvas / image size will make sure that we fit the page. */
+        max-width: 100%;
+        max-height: 100%;
+      }
     }
+
   }
 }

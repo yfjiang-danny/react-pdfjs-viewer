@@ -4064,6 +4064,8 @@ function useRectObserver({ elRef }) {
 // packages/hooks/usePageResize.ts
 function usePageResizes({ resizesRef, doc, scale }) {
   const [pageSize, setPageSize] = useState6({
+    vWidth: 0,
+    vHeight: 0,
     width: 0,
     height: 0,
     scale: 1
@@ -4112,6 +4114,8 @@ function usePageResizes({ resizesRef, doc, scale }) {
         h = viewport2.height * pageScale;
       }
       const newPageSize = {
+        vWidth: viewport2.width,
+        vHeight: viewport2.height,
         height: Math.floor(h),
         width: Math.floor(w),
         scale: pageScale
@@ -4197,19 +4201,22 @@ var ThumbnailItem2 = ({
   useEffect10(() => {
     if (!pageDoc)
       return;
-    const viewport2 = pageDoc.getViewport({ scale });
+    const viewport2 = pageDoc.getViewport({ scale: 1 });
     const canvasEl = document.createElement("canvas");
     const context = canvasEl.getContext("2d");
-    const outputScale = window.devicePixelRatio || 1;
+    const printUnits = 150 / 72;
+    const outputScale = printUnits;
     canvasEl.height = Math.floor(height * outputScale);
     canvasEl.width = Math.floor(width * outputScale);
-    canvasEl.style.width = `${Math.floor(width * outputScale)}px`;
-    canvasEl.style.height = `${Math.floor(height * outputScale)}px`;
     const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
     const pageWidth = viewport2.width, pageHeight = viewport2.height, pageRatio = pageWidth / pageHeight;
     const thumbWidth = width;
     const thumbHeight = width * pageRatio;
     if (context) {
+      context.save();
+      context.fillStyle = "rgb(255, 255, 255)";
+      context.fillRect(0, 0, canvasEl.width, canvasEl.height);
+      context.restore();
       renderTask.current = pageDoc.render({
         canvasContext: context,
         viewport: viewport2,
@@ -4218,20 +4225,13 @@ var ThumbnailItem2 = ({
       });
       renderTask.current.promise.then(
         () => {
-          if (context) {
-            context.drawImage(
-              canvasEl,
-              0,
-              0,
-              viewport2.width,
-              viewport2.height,
-              0,
-              0,
-              width * outputScale,
-              height * outputScale
-            );
+          if ("toBlob" in canvasEl && "createObjectURL" in URL) {
+            canvasEl.toBlob((blob) => {
+              blob && setImgURI(URL.createObjectURL(blob));
+            });
+          } else {
+            setImgURI(canvasEl.toDataURL());
           }
-          setImgURI(canvasEl.toDataURL());
         },
         () => {
         }
@@ -4680,8 +4680,8 @@ var PDFViewer = ({
           }), index2);
         }),
         pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ jsx15(print_default, {
-          height: pageSize.height,
-          width: pageSize.width,
+          height: pageSize.vHeight,
+          width: pageSize.vWidth,
           pdfDoc,
           scale: pageSize.scale
         })
