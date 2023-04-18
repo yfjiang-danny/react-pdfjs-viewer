@@ -12,6 +12,8 @@ class TempImageFactory {
     const tempCanvas = (this.#tempCanvas ||= document.createElement("canvas"));
     tempCanvas.width = width;
     tempCanvas.height = height;
+    tempCanvas.style.width = `${Math.floor(width)}px`;
+    tempCanvas.style.height = `${Math.floor(height)}px`;
 
     // Since this is a temporary canvas, we need to fill it with a white
     // background ourselves.

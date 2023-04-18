@@ -180,6 +180,7 @@ var TextLayer = (props) => {
       renderTask.current.cancel();
     }
     if (textContainerRef.current) {
+<<<<<<< HEAD
       const viewport = pageDoc.getViewport({ scale });
       pageDoc.getTextContent().then((textContent) => {
         if (textContent && textContainerRef.current) {
@@ -193,6 +194,24 @@ var TextLayer = (props) => {
         var _a;
         (_a = renderTask.current) == null ? void 0 : _a.cancel();
       });
+=======
+      const viewport2 = pageDoc.getViewport({ scale });
+      try {
+        pageDoc.getTextContent().then((textContent) => {
+          if (textContent && textContainerRef.current) {
+            renderTask.current = PDFLib.renderTextLayer({
+              container: textContainerRef.current,
+              viewport: viewport2,
+              textContent
+            });
+          }
+        }).catch((err) => {
+          var _a;
+          (_a = renderTask.current) == null ? void 0 : _a.cancel();
+        });
+      } catch (error) {
+      }
+>>>>>>> c1b0fa878efc3000c8ec4fb58368da69a4083745
     }
     return () => {
       if (renderTask.current) {
@@ -398,6 +417,7 @@ function usePDFViewerHook(initialState = {
     initialState.page || 0
 =======
   const [pdfURI, setPdfURI] = (0, import_react4.useState)(initialState.pdfURI);
+  const [pdfDoc, setPDFDoc] = (0, import_react4.useState)();
   const [scale, setScale] = (0, import_react4.useState)(initialState.scale || "auto");
   const [currentPage, setCurrentPage] = (0, import_react4.useState)(
     initialState.page || 1
@@ -408,6 +428,8 @@ function usePDFViewerHook(initialState = {
   return {
     pdfURI,
     setPdfURI,
+    pdfDoc,
+    setPDFDoc,
     scale,
     setScale,
     currentPage,
@@ -548,6 +570,8 @@ var TempImageFactory = class {
     const tempCanvas = __privateGet(this, _tempCanvas) || __privateSet(this, _tempCanvas, document.createElement("canvas"));
     tempCanvas.width = width;
     tempCanvas.height = height;
+    tempCanvas.style.width = `${Math.floor(width)}px`;
+    tempCanvas.style.height = `${Math.floor(height)}px`;
     const ctx = tempCanvas.getContext("2d", { alpha: false });
     if (ctx) {
       ctx.save();
@@ -794,6 +818,7 @@ var thumbnail_default = Thumbnail;
 
 // packages/toolbar/index.tsx
 <<<<<<< HEAD
+<<<<<<< HEAD
 var import_react12 = require("react");
 
 // packages/toolbar/scale-selector/index.tsx
@@ -803,7 +828,26 @@ var import_react11 = require("react");
 // packages/assets/svg/arrow-drop-down.tsx
 var import_react9 = __toESM(require("react"), 1);
 =======
+=======
+var import_pdfjs_dist = require("pdfjs-dist");
+>>>>>>> c1b0fa878efc3000c8ec4fb58368da69a4083745
 var import_react11 = require("react");
+
+// packages/utils/download.ts
+function downloadBlob(blobUrl, filename) {
+  const a = document.createElement("a");
+  if (!a.click) {
+    throw new Error('DownloadManager: "a.click()" is not supported.');
+  }
+  a.href = blobUrl;
+  a.target = "_blank";
+  if ("download" in a) {
+    a.download = filename;
+  }
+  (document.body || document.documentElement).append(a);
+  a.click();
+  a.remove();
+}
 
 // node_modules/@popperjs/core/lib/enums.js
 var top = "top";
@@ -4128,6 +4172,8 @@ var Toolbar = () => {
 =======
 var Toolbar = (props) => {
   const {
+    pdfDoc,
+    pdfURI,
     setPdfURI,
     currentPage,
     setCurrentPage,
@@ -4214,9 +4260,23 @@ var Toolbar = (props) => {
     const file = (_a = evt.currentTarget.files) == null ? void 0 : _a[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      console.log("onFileInputChanged", url);
       setPdfURI(url);
     }
+  }
+  function onPrintButtonClick() {
+    window.print();
+  }
+  function downloadButtonClick() {
+    if (!pdfDoc) {
+      return;
+    }
+    pdfDoc.getData().then((data) => {
+      const blob = new Blob([data], { type: "application/pdf" });
+      const blobUrl = URL.createObjectURL(blob);
+      blobUrl && downloadBlob(blobUrl, (0, import_pdfjs_dist.getPdfFilenameFromUrl)(pdfURI));
+    }, (err) => {
+      alert(err.toString());
+    });
   }
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
     className: "toolbar",
@@ -4320,6 +4380,7 @@ var Toolbar = (props) => {
           }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
             className: "common-button has-before print",
+            onClick: onPrintButtonClick,
             children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
               className: "button-label",
               children: "\u6253\u5370"
@@ -4327,6 +4388,7 @@ var Toolbar = (props) => {
           }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
             className: "common-button has-before  download",
+            onClick: downloadButtonClick,
             children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
               className: "button-label",
               children: "\u4FDD\u5B58"
@@ -4355,8 +4417,8 @@ var Toolbar = (props) => {
 var toolbar_default = Toolbar;
 
 // packages/viewer/index.tsx
-var import_lodash2 = require("lodash");
-var import_react16 = require("react");
+var import_lodash3 = require("lodash");
+var import_react18 = require("react");
 
 // packages/hooks/usePageResize.ts
 var import_react13 = require("react");
@@ -4395,6 +4457,8 @@ function useRectObserver({ elRef }) {
 // packages/hooks/usePageResize.ts
 function usePageResizes({ resizesRef, doc, scale }) {
   const [pageSize, setPageSize] = (0, import_react13.useState)({
+    vWidth: 0,
+    vHeight: 0,
     width: 0,
     height: 0,
     scale: 1
@@ -4443,6 +4507,8 @@ function usePageResizes({ resizesRef, doc, scale }) {
         h = viewport2.height * pageScale;
       }
       const newPageSize = {
+        vWidth: viewport2.width,
+        vHeight: viewport2.height,
         height: Math.floor(h),
         width: Math.floor(w),
         scale: pageScale
@@ -4498,8 +4564,125 @@ var PageLayer = ({
 };
 var page_layer_default = PageLayer;
 
-// packages/sidebar/index.tsx
+// packages/print/index.tsx
+var import_lodash2 = require("lodash");
+var import_react16 = __toESM(require("react"), 1);
+var import_react_dom2 = require("react-dom");
+
+// packages/print/item.tsx
 var import_react15 = require("react");
+var import_jsx_runtime = require("react/jsx-runtime");
+var ThumbnailItem2 = ({
+  pdfDoc,
+  pageIndex,
+  width,
+  height
+}) => {
+  const [pageDoc, setPageDoc] = (0, import_react15.useState)();
+  const rootRef = (0, import_react15.useRef)(null);
+  const renderTask = (0, import_react15.useRef)(null);
+  const [imgURI, setImgURI] = (0, import_react15.useState)();
+  (0, import_react15.useEffect)(() => {
+    pdfDoc.getPage(pageIndex).then((pageDoc2) => {
+      setPageDoc(pageDoc2);
+    });
+  }, [pageIndex, pdfDoc]);
+  (0, import_react15.useEffect)(() => {
+    if (!pageDoc)
+      return;
+    const viewport2 = pageDoc.getViewport({ scale: 1 });
+    const canvasEl = document.createElement("canvas");
+    const context = canvasEl.getContext("2d");
+    const printUnits = 150 / 72;
+    canvasEl.height = Math.floor(height * printUnits);
+    canvasEl.width = Math.floor(width * printUnits);
+    const transform = printUnits !== 1 ? [printUnits, 0, 0, printUnits, 0, 0] : void 0;
+    if (context) {
+      context.save();
+      context.fillStyle = "rgb(255, 255, 255)";
+      context.fillRect(0, 0, canvasEl.width, canvasEl.height);
+      context.restore();
+      renderTask.current = pageDoc.render({
+        canvasContext: context,
+        viewport: viewport2,
+        intent: "print",
+        transform
+      });
+      renderTask.current.promise.then(
+        () => {
+          if ("toBlob" in canvasEl && "createObjectURL" in URL) {
+            canvasEl.toBlob((blob) => {
+              blob && setImgURI(URL.createObjectURL(blob));
+            });
+          } else {
+            setImgURI(canvasEl.toDataURL());
+          }
+        },
+        () => {
+        }
+      );
+    }
+    return () => {
+      if (renderTask.current) {
+        renderTask.current.cancel();
+        renderTask.current = null;
+      }
+    };
+  }, [pageDoc]);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+    ref: rootRef,
+    id: `print_page_${pageIndex}`,
+    className: `print-item`,
+    children: imgURI ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+      src: imgURI
+    }) : null
+  });
+};
+var item_default2 = ThumbnailItem2;
+
+// packages/print/index.tsx
+var import_jsx_runtime = require("react/jsx-runtime");
+var Print = ({ pdfDoc, width, height }) => {
+  const container = import_react16.default.useMemo(() => {
+    const id = "__print_container__";
+    let containerEl = document.getElementById(`${id}`);
+    if (containerEl) {
+      return containerEl;
+    }
+    containerEl = document.createElement("div");
+    containerEl.id = id;
+    document.body.appendChild(containerEl);
+    return containerEl;
+  }, []);
+  return (0, import_react_dom2.createPortal)(
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, {
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+          id: "__print_view__",
+          children: !pdfDoc ? null : (0, import_lodash2.range)(0, pdfDoc.numPages).map((index2) => {
+            const pageIndex = index2 + 1;
+            return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(item_default2, {
+              pdfDoc,
+              pageIndex,
+              width,
+              height
+            }, pageIndex);
+          })
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("style", {
+          dangerouslySetInnerHTML: {
+            __html: `@page { size: ${width}pt ${height}pt }`
+          }
+        })
+      ]
+    }),
+    container
+  );
+};
+var print_default = Print;
+
+// packages/sidebar/index.tsx
+var import_react17 = require("react");
 
 // packages/types/types.ts
 var isBrowser3 = !!(typeof window !== "undefined" && window.document && window.document.createElement);
@@ -4694,11 +4877,11 @@ var SidebarResizer = class extends DragService {
 var import_jsx_runtime = require("react/jsx-runtime");
 var Sidebar = ({ children }) => {
   const { sidebarVisible } = usePDFViewer();
-  const resizerRef = (0, import_react15.useRef)(null);
-  const dragService = (0, import_react15.useMemo)(() => {
+  const resizerRef = (0, import_react17.useRef)(null);
+  const dragService = (0, import_react17.useMemo)(() => {
     return new SidebarResizer({});
   }, []);
-  (0, import_react15.useEffect)(() => {
+  (0, import_react17.useEffect)(() => {
     console.log("dragService", dragService);
     dragService == null ? void 0 : dragService.addDragSource({
       element: resizerRef
@@ -4744,30 +4927,31 @@ var PDFViewer = ({
     currentPage,
     setCurrentPage,
     setTotalPage,
-    sidebarVisible
+    sidebarVisible,
+    pdfDoc,
+    setPDFDoc
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [loading, setLoading] = (0, import_react16.useState)(false);
-  const [loadingProgress, setLoadingProgress] = (0, import_react16.useState)(-1);
-  const [pdfDoc, setPDFDoc] = (0, import_react16.useState)();
-  const [errorReason, setErrorReason] = (0, import_react16.useState)();
-  const loadingTask = (0, import_react16.useRef)(null);
-  const viewerRef = (0, import_react16.useRef)(null);
-  const scrollElRef = (0, import_react16.useRef)(null);
-  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react16.useState)(1);
-  const [renderMap, setRenderMap] = (0, import_react16.useState)({});
+  const [loading, setLoading] = (0, import_react18.useState)(false);
+  const [loadingProgress, setLoadingProgress] = (0, import_react18.useState)(-1);
+  const [errorReason, setErrorReason] = (0, import_react18.useState)();
+  const loadingTask = (0, import_react18.useRef)(null);
+  const viewerRef = (0, import_react18.useRef)(null);
+  const scrollElRef = (0, import_react18.useRef)(null);
+  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react18.useState)(1);
+  const [renderMap, setRenderMap] = (0, import_react18.useState)({});
   const pageSize = usePageResizes({
     resizesRef: viewerRef,
     doc: pdfDoc,
     scale
   });
-  (0, import_react16.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     scaleNumberRef.current = pageSize.scale;
   }, [pageSize, scaleNumberRef]);
-  (0, import_react16.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
-  (0, import_react16.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     if (pdfURI) {
       setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
@@ -4787,7 +4971,7 @@ var PDFViewer = ({
       loadingTask.current && loadingTask.current.destroy();
     };
   }, [pdfURI]);
-  const scrollHandler = (0, import_react16.useCallback)(
+  const scrollHandler = (0, import_react18.useCallback)(
     (state) => {
       if (scrollMode == "vertical") {
         if (pageSize.height == 0) {
@@ -4819,7 +5003,7 @@ var PDFViewer = ({
     },
     [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
   );
-  (0, import_react16.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     let scrollState = null;
     if (scrollElRef.current) {
       scrollState = watchScroll(scrollElRef.current, scrollHandler);
@@ -4839,46 +5023,53 @@ var PDFViewer = ({
       if (errorReason) {
         return typeof errorComponent == "function" ? errorComponent(errorReason) : errorComponent != null ? errorComponent : errorReason.toString();
       }
-      return "Loading error";
+      return "Waiting...";
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
       id: "__pdf_viewer_container__",
       className: "viewer",
       ref: scrollElRef,
-      children: pageSize.width == 0 ? null : (0, import_lodash2.range)(0, pdfDoc.numPages).map((index2) => {
-        const pageIndex = index2 + 1;
-        return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(page_layer_default, __spreadProps(__spreadValues({
-          pageIndex,
-          doc: pdfDoc
-        }, pageSize), {
-          scrollMode,
-          children: (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(loading_layer_default, {}) : [
-            /* @__PURE__ */ (0, import_react.createElement)(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
-              pageDoc: doc,
-              pageIndex,
-              renderingIndex: renderingPageIndex,
-              key: `canvas_layer_${pageIndex}`,
-              onCompleted: () => {
-                setRenderingPageIndex((pre) => pre + 1);
-                setRenderMap((pre) => {
-                  if (pre[pageIndex]) {
-                    return pre;
-                  }
-                  return __spreadProps(__spreadValues({}, pre), {
-                    pageIndex: true
+      children: [
+        pageSize.width == 0 ? null : (0, import_lodash3.range)(0, pdfDoc.numPages).map((index2) => {
+          const pageIndex = index2 + 1;
+          return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(page_layer_default, __spreadProps(__spreadValues({
+            pageIndex,
+            doc: pdfDoc
+          }, pageSize), {
+            scrollMode,
+            children: (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(loading_layer_default, {}) : [
+              /* @__PURE__ */ (0, import_react.createElement)(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+                pageDoc: doc,
+                pageIndex,
+                renderingIndex: renderingPageIndex,
+                key: `canvas_layer_${pageIndex}`,
+                onCompleted: () => {
+                  setRenderingPageIndex((pre) => pre + 1);
+                  setRenderMap((pre) => {
+                    if (pre[pageIndex]) {
+                      return pre;
+                    }
+                    return __spreadProps(__spreadValues({}, pre), {
+                      pageIndex: true
+                    });
                   });
-                });
-              }
-            })),
-            /* @__PURE__ */ (0, import_react.createElement)(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
-              pageDoc: doc,
-              pageIndex,
-              key: `text_layer_${pageIndex}`
-            })),
-            renderingPageIndex <= pageIndex ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(loading_layer_default, {}, `loading_layer_${pageIndex}`) : null
-          ]
-        }), index2);
-      })
+                }
+              })),
+              /* @__PURE__ */ (0, import_react.createElement)(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+                pageDoc: doc,
+                pageIndex,
+                key: `text_layer_${pageIndex}`
+              })),
+              renderingPageIndex <= pageIndex ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(loading_layer_default, {}, `loading_layer_${pageIndex}`) : null
+            ]
+          }), index2);
+        }),
+        pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(print_default, {
+          height: pageSize.vHeight,
+          width: pageSize.vWidth,
+          pdfDoc
+        })
+      ]
     });
   }
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {

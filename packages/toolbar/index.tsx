@@ -1,23 +1,27 @@
+import { getFilenameFromUrl, getPdfFilenameFromUrl } from "pdfjs-dist";
 import React, {
   ChangeEvent,
   FunctionComponent,
   useEffect,
   useRef,
-  useState,
+  useState
 } from "react";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
 import { MAX_SCALE, MIN_SCALE } from "../types/constant";
 import { scrollToPageIndex } from "../utils";
+import { downloadBlob } from "../utils/download";
 import "./index.less";
 import ScaleSelector from "./scale-selector";
 
 export const TOOLBAR_HEIGHT = 48;
 
-interface ToolbarProps {}
+interface ToolbarProps { }
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   const {
+    pdfDoc,
+    pdfURI,
     setPdfURI,
     currentPage,
     setCurrentPage,
@@ -110,19 +114,34 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     const file = evt.currentTarget.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      console.log("onFileInputChanged", url);
 
       setPdfURI(url);
     }
+  }
+
+  function onPrintButtonClick(): void {
+    window.print();
+  }
+
+  function downloadButtonClick(): void {
+    if (!pdfDoc) {
+      return;
+    }
+    pdfDoc.getData().then(data => {
+      const blob = new Blob([data], { type: "application/pdf" });
+      const blobUrl = URL.createObjectURL(blob);
+      blobUrl && downloadBlob(blobUrl, getPdfFilenameFromUrl(pdfURI))
+    }, err => {
+      alert(err.toString())
+    })
   }
 
   return (
     <div className="toolbar">
       <div className="toolbar-left">
         <button
-          className={`common-button has-before sidebar ${
-            sidebarVisible ? "active" : ""
-          }`}
+          className={`common-button has-before sidebar ${sidebarVisible ? "active" : ""
+            }`}
           onClick={onSidebarButtonClick}
         >
           <span className="button-label">切换侧边栏</span>
@@ -183,10 +202,16 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
         >
           <span className="button-label">打开</span>
         </button>
-        <button className="common-button has-before print">
+        <button
+          className="common-button has-before print"
+          onClick={onPrintButtonClick}
+        >
           <span className="button-label">打印</span>
         </button>
-        <button className="common-button has-before  download">
+        <button
+          className="common-button has-before  download"
+          onClick={downloadButtonClick}
+        >
           <span className="button-label">保存</span>
         </button>
         <button className="common-button has-before draw">

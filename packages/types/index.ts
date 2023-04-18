@@ -8,6 +8,10 @@ interface OptionModel {
 type ScrollMode = "vertical" | "horizontal";
 
 interface PageSize {
+  // viewport.width
+  vWidth: number;
+  // viewport.height
+  vHeight: number;
   width: number;
   height: number;
   scale: number;

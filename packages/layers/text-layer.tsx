@@ -25,20 +25,24 @@ const TextLayer: FunctionComponent<TextLayerProps> = (props) => {
     if (textContainerRef.current) {
       const viewport = pageDoc.getViewport({ scale });
 
-      pageDoc
-        .getTextContent()
-        .then((textContent) => {
-          if (textContent && textContainerRef.current) {
-            renderTask.current = PDFLib.renderTextLayer({
-              container: textContainerRef.current,
-              viewport: viewport,
-              textContent: textContent,
-            });
-          }
-        })
-        .catch((err) => {
-          renderTask.current?.cancel();
-        });
+      try {
+        pageDoc
+          .getTextContent()
+          .then((textContent) => {
+            if (textContent && textContainerRef.current) {
+              renderTask.current = PDFLib.renderTextLayer({
+                container: textContainerRef.current,
+                viewport: viewport,
+                textContent: textContent,
+              });
+            }
+          })
+          .catch((err) => {
+            renderTask.current?.cancel();
+          });
+      } catch (error) {
+        //
+      }
     }
 
     return () => {
