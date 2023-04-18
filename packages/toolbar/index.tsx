@@ -1,3 +1,4 @@
+import { getFilenameFromUrl, getPdfFilenameFromUrl } from "pdfjs-dist";
 import React, {
   ChangeEvent,
   FunctionComponent,
@@ -9,6 +10,7 @@ import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
 import { MAX_SCALE, MIN_SCALE } from "../types/constant";
 import { scrollToPageIndex } from "../utils";
+import { downloadBlob } from "../utils/download";
 import "./index.less";
 import ScaleSelector from "./scale-selector";
 
@@ -18,6 +20,8 @@ interface ToolbarProps { }
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   const {
+    pdfDoc,
+    pdfURI,
     setPdfURI,
     currentPage,
     setCurrentPage,
@@ -120,7 +124,16 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   }
 
   function downloadButtonClick(): void {
-    //
+    if (!pdfDoc) {
+      return;
+    }
+    pdfDoc.getData().then(data => {
+      const blob = new Blob([data], { type: "application/pdf" });
+      const blobUrl = URL.createObjectURL(blob);
+      blobUrl && downloadBlob(blobUrl, getPdfFilenameFromUrl(pdfURI))
+    }, err => {
+      alert(err.toString())
+    })
   }
 
   return (

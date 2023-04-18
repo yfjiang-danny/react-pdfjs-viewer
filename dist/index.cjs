@@ -181,18 +181,21 @@ var TextLayer = (props) => {
     }
     if (textContainerRef.current) {
       const viewport2 = pageDoc.getViewport({ scale });
-      pageDoc.getTextContent().then((textContent) => {
-        if (textContent && textContainerRef.current) {
-          renderTask.current = PDFLib.renderTextLayer({
-            container: textContainerRef.current,
-            viewport: viewport2,
-            textContent
-          });
-        }
-      }).catch((err) => {
-        var _a;
-        (_a = renderTask.current) == null ? void 0 : _a.cancel();
-      });
+      try {
+        pageDoc.getTextContent().then((textContent) => {
+          if (textContent && textContainerRef.current) {
+            renderTask.current = PDFLib.renderTextLayer({
+              container: textContainerRef.current,
+              viewport: viewport2,
+              textContent
+            });
+          }
+        }).catch((err) => {
+          var _a;
+          (_a = renderTask.current) == null ? void 0 : _a.cancel();
+        });
+      } catch (error) {
+      }
     }
     return () => {
       if (renderTask.current) {
@@ -239,6 +242,7 @@ function usePDFViewerHook(initialState = {
   pdfURI: ""
 }) {
   const [pdfURI, setPdfURI] = (0, import_react4.useState)(initialState.pdfURI);
+  const [pdfDoc, setPDFDoc] = (0, import_react4.useState)();
   const [scale, setScale] = (0, import_react4.useState)(initialState.scale || "auto");
   const [currentPage, setCurrentPage] = (0, import_react4.useState)(
     initialState.page || 1
@@ -248,6 +252,8 @@ function usePDFViewerHook(initialState = {
   return {
     pdfURI,
     setPdfURI,
+    pdfDoc,
+    setPDFDoc,
     scale,
     setScale,
     currentPage,
@@ -531,7 +537,24 @@ var Thumbnail = ({ pdfDoc, currentPage }) => {
 var thumbnail_default = Thumbnail;
 
 // packages/toolbar/index.tsx
+var import_pdfjs_dist = require("pdfjs-dist");
 var import_react11 = require("react");
+
+// packages/utils/download.ts
+function downloadBlob(blobUrl, filename) {
+  const a = document.createElement("a");
+  if (!a.click) {
+    throw new Error('DownloadManager: "a.click()" is not supported.');
+  }
+  a.href = blobUrl;
+  a.target = "_blank";
+  if ("download" in a) {
+    a.download = filename;
+  }
+  (document.body || document.documentElement).append(a);
+  a.click();
+  a.remove();
+}
 
 // node_modules/@popperjs/core/lib/enums.js
 var top = "top";
@@ -3833,6 +3856,8 @@ var scale_selector_default = ScaleSelector;
 var import_jsx_runtime = require("react/jsx-runtime");
 var Toolbar = (props) => {
   const {
+    pdfDoc,
+    pdfURI,
     setPdfURI,
     currentPage,
     setCurrentPage,
@@ -3912,6 +3937,16 @@ var Toolbar = (props) => {
     window.print();
   }
   function downloadButtonClick() {
+    if (!pdfDoc) {
+      return;
+    }
+    pdfDoc.getData().then((data) => {
+      const blob = new Blob([data], { type: "application/pdf" });
+      const blobUrl = URL.createObjectURL(blob);
+      blobUrl && downloadBlob(blobUrl, (0, import_pdfjs_dist.getPdfFilenameFromUrl)(pdfURI));
+    }, (err) => {
+      alert(err.toString());
+    });
   }
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
     className: "toolbar",
@@ -4211,8 +4246,7 @@ var ThumbnailItem2 = ({
   pdfDoc,
   pageIndex,
   width,
-  height,
-  scale
+  height
 }) => {
   const [pageDoc, setPageDoc] = (0, import_react15.useState)();
   const rootRef = (0, import_react15.useRef)(null);
@@ -4230,13 +4264,9 @@ var ThumbnailItem2 = ({
     const canvasEl = document.createElement("canvas");
     const context = canvasEl.getContext("2d");
     const printUnits = 150 / 72;
-    const outputScale = printUnits;
-    canvasEl.height = Math.floor(height * outputScale);
-    canvasEl.width = Math.floor(width * outputScale);
-    const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : void 0;
-    const pageWidth = viewport2.width, pageHeight = viewport2.height, pageRatio = pageWidth / pageHeight;
-    const thumbWidth = width;
-    const thumbHeight = width * pageRatio;
+    canvasEl.height = Math.floor(height * printUnits);
+    canvasEl.width = Math.floor(width * printUnits);
+    const transform = printUnits !== 1 ? [printUnits, 0, 0, printUnits, 0, 0] : void 0;
     if (context) {
       context.save();
       context.fillStyle = "rgb(255, 255, 255)";
@@ -4282,7 +4312,7 @@ var item_default2 = ThumbnailItem2;
 
 // packages/print/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
-var Print = ({ pdfDoc, width, height, scale }) => {
+var Print = ({ pdfDoc, width, height }) => {
   const container = import_react16.default.useMemo(() => {
     const id = "__print_container__";
     let containerEl = document.getElementById(`${id}`);
@@ -4305,8 +4335,7 @@ var Print = ({ pdfDoc, width, height, scale }) => {
               pdfDoc,
               pageIndex,
               width,
-              height,
-              scale
+              height
             }, pageIndex);
           })
         }),
@@ -4568,12 +4597,13 @@ var PDFViewer = ({
     currentPage,
     setCurrentPage,
     setTotalPage,
-    sidebarVisible
+    sidebarVisible,
+    pdfDoc,
+    setPDFDoc
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
   const [loading, setLoading] = (0, import_react18.useState)(false);
   const [loadingProgress, setLoadingProgress] = (0, import_react18.useState)(-1);
-  const [pdfDoc, setPDFDoc] = (0, import_react18.useState)();
   const [errorReason, setErrorReason] = (0, import_react18.useState)();
   const loadingTask = (0, import_react18.useRef)(null);
   const viewerRef = (0, import_react18.useRef)(null);
@@ -4707,8 +4737,7 @@ var PDFViewer = ({
         pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(print_default, {
           height: pageSize.vHeight,
           width: pageSize.vWidth,
-          pdfDoc,
-          scale: pageSize.scale
+          pdfDoc
         })
       ]
     });

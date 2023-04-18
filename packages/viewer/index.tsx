@@ -53,12 +53,13 @@ const PDFViewer: FC<PDFViewerProps> = ({
     setCurrentPage,
     setTotalPage,
     sidebarVisible,
+    pdfDoc,
+    setPDFDoc
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(-1);
-  const [pdfDoc, setPDFDoc] = useState<PDFDocumentProxy>();
   const [errorReason, setErrorReason] = useState<any>();
   const loadingTask = useRef<PDFDocumentLoadingTask | null>(null);
   const viewerRef = useRef<HTMLDivElement | null>(null);

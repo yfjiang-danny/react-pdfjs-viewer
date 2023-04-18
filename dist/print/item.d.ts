@@ -5,7 +5,6 @@ interface ThumbnailItemProps {
     pageIndex: number;
     width: number;
     height: number;
-    scale: number;
 }
 declare const ThumbnailItem: FC<ThumbnailItemProps>;
 export default ThumbnailItem;

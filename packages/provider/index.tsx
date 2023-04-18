@@ -1,3 +1,4 @@
+import { PDFDocumentProxy } from "pdfjs-dist/types/display/api";
 import React, { FC, useState } from "react";
 import { OptionModel, ScaleType } from "../types";
 import { InternalStateContext, useInternalStateHook } from "./internal";
@@ -12,6 +13,8 @@ interface PDFViewerInitialState {
 interface PDFViewerState {
   pdfURI: string;
   setPdfURI: React.Dispatch<React.SetStateAction<string>>;
+  pdfDoc: PDFDocumentProxy | undefined;
+  setPDFDoc: React.Dispatch<React.SetStateAction<PDFDocumentProxy | undefined>>
   scale: ScaleType;
   setScale: React.Dispatch<React.SetStateAction<ScaleType>>;
   currentPage: number;
@@ -30,6 +33,7 @@ function usePDFViewerHook(
   }
 ): PDFViewerState {
   const [pdfURI, setPdfURI] = useState<string>(initialState.pdfURI);
+  const [pdfDoc, setPDFDoc] = useState<PDFDocumentProxy>();
   const [scale, setScale] = useState<ScaleType>(initialState.scale || "auto");
   const [currentPage, setCurrentPage] = useState<number>(
     initialState.page || 1
@@ -41,6 +45,7 @@ function usePDFViewerHook(
   return {
     pdfURI,
     setPdfURI,
+    pdfDoc, setPDFDoc,
     scale,
     setScale,
     currentPage,
