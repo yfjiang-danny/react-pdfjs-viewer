@@ -916,9 +916,9 @@ var toolbar_default = Toolbar;
 import { range as range3 } from "lodash";
 import {
   useCallback,
-  useEffect as useEffect11,
+  useEffect as useEffect12,
   useRef as useRef10,
-  useState as useState8
+  useState as useState9
 } from "react";
 
 // packages/hooks/usePageResize.ts
@@ -1413,8 +1413,73 @@ var Sidebar = ({ children }) => {
 };
 var sidebar_default = Sidebar;
 
+// packages/property/index.tsx
+import { useEffect as useEffect11, useLayoutEffect, useState as useState8 } from "react";
+
+// packages/utils/properties.ts
+import { PDFDateString } from "pdfjs-dist";
+function parseFileSize(fileSize = 0) {
+  const kb = fileSize / 1024, mb = kb / 1024;
+  if (!kb) {
+    return void 0;
+  }
+  return mb > 1 ? `${+mb.toPrecision(3)}mb` : `${mb < 1 && +kb.toPrecision(3)}kb`;
+}
+function parseDate(inputDate) {
+  const dateObject = PDFDateString.toDateObject(inputDate);
+  if (!dateObject) {
+    return void 0;
+  }
+  return dateObject.toLocaleDateString();
+}
+
+// packages/property/index.tsx
+import { getFilenameFromUrl as getFilenameFromUrl2 } from "pdfjs-dist";
+import { Fragment as Fragment4, jsx as jsx15 } from "react/jsx-runtime";
+var PropertyModal = (props) => {
+  const { pdfURI, pdfDoc, currentPage } = usePDFViewer();
+  const [properties, setProperties] = useState8();
+  useLayoutEffect(() => {
+    if (pdfDoc) {
+      Promise.all([pdfDoc.getMetadata(), pdfDoc.getPage(currentPage)]).then(
+        ([pdfInfo, pageDoc]) => {
+          const infoObj = pdfInfo.info;
+          const fileName = pdfInfo["contentDispositionFilename"] || getFilenameFromUrl2(pdfURI);
+          setProperties({
+            pageSize: "",
+            fileSize: parseFileSize(
+              pdfInfo["contentLength"]
+            ),
+            creationDate: parseDate(infoObj["CreationDate"]),
+            modificationDate: parseDate(infoObj.ModDate),
+            fileName,
+            title: infoObj.Title,
+            author: infoObj.Author,
+            subject: infoObj.Subject,
+            keywords: infoObj.Keywords,
+            creator: infoObj.Creator,
+            producer: infoObj.Producer,
+            version: infoObj.PDFFormatVersion,
+            pageCount: pdfDoc.numPages
+          });
+        },
+        (err) => {
+        }
+      ).catch((reason) => {
+      });
+    }
+  }, [currentPage, pdfDoc, pdfURI]);
+  useEffect11(() => {
+    console.log("property", properties);
+  }, [properties]);
+  return /* @__PURE__ */ jsx15(Fragment4, {
+    children: "PropertyModal Component"
+  });
+};
+var property_default = PropertyModal;
+
 // packages/viewer/index.tsx
-import { jsx as jsx15, jsxs as jsxs6 } from "react/jsx-runtime";
+import { jsx as jsx16, jsxs as jsxs6 } from "react/jsx-runtime";
 import { createElement } from "react";
 var PDFViewer = ({
   loadingComponent,
@@ -1436,26 +1501,26 @@ var PDFViewer = ({
     setPDFDoc
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [loading, setLoading] = useState8(false);
-  const [loadingProgress, setLoadingProgress] = useState8(-1);
-  const [errorReason, setErrorReason] = useState8();
+  const [loading, setLoading] = useState9(false);
+  const [loadingProgress, setLoadingProgress] = useState9(-1);
+  const [errorReason, setErrorReason] = useState9();
   const loadingTask = useRef10(null);
   const viewerRef = useRef10(null);
   const scrollElRef = useRef10(null);
-  const [renderingPageIndex, setRenderingPageIndex] = useState8(1);
-  const [renderMap, setRenderMap] = useState8({});
+  const [renderingPageIndex, setRenderingPageIndex] = useState9(1);
+  const [renderMap, setRenderMap] = useState9({});
   const pageSize = usePageResizes({
     resizesRef: viewerRef,
     doc: pdfDoc,
     scale
   });
-  useEffect11(() => {
+  useEffect12(() => {
     scaleNumberRef.current = pageSize.scale;
   }, [pageSize, scaleNumberRef]);
-  useEffect11(() => {
+  useEffect12(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
-  useEffect11(() => {
+  useEffect12(() => {
     if (pdfURI) {
       setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
@@ -1508,7 +1573,7 @@ var PDFViewer = ({
     },
     [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
   );
-  useEffect11(() => {
+  useEffect12(() => {
     let scrollState = null;
     if (scrollElRef.current) {
       scrollState = watchScroll(scrollElRef.current, scrollHandler);
@@ -1537,12 +1602,12 @@ var PDFViewer = ({
       children: [
         pageSize.width == 0 ? null : range3(0, pdfDoc.numPages).map((index) => {
           const pageIndex = index + 1;
-          return /* @__PURE__ */ jsx15(page_layer_default, __spreadProps(__spreadValues({
+          return /* @__PURE__ */ jsx16(page_layer_default, __spreadProps(__spreadValues({
             pageIndex,
             doc: pdfDoc
           }, pageSize), {
             scrollMode,
-            children: (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ jsx15(loading_layer_default, {}) : [
+            children: (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ jsx16(loading_layer_default, {}) : [
               /* @__PURE__ */ createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
                 pageDoc: doc,
                 pageIndex,
@@ -1565,11 +1630,11 @@ var PDFViewer = ({
                 pageIndex,
                 key: `text_layer_${pageIndex}`
               })),
-              renderingPageIndex <= pageIndex ? /* @__PURE__ */ jsx15(loading_layer_default, {}, `loading_layer_${pageIndex}`) : null
+              renderingPageIndex <= pageIndex ? /* @__PURE__ */ jsx16(loading_layer_default, {}, `loading_layer_${pageIndex}`) : null
             ]
           }), index);
         }),
-        pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ jsx15(print_default, {
+        pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ jsx16(print_default, {
           height: pageSize.vHeight,
           width: pageSize.vWidth,
           pdfDoc
@@ -1583,23 +1648,24 @@ var PDFViewer = ({
     ref: viewerRef,
     className: sidebarVisible ? "sidebar-visible" : "",
     children: [
-      /* @__PURE__ */ jsx15(sidebar_default, {
-        children: thumbnail && /* @__PURE__ */ jsx15(thumbnail_default, {
+      /* @__PURE__ */ jsx16(sidebar_default, {
+        children: thumbnail && /* @__PURE__ */ jsx16(thumbnail_default, {
           currentPage,
           pdfDoc
         })
       }),
-      contentComponent()
+      contentComponent(),
+      /* @__PURE__ */ jsx16(property_default, {})
     ]
   });
 };
 var viewer_default = PDFViewer;
 
 // packages/worker/index.tsx
-import { Fragment as Fragment4, jsx as jsx16 } from "react/jsx-runtime";
+import { Fragment as Fragment5, jsx as jsx17 } from "react/jsx-runtime";
 var PDFWorker = ({ workerDir, children }) => {
   PDFLib.GlobalWorkerOptions.workerSrc = workerDir;
-  return /* @__PURE__ */ jsx16(Fragment4, {
+  return /* @__PURE__ */ jsx17(Fragment5, {
     children
   });
 };

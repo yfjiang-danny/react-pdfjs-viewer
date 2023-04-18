@@ -947,7 +947,7 @@ var toolbar_default = Toolbar;
 
 // packages/viewer/index.tsx
 var import_lodash3 = require("lodash");
-var import_react17 = require("react");
+var import_react18 = require("react");
 
 // packages/hooks/usePageResize.ts
 var import_react12 = require("react");
@@ -1438,6 +1438,71 @@ var Sidebar = ({ children }) => {
 };
 var sidebar_default = Sidebar;
 
+// packages/property/index.tsx
+var import_react17 = require("react");
+
+// packages/utils/properties.ts
+var import_pdfjs_dist2 = require("pdfjs-dist");
+function parseFileSize(fileSize = 0) {
+  const kb = fileSize / 1024, mb = kb / 1024;
+  if (!kb) {
+    return void 0;
+  }
+  return mb > 1 ? `${+mb.toPrecision(3)}mb` : `${mb < 1 && +kb.toPrecision(3)}kb`;
+}
+function parseDate(inputDate) {
+  const dateObject = import_pdfjs_dist2.PDFDateString.toDateObject(inputDate);
+  if (!dateObject) {
+    return void 0;
+  }
+  return dateObject.toLocaleDateString();
+}
+
+// packages/property/index.tsx
+var import_pdfjs_dist3 = require("pdfjs-dist");
+var import_jsx_runtime = require("react/jsx-runtime");
+var PropertyModal = (props) => {
+  const { pdfURI, pdfDoc, currentPage } = usePDFViewer();
+  const [properties, setProperties] = (0, import_react17.useState)();
+  (0, import_react17.useLayoutEffect)(() => {
+    if (pdfDoc) {
+      Promise.all([pdfDoc.getMetadata(), pdfDoc.getPage(currentPage)]).then(
+        ([pdfInfo, pageDoc]) => {
+          const infoObj = pdfInfo.info;
+          const fileName = pdfInfo["contentDispositionFilename"] || (0, import_pdfjs_dist3.getFilenameFromUrl)(pdfURI);
+          setProperties({
+            pageSize: "",
+            fileSize: parseFileSize(
+              pdfInfo["contentLength"]
+            ),
+            creationDate: parseDate(infoObj["CreationDate"]),
+            modificationDate: parseDate(infoObj.ModDate),
+            fileName,
+            title: infoObj.Title,
+            author: infoObj.Author,
+            subject: infoObj.Subject,
+            keywords: infoObj.Keywords,
+            creator: infoObj.Creator,
+            producer: infoObj.Producer,
+            version: infoObj.PDFFormatVersion,
+            pageCount: pdfDoc.numPages
+          });
+        },
+        (err) => {
+        }
+      ).catch((reason) => {
+      });
+    }
+  }, [currentPage, pdfDoc, pdfURI]);
+  (0, import_react17.useEffect)(() => {
+    console.log("property", properties);
+  }, [properties]);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {
+    children: "PropertyModal Component"
+  });
+};
+var property_default = PropertyModal;
+
 // packages/viewer/index.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 var import_react = require("react");
@@ -1461,26 +1526,26 @@ var PDFViewer = ({
     setPDFDoc
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [loading, setLoading] = (0, import_react17.useState)(false);
-  const [loadingProgress, setLoadingProgress] = (0, import_react17.useState)(-1);
-  const [errorReason, setErrorReason] = (0, import_react17.useState)();
-  const loadingTask = (0, import_react17.useRef)(null);
-  const viewerRef = (0, import_react17.useRef)(null);
-  const scrollElRef = (0, import_react17.useRef)(null);
-  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react17.useState)(1);
-  const [renderMap, setRenderMap] = (0, import_react17.useState)({});
+  const [loading, setLoading] = (0, import_react18.useState)(false);
+  const [loadingProgress, setLoadingProgress] = (0, import_react18.useState)(-1);
+  const [errorReason, setErrorReason] = (0, import_react18.useState)();
+  const loadingTask = (0, import_react18.useRef)(null);
+  const viewerRef = (0, import_react18.useRef)(null);
+  const scrollElRef = (0, import_react18.useRef)(null);
+  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react18.useState)(1);
+  const [renderMap, setRenderMap] = (0, import_react18.useState)({});
   const pageSize = usePageResizes({
     resizesRef: viewerRef,
     doc: pdfDoc,
     scale
   });
-  (0, import_react17.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     scaleNumberRef.current = pageSize.scale;
   }, [pageSize, scaleNumberRef]);
-  (0, import_react17.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
-  (0, import_react17.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     if (pdfURI) {
       setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
@@ -1501,7 +1566,7 @@ var PDFViewer = ({
       loadingTask.current && loadingTask.current.destroy();
     };
   }, [pdfURI]);
-  const scrollHandler = (0, import_react17.useCallback)(
+  const scrollHandler = (0, import_react18.useCallback)(
     (state) => {
       if (scrollMode == "vertical") {
         if (pageSize.height == 0) {
@@ -1533,7 +1598,7 @@ var PDFViewer = ({
     },
     [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
   );
-  (0, import_react17.useEffect)(() => {
+  (0, import_react18.useEffect)(() => {
     let scrollState = null;
     if (scrollElRef.current) {
       scrollState = watchScroll(scrollElRef.current, scrollHandler);
@@ -1614,7 +1679,8 @@ var PDFViewer = ({
           pdfDoc
         })
       }),
-      contentComponent()
+      contentComponent(),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(property_default, {})
     ]
   });
 };
