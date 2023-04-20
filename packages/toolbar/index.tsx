@@ -4,7 +4,7 @@ import React, {
   FunctionComponent,
   useEffect,
   useRef,
-  useState
+  useState,
 } from "react";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
@@ -16,7 +16,7 @@ import ScaleSelector from "./scale-selector";
 
 export const TOOLBAR_HEIGHT = 48;
 
-interface ToolbarProps { }
+interface ToolbarProps {}
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   const {
@@ -29,6 +29,7 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     totalPage,
     sidebarVisible,
     setSidebarVisible,
+    setPropertyModalVisible,
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
@@ -127,21 +128,25 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     if (!pdfDoc) {
       return;
     }
-    pdfDoc.getData().then(data => {
-      const blob = new Blob([data], { type: "application/pdf" });
-      const blobUrl = URL.createObjectURL(blob);
-      blobUrl && downloadBlob(blobUrl, getPdfFilenameFromUrl(pdfURI))
-    }, err => {
-      alert(err.toString())
-    })
+    pdfDoc.getData().then(
+      (data) => {
+        const blob = new Blob([data], { type: "application/pdf" });
+        const blobUrl = URL.createObjectURL(blob);
+        blobUrl && downloadBlob(blobUrl, getPdfFilenameFromUrl(pdfURI));
+      },
+      (err) => {
+        alert(err.toString());
+      }
+    );
   }
 
   return (
     <div className="toolbar">
       <div className="toolbar-left">
         <button
-          className={`common-button has-before sidebar ${sidebarVisible ? "active" : ""
-            }`}
+          className={`common-button has-before sidebar ${
+            sidebarVisible ? "active" : ""
+          }`}
           onClick={onSidebarButtonClick}
         >
           <span className="button-label">切换侧边栏</span>
@@ -216,6 +221,9 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
         </button>
         <button className="common-button has-before draw">
           <span className="button-label">绘图</span>
+        </button>
+        <button className="common-button has-before tools">
+          <span className="button-label">工具</span>
         </button>
       </div>
       <input

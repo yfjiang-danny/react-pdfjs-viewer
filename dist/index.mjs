@@ -17,6 +17,18 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __objRest = (source, exclude) => {
+  var target = {};
+  for (var prop in source)
+    if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
+      target[prop] = source[prop];
+  if (source != null && __getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(source)) {
+      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
+        target[prop] = source[prop];
+    }
+  return target;
+};
 var __accessCheck = (obj, member, msg) => {
   if (!member.has(obj))
     throw TypeError("Cannot " + msg);
@@ -212,6 +224,7 @@ function usePDFViewerHook(initialState = {
   );
   const [totalPage, setTotalPage] = useState(0);
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [propertyModalVisible, setPropertyModalVisible] = useState(false);
   return {
     pdfURI,
     setPdfURI,
@@ -224,7 +237,9 @@ function usePDFViewerHook(initialState = {
     totalPage,
     setTotalPage,
     sidebarVisible,
-    setSidebarVisible
+    setSidebarVisible,
+    propertyModalVisible,
+    setPropertyModalVisible
   };
 }
 var PDFViewerContext = React4.createContext(null);
@@ -690,7 +705,8 @@ var Toolbar = (props) => {
     setScale,
     totalPage,
     sidebarVisible,
-    setSidebarVisible
+    setSidebarVisible,
+    setPropertyModalVisible
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
   const [inputPageIndex, setInputPageIndex] = useState3(currentPage);
@@ -766,13 +782,16 @@ var Toolbar = (props) => {
     if (!pdfDoc) {
       return;
     }
-    pdfDoc.getData().then((data) => {
-      const blob = new Blob([data], { type: "application/pdf" });
-      const blobUrl = URL.createObjectURL(blob);
-      blobUrl && downloadBlob(blobUrl, getPdfFilenameFromUrl(pdfURI));
-    }, (err) => {
-      alert(err.toString());
-    });
+    pdfDoc.getData().then(
+      (data) => {
+        const blob = new Blob([data], { type: "application/pdf" });
+        const blobUrl = URL.createObjectURL(blob);
+        blobUrl && downloadBlob(blobUrl, getPdfFilenameFromUrl(pdfURI));
+      },
+      (err) => {
+        alert(err.toString());
+      }
+    );
   }
   return /* @__PURE__ */ jsxs3("div", {
     className: "toolbar",
@@ -895,6 +914,13 @@ var Toolbar = (props) => {
             children: /* @__PURE__ */ jsx9("span", {
               className: "button-label",
               children: "\u7ED8\u56FE"
+            })
+          }),
+          /* @__PURE__ */ jsx9("button", {
+            className: "common-button has-before tools",
+            children: /* @__PURE__ */ jsx9("span", {
+              className: "button-label",
+              children: "\u5DE5\u5177"
             })
           })
         ]
@@ -1432,11 +1458,58 @@ function parseDate(inputDate) {
   }
   return dateObject.toLocaleDateString();
 }
+function getPageSizeInches({ view, userUnit, rotate }) {
+  const [x1, y1, x2, y2] = view;
+  const changeOrientation = rotate % 180 !== 0;
+  const width = (x2 - x1) / 72 * userUnit;
+  const height = (y2 - y1) / 72 * userUnit;
+  return {
+    width: changeOrientation ? height : width,
+    height: changeOrientation ? width : height
+  };
+}
 
 // packages/property/index.tsx
 import { getFilenameFromUrl as getFilenameFromUrl2 } from "pdfjs-dist";
-import { Fragment as Fragment4, jsx as jsx15 } from "react/jsx-runtime";
-var PropertyModal = (props) => {
+
+// packages/share/modal/index.tsx
+import { jsx as jsx15, jsxs as jsxs6 } from "react/jsx-runtime";
+var Modal = ({
+  visible,
+  wrapperClassName,
+  className,
+  mask = true,
+  children
+}) => {
+  return /* @__PURE__ */ jsxs6("div", {
+    className: `share-modal-container ${wrapperClassName != null ? wrapperClassName : ""}`,
+    style: { display: visible ? "flex" : "none" },
+    children: [
+      mask && /* @__PURE__ */ jsx15("div", {
+        className: "share-modal-mask"
+      }),
+      /* @__PURE__ */ jsx15("div", {
+        className: `share-modal ${className != null ? className : ""}`,
+        children
+      })
+    ]
+  });
+};
+var modal_default = Modal;
+
+// packages/share/button/index.tsx
+import { jsx as jsx16 } from "react/jsx-runtime";
+var Button = (_a) => {
+  var _b = _a, { className } = _b, restProps = __objRest(_b, ["className"]);
+  return /* @__PURE__ */ jsx16("button", __spreadProps(__spreadValues({}, restProps), {
+    className: `share-button ${className != null ? className : ""}`
+  }));
+};
+var button_default = Button;
+
+// packages/property/index.tsx
+import { jsx as jsx17, jsxs as jsxs7 } from "react/jsx-runtime";
+var PropertyModal = ({ visible, onClose }) => {
   const { pdfURI, pdfDoc, currentPage } = usePDFViewer();
   const [properties, setProperties] = useState8();
   useLayoutEffect(() => {
@@ -1445,8 +1518,9 @@ var PropertyModal = (props) => {
         ([pdfInfo, pageDoc]) => {
           const infoObj = pdfInfo.info;
           const fileName = pdfInfo["contentDispositionFilename"] || getFilenameFromUrl2(pdfURI);
+          const pageSize = getPageSizeInches(pageDoc);
           setProperties({
-            pageSize: "",
+            pageSize: `${pageSize.width}x${pageSize.height}in`,
             fileSize: parseFileSize(
               pdfInfo["contentLength"]
             ),
@@ -1472,14 +1546,225 @@ var PropertyModal = (props) => {
   useEffect11(() => {
     console.log("property", properties);
   }, [properties]);
-  return /* @__PURE__ */ jsx15(Fragment4, {
-    children: "PropertyModal Component"
+  return /* @__PURE__ */ jsxs7(modal_default, {
+    className: "property-modal",
+    visible,
+    children: [
+      /* @__PURE__ */ jsxs7("div", {
+        className: "session",
+        children: [
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u6587\u4EF6\u540D\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.fileName
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u6587\u4EF6\u5927\u5C0F\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.fileSize
+              })
+            ]
+          })
+        ]
+      }),
+      /* @__PURE__ */ jsxs7("div", {
+        className: "session",
+        children: [
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u6807\u9898\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.title
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u4F5C\u8005\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.author
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u4E3B\u9898\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.subject
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u5173\u952E\u8BCD\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.keywords
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u521B\u5EFA\u65E5\u671F\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.creationDate
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u4FEE\u6539\u65E5\u671F\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.modificationDate
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u521B\u5EFA\u8005\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.creator
+              })
+            ]
+          })
+        ]
+      }),
+      /* @__PURE__ */ jsxs7("div", {
+        className: "session",
+        children: [
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "PDF \u751F\u6210\u5668\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.producer
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "PDF \u7248\u672C\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.version
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u9875\u6570\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.pageCount
+              })
+            ]
+          }),
+          /* @__PURE__ */ jsxs7("div", {
+            className: "row",
+            children: [
+              /* @__PURE__ */ jsx17("div", {
+                className: "label",
+                children: "\u9875\u9762\u5927\u5C0F\uFF1A"
+              }),
+              /* @__PURE__ */ jsx17("div", {
+                className: "value",
+                children: properties == null ? void 0 : properties.pageSize
+              })
+            ]
+          })
+        ]
+      }),
+      /* @__PURE__ */ jsx17("div", {
+        className: "session",
+        children: /* @__PURE__ */ jsxs7("div", {
+          className: "row",
+          children: [
+            /* @__PURE__ */ jsx17("div", {
+              className: "label",
+              children: "\u5FEB\u901F Web \u89C6\u56FE\uFF1A"
+            }),
+            /* @__PURE__ */ jsx17("div", {
+              className: "value",
+              children: properties == null ? void 0 : properties.isWebView
+            })
+          ]
+        })
+      }),
+      /* @__PURE__ */ jsx17("div", {
+        className: "btn-wrapper",
+        children: /* @__PURE__ */ jsx17(button_default, {
+          className: "close-btn",
+          onClick: onClose,
+          children: "\u5173\u95ED"
+        })
+      })
+    ]
   });
 };
 var property_default = PropertyModal;
 
 // packages/viewer/index.tsx
-import { jsx as jsx16, jsxs as jsxs6 } from "react/jsx-runtime";
+import { jsx as jsx18, jsxs as jsxs8 } from "react/jsx-runtime";
 import { createElement } from "react";
 var PDFViewer = ({
   loadingComponent,
@@ -1498,7 +1783,9 @@ var PDFViewer = ({
     setTotalPage,
     sidebarVisible,
     pdfDoc,
-    setPDFDoc
+    setPDFDoc,
+    propertyModalVisible,
+    setPropertyModalVisible
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
   const [loading, setLoading] = useState9(false);
@@ -1595,19 +1882,19 @@ var PDFViewer = ({
       }
       return "Waiting...";
     }
-    return /* @__PURE__ */ jsxs6("div", {
+    return /* @__PURE__ */ jsxs8("div", {
       id: "__pdf_viewer_container__",
       className: "viewer",
       ref: scrollElRef,
       children: [
         pageSize.width == 0 ? null : range3(0, pdfDoc.numPages).map((index) => {
           const pageIndex = index + 1;
-          return /* @__PURE__ */ jsx16(page_layer_default, __spreadProps(__spreadValues({
+          return /* @__PURE__ */ jsx18(page_layer_default, __spreadProps(__spreadValues({
             pageIndex,
             doc: pdfDoc
           }, pageSize), {
             scrollMode,
-            children: (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ jsx16(loading_layer_default, {}) : [
+            children: (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ jsx18(loading_layer_default, {}) : [
               /* @__PURE__ */ createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
                 pageDoc: doc,
                 pageIndex,
@@ -1630,11 +1917,11 @@ var PDFViewer = ({
                 pageIndex,
                 key: `text_layer_${pageIndex}`
               })),
-              renderingPageIndex <= pageIndex ? /* @__PURE__ */ jsx16(loading_layer_default, {}, `loading_layer_${pageIndex}`) : null
+              renderingPageIndex <= pageIndex ? /* @__PURE__ */ jsx18(loading_layer_default, {}, `loading_layer_${pageIndex}`) : null
             ]
           }), index);
         }),
-        pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ jsx16(print_default, {
+        pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ jsx18(print_default, {
           height: pageSize.vHeight,
           width: pageSize.vWidth,
           pdfDoc
@@ -1642,30 +1929,33 @@ var PDFViewer = ({
       ]
     });
   }
-  return /* @__PURE__ */ jsxs6("div", {
+  return /* @__PURE__ */ jsxs8("div", {
     id: "__outer_container__",
     style: { height, width },
     ref: viewerRef,
     className: sidebarVisible ? "sidebar-visible" : "",
     children: [
-      /* @__PURE__ */ jsx16(sidebar_default, {
-        children: thumbnail && /* @__PURE__ */ jsx16(thumbnail_default, {
+      /* @__PURE__ */ jsx18(sidebar_default, {
+        children: thumbnail && /* @__PURE__ */ jsx18(thumbnail_default, {
           currentPage,
           pdfDoc
         })
       }),
       contentComponent(),
-      /* @__PURE__ */ jsx16(property_default, {})
+      /* @__PURE__ */ jsx18(property_default, {
+        visible: propertyModalVisible,
+        onClose: () => setPropertyModalVisible(false)
+      })
     ]
   });
 };
 var viewer_default = PDFViewer;
 
 // packages/worker/index.tsx
-import { Fragment as Fragment5, jsx as jsx17 } from "react/jsx-runtime";
+import { Fragment as Fragment4, jsx as jsx19 } from "react/jsx-runtime";
 var PDFWorker = ({ workerDir, children }) => {
   PDFLib.GlobalWorkerOptions.workerSrc = workerDir;
-  return /* @__PURE__ */ jsx17(Fragment5, {
+  return /* @__PURE__ */ jsx19(Fragment4, {
     children
   });
 };

@@ -56,6 +56,8 @@ const PDFViewer: FC<PDFViewerProps> = ({
     sidebarVisible,
     pdfDoc,
     setPDFDoc,
+    propertyModalVisible,
+    setPropertyModalVisible,
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
 
@@ -253,7 +255,10 @@ const PDFViewer: FC<PDFViewerProps> = ({
         {thumbnail && <Thumbnail currentPage={currentPage} pdfDoc={pdfDoc} />}
       </Sidebar>
       {contentComponent()}
-      <PropertyModal />
+      <PropertyModal
+        visible={propertyModalVisible}
+        onClose={() => setPropertyModalVisible(false)}
+      />
     </div>
   );
 };

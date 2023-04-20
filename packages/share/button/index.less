@@ -1,0 +1,26 @@
+.share-button {
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-block;
+    user-select: none;
+    min-width: 16px;
+    border: 1px solid;
+    border-radius: 2px;
+    color: #666;
+    padding: 2px 6px 0;
+    background: none;
+    position: relative;
+
+    & + .share-button {
+      margin-left: 8px;
+    }
+
+    &:focus {
+      outline: none !important;
+    }
+
+    &:hover, &:focus, &:active {
+      color: #333;
+      border-color: #333;
+    }
+}

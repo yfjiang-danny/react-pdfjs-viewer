@@ -7,6 +7,9 @@ import {
   parseFileSize,
 } from "../utils/properties";
 import { getFilenameFromUrl } from "pdfjs-dist";
+import Modal, { ModalProps } from "../share/modal";
+import "./index.less";
+import Button from "../share/button";
 
 interface PropertiesModel {
   fileName?: string;
@@ -25,9 +28,11 @@ interface PropertiesModel {
   isWebView?: boolean;
 }
 
-interface PropertyModalProps {}
+interface PropertyModalProps extends ModalProps {
+  onClose?(): void;
+}
 
-const PropertyModal: FC<PropertyModalProps> = (props) => {
+const PropertyModal: FC<PropertyModalProps> = ({ visible, onClose }) => {
   const { pdfURI, pdfDoc, currentPage } = usePDFViewer();
 
   const [properties, setProperties] = useState<PropertiesModel>();
@@ -41,8 +46,9 @@ const PropertyModal: FC<PropertyModalProps> = (props) => {
             const fileName =
               (pdfInfo as any)["contentDispositionFilename"] ||
               getFilenameFromUrl(pdfURI);
+            const pageSize = getPageSizeInches(pageDoc);
             setProperties({
-              pageSize: "",
+              pageSize: `${pageSize.width}x${pageSize.height}in`,
               fileSize: parseFileSize(
                 (pdfInfo as any)["contentLength"] as number
               ),
@@ -73,7 +79,79 @@ const PropertyModal: FC<PropertyModalProps> = (props) => {
     console.log("property", properties);
   }, [properties]);
 
-  return <>PropertyModal Component</>;
+  return (
+    <Modal className="property-modal" visible={visible}>
+      <div className="session">
+        <div className="row">
+          <div className="label">文件名：</div>
+          <div className="value">{properties?.fileName}</div>
+        </div>
+        <div className="row">
+          <div className="label">文件大小：</div>
+          <div className="value">{properties?.fileSize}</div>
+        </div>
+      </div>
+      <div className="session">
+        <div className="row">
+          <div className="label">标题：</div>
+          <div className="value">{properties?.title}</div>
+        </div>
+        <div className="row">
+          <div className="label">作者：</div>
+          <div className="value">{properties?.author}</div>
+        </div>
+        <div className="row">
+          <div className="label">主题：</div>
+          <div className="value">{properties?.subject}</div>
+        </div>
+        <div className="row">
+          <div className="label">关键词：</div>
+          <div className="value">{properties?.keywords}</div>
+        </div>
+        <div className="row">
+          <div className="label">创建日期：</div>
+          <div className="value">{properties?.creationDate}</div>
+        </div>
+        <div className="row">
+          <div className="label">修改日期：</div>
+          <div className="value">{properties?.modificationDate}</div>
+        </div>
+        <div className="row">
+          <div className="label">创建者：</div>
+          <div className="value">{properties?.creator}</div>
+        </div>
+      </div>
+      <div className="session">
+        <div className="row">
+          <div className="label">PDF 生成器：</div>
+          <div className="value">{properties?.producer}</div>
+        </div>
+        <div className="row">
+          <div className="label">PDF 版本：</div>
+          <div className="value">{properties?.version}</div>
+        </div>
+        <div className="row">
+          <div className="label">页数：</div>
+          <div className="value">{properties?.pageCount}</div>
+        </div>
+        <div className="row">
+          <div className="label">页面大小：</div>
+          <div className="value">{properties?.pageSize}</div>
+        </div>
+      </div>
+      <div className="session">
+        <div className="row">
+          <div className="label">快速 Web 视图：</div>
+          <div className="value">{properties?.isWebView}</div>
+        </div>
+      </div>
+      <div className="btn-wrapper">
+        <Button className="close-btn" onClick={onClose}>
+          关闭
+        </Button>
+      </div>
+    </Modal>
+  );
 };
 
 export default PropertyModal;

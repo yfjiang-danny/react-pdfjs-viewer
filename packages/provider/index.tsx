@@ -14,7 +14,7 @@ interface PDFViewerState {
   pdfURI: string;
   setPdfURI: React.Dispatch<React.SetStateAction<string>>;
   pdfDoc: PDFDocumentProxy | undefined;
-  setPDFDoc: React.Dispatch<React.SetStateAction<PDFDocumentProxy | undefined>>
+  setPDFDoc: React.Dispatch<React.SetStateAction<PDFDocumentProxy | undefined>>;
   scale: ScaleType;
   setScale: React.Dispatch<React.SetStateAction<ScaleType>>;
   currentPage: number;
@@ -23,6 +23,8 @@ interface PDFViewerState {
   setTotalPage: React.Dispatch<React.SetStateAction<number>>;
   sidebarVisible: boolean;
   setSidebarVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  propertyModalVisible: boolean;
+  setPropertyModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function usePDFViewerHook(
@@ -42,10 +44,13 @@ function usePDFViewerHook(
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
+  const [propertyModalVisible, setPropertyModalVisible] = useState(false);
+
   return {
     pdfURI,
     setPdfURI,
-    pdfDoc, setPDFDoc,
+    pdfDoc,
+    setPDFDoc,
     scale,
     setScale,
     currentPage,
@@ -54,6 +59,8 @@ function usePDFViewerHook(
     setTotalPage,
     sidebarVisible,
     setSidebarVisible,
+    propertyModalVisible,
+    setPropertyModalVisible,
   };
 }
 
