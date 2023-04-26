@@ -350,30 +350,30 @@
   --treeitem-expanded-icon: url(./treeitem-expanded-XTU4OBGA.svg);
   --treeitem-collapsed-icon: url(./treeitem-collapsed-MUILMI3U.svg);
   --toolbarButton-menuArrow-icon: url(./toolbarButton-menuArrow-VUIH3IV5.svg);
-  --toolbarButton-sidebarToggle-icon: url(./toolbarButton-sidebarToggle-YZ64JVES.svg);
-  --toolbarButton-secondaryToolbarToggle-icon: url(./toolbarButton-secondaryToolbarToggle-X4SS4RBZ.svg);
-  --toolbarButton-pageUp-icon: url(./toolbarButton-pageUp-OHQ3TWF5.svg);
-  --toolbarButton-pageDown-icon: url(./toolbarButton-pageDown-CEZ2XMPK.svg);
-  --toolbarButton-zoomOut-icon: url(./toolbarButton-zoomOut-527I3DQO.svg);
-  --toolbarButton-zoomIn-icon: url(./toolbarButton-zoomIn-LZ5AU77S.svg);
+  --toolbarButton-sidebarToggle-icon: url(./toolbarButton-sidebarToggle-VULY2W3P.svg);
+  --toolbarButton-secondaryToolbarToggle-icon: url(./toolbarButton-secondaryToolbarToggle-VS6NBOBC.svg);
+  --toolbarButton-pageUp-icon: url(./toolbarButton-pageUp-BVPBZMCN.svg);
+  --toolbarButton-pageDown-icon: url(./toolbarButton-pageDown-GIATYAZL.svg);
+  --toolbarButton-zoomOut-icon: url(./toolbarButton-zoomOut-Y6ZECRIP.svg);
+  --toolbarButton-zoomIn-icon: url(./toolbarButton-zoomIn-2BPLUS5X.svg);
   --toolbarButton-presentationMode-icon: url(./toolbarButton-presentationMode-LJXHOSM3.svg);
-  --toolbarButton-print-icon: url(./toolbarButton-print-6CUAHGY5.svg);
-  --toolbarButton-openFile-icon: url(./toolbarButton-openFile-YKNLAXEW.svg);
-  --toolbarButton-download-icon: url(./toolbarButton-download-QEV4QC5F.svg);
+  --toolbarButton-print-icon: url(./toolbarButton-print-F27YHHKW.svg);
+  --toolbarButton-openFile-icon: url(./toolbarButton-openFile-73QYQCPZ.svg);
+  --toolbarButton-download-icon: url(./toolbarButton-download-U56CVFLG.svg);
   --toolbarButton-bookmark-icon: url(./toolbarButton-bookmark-UNTB53H7.svg);
-  --toolbarButton-viewThumbnail-icon: url(./toolbarButton-viewThumbnail-BIUNM32S.svg);
+  --toolbarButton-viewThumbnail-icon: url(./toolbarButton-viewThumbnail-H7BNMKR2.svg);
   --toolbarButton-viewOutline-icon: url(./toolbarButton-viewOutline-LDHGTHGI.svg);
   --toolbarButton-viewAttachments-icon: url(./toolbarButton-viewAttachments-KG33S52R.svg);
   --toolbarButton-viewLayers-icon: url(./toolbarButton-viewLayers-6BCGVNCY.svg);
   --toolbarButton-currentOutlineItem-icon: url(./toolbarButton-currentOutlineItem-ZOYKA43F.svg);
-  --toolbarButton-search-icon: url(./toolbarButton-search-AQ5EUHAM.svg);
-  --findbarButton-previous-icon: url(./findbarButton-previous-LFU6IG5K.svg);
-  --findbarButton-next-icon: url(./findbarButton-next-A5AOXGK6.svg);
+  --toolbarButton-search-icon: url(./toolbarButton-search-HTVQT4W3.svg);
+  --findbarButton-previous-icon: url(./findbarButton-previous-JOTRRVYI.svg);
+  --findbarButton-next-icon: url(./findbarButton-next-QS6FQZBG.svg);
   --secondaryToolbarButton-firstPage-icon: url(./secondaryToolbarButton-firstPage-YHTZSK2L.svg);
   --secondaryToolbarButton-lastPage-icon: url(./secondaryToolbarButton-lastPage-I5CDETI3.svg);
   --secondaryToolbarButton-rotateCcw-icon: url(./secondaryToolbarButton-rotateCcw-D5CHLF2Q.svg);
-  --secondaryToolbarButton-rotateCw-icon: url(./secondaryToolbarButton-rotateCw-RZRBO3TL.svg);
-  --secondaryToolbarButton-selectTool-icon: url(./secondaryToolbarButton-selectTool-SYCJVRTQ.svg);
+  --secondaryToolbarButton-rotateCw-icon: url(./secondaryToolbarButton-rotateCw-SMTUART3.svg);
+  --secondaryToolbarButton-selectTool-icon: url(./secondaryToolbarButton-selectTool-7NHXKZPB.svg);
   --secondaryToolbarButton-handTool-icon: url(./secondaryToolbarButton-handTool-RSWRUKIX.svg);
   --secondaryToolbarButton-scrollPage-icon: url(./secondaryToolbarButton-scrollPage-J4QLGJGZ.svg);
   --secondaryToolbarButton-scrollVertical-icon: url(./secondaryToolbarButton-scrollVertical-ROUKMY4T.svg);
@@ -382,8 +382,8 @@
   --secondaryToolbarButton-spreadNone-icon: url(./secondaryToolbarButton-spreadNone-YBFC2UEH.svg);
   --secondaryToolbarButton-spreadOdd-icon: url(./secondaryToolbarButton-spreadOdd-QKWI7DON.svg);
   --secondaryToolbarButton-spreadEven-icon: url(./secondaryToolbarButton-spreadEven-KR4WWSSH.svg);
-  --secondaryToolbarButton-documentProperties-icon: url(./secondaryToolbarButton-documentProperties-SGMLTLBK.svg);
-  --toolbarButton-editorInk-icon: url(./toolbarButton-editorInk-VU3Y45ZN.svg);
+  --secondaryToolbarButton-documentProperties-icon: url(./secondaryToolbarButton-documentProperties-VCMABMUJ.svg);
+  --toolbarButton-editorInk-icon: url(./toolbarButton-editorInk-XKS5ONO3.svg);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -423,7 +423,7 @@
     --doorhanger-separator-color: #5c5c61;
     --overlay-button-bg-color: #5c5c61;
     --overlay-button-hover-bg-color: #737373;
-    --loading-icon: url(./loading-dark-TK3IAC3W.svg);
+    --loading-icon: url(./loading-dark-YGPFGP72.svg);
   }
 }
 * {

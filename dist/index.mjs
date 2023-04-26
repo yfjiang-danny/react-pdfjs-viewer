@@ -1520,7 +1520,7 @@ var PropertyModal = ({ visible, onClose }) => {
           const fileName = pdfInfo["contentDispositionFilename"] || getFilenameFromUrl2(pdfURI);
           const pageSize = getPageSizeInches(pageDoc);
           setProperties({
-            pageSize: `${pageSize.width}x${pageSize.height}in`,
+            pageSize: `${pageSize.width * 2.54}cm*${pageSize.height * 2.54}cm`,
             fileSize: parseFileSize(
               pdfInfo["contentLength"]
             ),

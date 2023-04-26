@@ -1,9 +1,9 @@
 import React, { FC } from "react";
 
-interface ToolModalProps {}
+interface ToolModalProps { }
 
 const ToolModal: FC<ToolModalProps> = (props) => {
-  return <>ToolModal Component</>;
+  return <div>ToolModal Component</div>;
 };
 
 export default ToolModal;

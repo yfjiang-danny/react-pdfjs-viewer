@@ -48,7 +48,7 @@ const PropertyModal: FC<PropertyModalProps> = ({ visible, onClose }) => {
               getFilenameFromUrl(pdfURI);
             const pageSize = getPageSizeInches(pageDoc);
             setProperties({
-              pageSize: `${pageSize.width}x${pageSize.height}in`,
+              pageSize: `${pageSize.width * 2.54}cm*${pageSize.height * 2.54}cm`,
               fileSize: parseFileSize(
                 (pdfInfo as any)["contentLength"] as number
               ),
