@@ -1,4 +1,4 @@
-import { getFilenameFromUrl, getPdfFilenameFromUrl } from "pdfjs-dist";
+import { getPdfFilenameFromUrl } from "pdfjs-dist";
 import React, {
   ChangeEvent,
   FunctionComponent,
@@ -13,10 +13,11 @@ import { scrollToPageIndex } from "../utils";
 import { downloadBlob } from "../utils/download";
 import "./index.less";
 import ScaleSelector from "./scale-selector";
+import Tool, { ToolTypes } from "./tool";
 
 export const TOOLBAR_HEIGHT = 48;
 
-interface ToolbarProps {}
+interface ToolbarProps { }
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   const {
@@ -140,13 +141,23 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     );
   }
 
+  function onToolClick(type: ToolTypes) {
+    switch (type) {
+      case "property":
+        setPropertyModalVisible(true);
+        break;
+
+      default:
+        break;
+    }
+  }
+
   return (
     <div className="toolbar">
       <div className="toolbar-left">
         <button
-          className={`common-button has-before sidebar ${
-            sidebarVisible ? "active" : ""
-          }`}
+          className={`common-button has-before sidebar ${sidebarVisible ? "active" : ""
+            }`}
           onClick={onSidebarButtonClick}
         >
           <span className="button-label">切换侧边栏</span>
@@ -222,9 +233,11 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
         <button className="common-button has-before draw">
           <span className="button-label">绘图</span>
         </button>
-        <button className="common-button has-before tools">
-          <span className="button-label">工具</span>
-        </button>
+        <Tool onItemClick={onToolClick} >
+          <button className="common-button has-before tools">
+            <span className="button-label">工具</span>
+          </button>
+        </Tool>
       </div>
       <input
         type="file"

@@ -86,8 +86,7 @@ __export(packages_exports, {
 module.exports = __toCommonJS(packages_exports);
 
 // packages/layers/canvas-layer.tsx
-var import_react = require("react");
-var import_jsx_runtime = require("react/jsx-runtime");
+var import_react = __toESM(require("react"), 1);
 var CanvasLayer = (props) => {
   const {
     pageDoc,
@@ -158,7 +157,7 @@ var CanvasLayer = (props) => {
       );
     }
   }, [pageDoc, scale, width, height, renderingIndex]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+  return /* @__PURE__ */ import_react.default.createElement("div", {
     className: "canvas-layer",
     style: { width, height },
     ref: wrapperRef
@@ -167,27 +166,24 @@ var CanvasLayer = (props) => {
 var canvas_layer_default = CanvasLayer;
 
 // packages/layers/svg-layer.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
+var import_react2 = __toESM(require("react"), 1);
 var SvgLayer = (props) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {
-    children: "SvgLayer Component"
-  });
+  return /* @__PURE__ */ import_react2.default.createElement(import_react2.default.Fragment, null, "SvgLayer Component");
 };
 var svg_layer_default = SvgLayer;
 
 // packages/layers/text-layer.tsx
-var import_react2 = require("react");
+var import_react3 = __toESM(require("react"), 1);
 
 // packages/vendors/lib.ts
 var PDFLib = __toESM(require("pdfjs-dist"), 1);
 
 // packages/layers/text-layer.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
 var TextLayer = (props) => {
   const { pageDoc, pageIndex, width, height, scale } = props;
-  const textContainerRef = (0, import_react2.useRef)(null);
-  const renderTask = (0, import_react2.useRef)(null);
-  (0, import_react2.useEffect)(() => {
+  const textContainerRef = (0, import_react3.useRef)(null);
+  const renderTask = (0, import_react3.useRef)(null);
+  (0, import_react3.useEffect)(() => {
     if (renderTask.current) {
       renderTask.current.cancel();
     }
@@ -215,7 +211,7 @@ var TextLayer = (props) => {
       }
     };
   }, [pageDoc, scale, width, height]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+  return /* @__PURE__ */ import_react3.default.createElement("div", {
     ref: textContainerRef,
     style: {
       width,
@@ -227,19 +223,19 @@ var TextLayer = (props) => {
 var text_layer_default = TextLayer;
 
 // packages/provider/index.tsx
-var import_react4 = __toESM(require("react"), 1);
+var import_react5 = __toESM(require("react"), 1);
 
 // packages/provider/internal.ts
-var import_react3 = __toESM(require("react"), 1);
+var import_react4 = __toESM(require("react"), 1);
 function useInternalStateHook() {
-  const scaleNumberRef = (0, import_react3.useRef)(1);
+  const scaleNumberRef = (0, import_react4.useRef)(1);
   return {
     scaleNumberRef
   };
 }
-var InternalStateContext = import_react3.default.createContext(null);
+var InternalStateContext = import_react4.default.createContext(null);
 function useInternalState() {
-  const state = import_react3.default.useContext(InternalStateContext);
+  const state = import_react4.default.useContext(InternalStateContext);
   if (!state) {
     throw new Error("Component must be wrapped with <PDFViewerProvider>");
   }
@@ -247,21 +243,20 @@ function useInternalState() {
 }
 
 // packages/provider/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
 function usePDFViewerHook(initialState = {
   scale: "auto",
   page: 0,
   pdfURI: ""
 }) {
-  const [pdfURI, setPdfURI] = (0, import_react4.useState)(initialState.pdfURI);
-  const [pdfDoc, setPDFDoc] = (0, import_react4.useState)();
-  const [scale, setScale] = (0, import_react4.useState)(initialState.scale || "auto");
-  const [currentPage, setCurrentPage] = (0, import_react4.useState)(
+  const [pdfURI, setPdfURI] = (0, import_react5.useState)(initialState.pdfURI);
+  const [pdfDoc, setPDFDoc] = (0, import_react5.useState)();
+  const [scale, setScale] = (0, import_react5.useState)(initialState.scale || "auto");
+  const [currentPage, setCurrentPage] = (0, import_react5.useState)(
     initialState.page || 0
   );
-  const [totalPage, setTotalPage] = (0, import_react4.useState)(0);
-  const [sidebarVisible, setSidebarVisible] = (0, import_react4.useState)(false);
-  const [propertyModalVisible, setPropertyModalVisible] = (0, import_react4.useState)(false);
+  const [totalPage, setTotalPage] = (0, import_react5.useState)(0);
+  const [sidebarVisible, setSidebarVisible] = (0, import_react5.useState)(false);
+  const [propertyModalVisible, setPropertyModalVisible] = (0, import_react5.useState)(false);
   return {
     pdfURI,
     setPdfURI,
@@ -279,9 +274,9 @@ function usePDFViewerHook(initialState = {
     setPropertyModalVisible
   };
 }
-var PDFViewerContext = import_react4.default.createContext(null);
+var PDFViewerContext = import_react5.default.createContext(null);
 function usePDFViewer() {
-  const state = import_react4.default.useContext(PDFViewerContext);
+  const state = import_react5.default.useContext(PDFViewerContext);
   if (!state) {
     throw new Error("Component must be wrapped with <PDFViewerProvider>");
   }
@@ -290,18 +285,16 @@ function usePDFViewer() {
 var PDFViewerProvider = (props) => {
   const value = usePDFViewerHook(props.initialState);
   const internalState = useInternalStateHook();
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PDFViewerContext.Provider, {
-    value,
-    children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(InternalStateContext.Provider, {
-      value: internalState,
-      children: props.children
-    })
-  });
+  return /* @__PURE__ */ import_react5.default.createElement(PDFViewerContext.Provider, {
+    value
+  }, /* @__PURE__ */ import_react5.default.createElement(InternalStateContext.Provider, {
+    value: internalState
+  }, props.children));
 };
 
 // packages/thumbnail/index.tsx
 var import_lodash = require("lodash");
-var import_react6 = require("react");
+var import_react7 = __toESM(require("react"), 1);
 
 // packages/utils/index.ts
 function isInViewport(el) {
@@ -391,7 +384,7 @@ function scrollToPageIndex(index) {
 }
 
 // packages/thumbnail/item.tsx
-var import_react5 = require("react");
+var import_react6 = __toESM(require("react"), 1);
 
 // packages/types/constant.ts
 var MIN_SCALE = 0.1;
@@ -433,19 +426,18 @@ _tempCanvas = new WeakMap();
 __privateAdd(TempImageFactory, _tempCanvas, null);
 
 // packages/thumbnail/item.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
 var ThumbnailItem = ({ pdfDoc, pageIndex }) => {
   const { currentPage, setCurrentPage } = usePDFViewer();
-  const [pageDoc, setPageDoc] = (0, import_react5.useState)();
-  const rootRef = (0, import_react5.useRef)(null);
-  const renderTask = (0, import_react5.useRef)(null);
-  const [imgURI, setImgURI] = (0, import_react5.useState)();
-  (0, import_react5.useEffect)(() => {
+  const [pageDoc, setPageDoc] = (0, import_react6.useState)();
+  const rootRef = (0, import_react6.useRef)(null);
+  const renderTask = (0, import_react6.useRef)(null);
+  const [imgURI, setImgURI] = (0, import_react6.useState)();
+  (0, import_react6.useEffect)(() => {
     pdfDoc.getPage(pageIndex).then((pageDoc2) => {
       setPageDoc(pageDoc2);
     });
   }, [pageIndex, pdfDoc]);
-  (0, import_react5.useEffect)(() => {
+  (0, import_react6.useEffect)(() => {
     if (!pageDoc)
       return;
     const viewport = pageDoc.getViewport({ scale: 1 });
@@ -499,7 +491,7 @@ var ThumbnailItem = ({ pdfDoc, pageIndex }) => {
     };
   }, [pageDoc]);
   const selectionClassName = "selection";
-  (0, import_react5.useEffect)(() => {
+  (0, import_react6.useEffect)(() => {
     if (rootRef.current) {
       if (pageIndex == currentPage) {
         !rootRef.current.classList.contains(selectionClassName) && rootRef.current.classList.add(selectionClassName);
@@ -508,52 +500,47 @@ var ThumbnailItem = ({ pdfDoc, pageIndex }) => {
       }
     }
   }, [currentPage, pageIndex]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+  return /* @__PURE__ */ import_react6.default.createElement("div", {
     ref: rootRef,
     id: `thumbnail_page_${pageIndex}`,
     className: `thumbnail-item`,
     onClick: () => {
       setCurrentPage(pageIndex);
       scrollToPageIndex(pageIndex);
-    },
-    children: [
-      imgURI ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-        src: imgURI
-      }) : null,
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-        className: "thumbnail-item-page-mask",
-        title: `\u7B2C${pageIndex}\u9875`,
-        "data-num": pageIndex
-      })
-    ]
-  });
+    }
+  }, imgURI ? /* @__PURE__ */ import_react6.default.createElement("img", {
+    src: imgURI
+  }) : null, /* @__PURE__ */ import_react6.default.createElement("div", {
+    className: "thumbnail-item-page-mask",
+    title: `\u7B2C${pageIndex}\u9875`,
+    "data-num": pageIndex
+  }));
 };
 var item_default = ThumbnailItem;
 
 // packages/thumbnail/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
 var Thumbnail = ({ pdfDoc, currentPage }) => {
   const { sidebarVisible } = usePDFViewer();
-  (0, import_react6.useEffect)(() => {
+  (0, import_react7.useEffect)(() => {
     sidebarVisible && scrollIntoViewByID(`thumbnail_page_${currentPage}`);
   }, [currentPage, sidebarVisible]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-    id: "__thumbnail__",
-    children: !pdfDoc ? null : (0, import_lodash.range)(0, pdfDoc.numPages).map((index) => {
-      const pageIndex = index + 1;
-      return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(item_default, {
-        pdfDoc,
-        pageIndex,
-        currentPage
-      }, pageIndex);
-    })
-  });
+  return /* @__PURE__ */ import_react7.default.createElement("div", {
+    id: "__thumbnail__"
+  }, !pdfDoc ? null : (0, import_lodash.range)(0, pdfDoc.numPages).map((index) => {
+    const pageIndex = index + 1;
+    return /* @__PURE__ */ import_react7.default.createElement(item_default, {
+      key: pageIndex,
+      pdfDoc,
+      pageIndex,
+      currentPage
+    });
+  }));
 };
 var thumbnail_default = Thumbnail;
 
 // packages/toolbar/index.tsx
 var import_pdfjs_dist = require("pdfjs-dist");
-var import_react10 = require("react");
+var import_react14 = __toESM(require("react"), 1);
 
 // packages/utils/download.ts
 function downloadBlob(blobUrl, filename) {
@@ -572,29 +559,26 @@ function downloadBlob(blobUrl, filename) {
 }
 
 // packages/toolbar/scale-selector/index.tsx
-var import_react8 = __toESM(require("@tippyjs/react"), 1);
-var import_react9 = require("react");
+var import_react9 = __toESM(require("@tippyjs/react"), 1);
+var import_react10 = __toESM(require("react"), 1);
 
 // packages/assets/svg/arrow-drop-down.tsx
-var import_react7 = __toESM(require("react"), 1);
-var import_jsx_runtime = require("react/jsx-runtime");
+var import_react8 = __toESM(require("react"), 1);
 function SvgArrowDropDown(props, svgRef) {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", __spreadProps(__spreadValues({
+  return /* @__PURE__ */ import_react8.default.createElement("svg", __spreadProps(__spreadValues({
     viewBox: "0 0 24 24"
   }, props), {
-    ref: svgRef,
-    children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", {
-      d: "M7 10l5 5 5-5z"
-    })
+    ref: svgRef
+  }), /* @__PURE__ */ import_react8.default.createElement("path", {
+    d: "M7 10l5 5 5-5z"
   }));
 }
-var ForwardRef = import_react7.default.forwardRef(SvgArrowDropDown);
+var ForwardRef = import_react8.default.forwardRef(SvgArrowDropDown);
 var arrow_drop_down_default = ForwardRef;
 
 // packages/toolbar/scale-selector/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
 var ScaleSelector = () => {
-  const options = (0, import_react9.useMemo)(() => {
+  const options = (0, import_react10.useMemo)(() => {
     return [
       {
         value: "auto",
@@ -643,9 +627,9 @@ var ScaleSelector = () => {
     ];
   }, []);
   const { scale, setScale } = usePDFViewer();
-  const instanceRef = (0, import_react9.useRef)();
-  const rootRef = (0, import_react9.useRef)(null);
-  const displayName = (0, import_react9.useMemo)(() => {
+  const instanceRef = (0, import_react10.useRef)();
+  const rootRef = (0, import_react10.useRef)(null);
+  const displayName = (0, import_react10.useMemo)(() => {
     const findOption = options.find((v) => v.value == scale);
     if (findOption) {
       return findOption.label;
@@ -663,35 +647,34 @@ var ScaleSelector = () => {
       return v.value;
     });
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react8.default, {
+  return /* @__PURE__ */ import_react10.default.createElement(import_react9.default, {
     interactive: true,
     trigger: "click",
     onCreate: (instance) => instanceRef.current = instance,
     placement: "bottom-start",
-    content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-      className: "scale-wrapper",
-      children: options.map((v) => {
-        let valid = true;
-        if (typeof v.value == "number") {
-          if (v.value > MAX_SCALE) {
-            valid = false;
-            console.warn(`MAX_SCALE is ${MAX_SCALE}, you have ${v.value}`);
-          } else if (v.value < MIN_SCALE) {
-            valid = false;
-            console.warn(`MIN_SCALE is ${MIN_SCALE}, you have ${v.value}`);
-          }
+    content: /* @__PURE__ */ import_react10.default.createElement("div", {
+      className: "scale-wrapper"
+    }, options.map((v) => {
+      let valid = true;
+      if (typeof v.value == "number") {
+        if (v.value > MAX_SCALE) {
+          valid = false;
+          console.warn(`MAX_SCALE is ${MAX_SCALE}, you have ${v.value}`);
+        } else if (v.value < MIN_SCALE) {
+          valid = false;
+          console.warn(`MIN_SCALE is ${MIN_SCALE}, you have ${v.value}`);
         }
-        return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-          onClick: valid ? () => {
-            var _a;
-            onChanged(v);
-            (_a = instanceRef.current) == null ? void 0 : _a.hide();
-          } : void 0,
-          className: "scale-option",
-          children: v.label
-        }, v.value);
-      })
-    }),
+      }
+      return /* @__PURE__ */ import_react10.default.createElement("div", {
+        key: v.value,
+        onClick: valid ? () => {
+          var _a;
+          onChanged(v);
+          (_a = instanceRef.current) == null ? void 0 : _a.hide();
+        } : void 0,
+        className: "scale-option"
+      }, v.label);
+    })),
     popperOptions: {
       modifiers: [
         {
@@ -711,23 +694,47 @@ var ScaleSelector = () => {
         }
       ]
     },
-    hideOnClick: true,
-    children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-      className: "scale-reference",
-      ref: rootRef,
-      children: [
-        displayName,
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(arrow_drop_down_default, {
-          className: "select-icon"
-        })
-      ]
-    })
-  });
+    hideOnClick: true
+  }, /* @__PURE__ */ import_react10.default.createElement("div", {
+    className: "scale-reference",
+    ref: rootRef
+  }, displayName, /* @__PURE__ */ import_react10.default.createElement(arrow_drop_down_default, {
+    className: "select-icon"
+  })));
 };
 var scale_selector_default = ScaleSelector;
 
+// packages/toolbar/tool/index.tsx
+var import_react12 = __toESM(require("@tippyjs/react"), 1);
+var import_react13 = __toESM(require("react"), 1);
+
+// packages/share/button/index.tsx
+var import_react11 = __toESM(require("react"), 1);
+var Button = (_a) => {
+  var _b = _a, { className } = _b, restProps = __objRest(_b, ["className"]);
+  return /* @__PURE__ */ import_react11.default.createElement("button", __spreadProps(__spreadValues({}, restProps), {
+    className: `share-button ${className != null ? className : ""}`
+  }));
+};
+var button_default = Button;
+
+// packages/toolbar/tool/index.tsx
+var Tool = ({ className, children, onItemClick }) => {
+  return /* @__PURE__ */ import_react13.default.createElement(import_react12.default, {
+    content: /* @__PURE__ */ import_react13.default.createElement("div", {
+      className: "tool-modal"
+    }, /* @__PURE__ */ import_react13.default.createElement(button_default, {
+      className: "tool-button",
+      onClick: () => onItemClick == null ? void 0 : onItemClick("property")
+    }, /* @__PURE__ */ import_react13.default.createElement("span", null, "\u6587\u6863\u5C5E\u6027"))),
+    interactive: true,
+    trigger: "click",
+    className: "tool-tippy"
+  }, children);
+};
+var tool_default = Tool;
+
 // packages/toolbar/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
 var Toolbar = (props) => {
   const {
     pdfDoc,
@@ -742,9 +749,9 @@ var Toolbar = (props) => {
     setPropertyModalVisible
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [inputPageIndex, setInputPageIndex] = (0, import_react10.useState)(currentPage);
-  const fileInputRef = (0, import_react10.useRef)(null);
-  (0, import_react10.useEffect)(() => {
+  const [inputPageIndex, setInputPageIndex] = (0, import_react14.useState)(currentPage);
+  const fileInputRef = (0, import_react14.useRef)(null);
+  (0, import_react14.useEffect)(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
   function onSidebarButtonClick() {
@@ -826,164 +833,118 @@ var Toolbar = (props) => {
       }
     );
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-    className: "toolbar",
-    children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-        className: "toolbar-left",
-        children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: `common-button has-before sidebar ${sidebarVisible ? "active" : ""}`,
-            onClick: onSidebarButtonClick,
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u5207\u6362\u4FA7\u8FB9\u680F"
-            })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button has-before search",
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u67E5\u627E"
-            })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button has-before previous",
-            onClick: onPreviousButtonClick,
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u4E0A\u4E00\u9875"
-            })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button has-before next",
-            onClick: onNextButtonClick,
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u4E0B\u4E00\u9875"
-            })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "page-input-wrapper",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-                className: "page-input",
-                value: `${inputPageIndex}`,
-                onChange: onPageInputChange,
-                onKeyDown: onPageInputKeyDown,
-                type: "number",
-                title: "\u9875\u9762",
-                size: 4,
-                min: 1,
-                autoComplete: "off",
-                max: totalPage
-              }),
-              " ",
-              "/ ",
-              totalPage
-            ]
-          })
-        ]
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-        className: "toolbar-center",
-        children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "zoom-button-wrapper",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-                className: "common-button has-before zoom-button zoom-out",
-                onClick: onZoomOut,
-                children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-                  className: "button-label zoom-label",
-                  children: "\u7F29\u5C0F"
-                })
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-                className: "divider"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-                className: "common-button has-before zoom-button zoom-in",
-                onClick: onZoomIn,
-                children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-                  className: "button-label zoom-label",
-                  children: "\u653E\u5927"
-                })
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(scale_selector_default, {})
-        ]
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-        className: "toolbar-right",
-        children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button has-before open",
-            onClick: onFileInputButtonClicked,
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u6253\u5F00"
-            })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button has-before print",
-            onClick: onPrintButtonClick,
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u6253\u5370"
-            })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button has-before  download",
-            onClick: downloadButtonClick,
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u4FDD\u5B58"
-            })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button has-before draw",
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u7ED8\u56FE"
-            })
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-            className: "common-button has-before tools",
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-              className: "button-label",
-              children: "\u5DE5\u5177"
-            })
-          })
-        ]
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-        type: "file",
-        accept: ".pdf",
-        id: "fileInput",
-        className: "hidden",
-        onChange: onFileInputChanged,
-        ref: fileInputRef
-      })
-    ]
-  });
+  function onToolClick(type) {
+    switch (type) {
+      case "property":
+        setPropertyModalVisible(true);
+        break;
+      default:
+        break;
+    }
+  }
+  return /* @__PURE__ */ import_react14.default.createElement("div", {
+    className: "toolbar"
+  }, /* @__PURE__ */ import_react14.default.createElement("div", {
+    className: "toolbar-left"
+  }, /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: `common-button has-before sidebar ${sidebarVisible ? "active" : ""}`,
+    onClick: onSidebarButtonClick
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u5207\u6362\u4FA7\u8FB9\u680F")), /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before search"
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u67E5\u627E")), /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before previous",
+    onClick: onPreviousButtonClick
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u4E0A\u4E00\u9875")), /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before next",
+    onClick: onNextButtonClick
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u4E0B\u4E00\u9875")), /* @__PURE__ */ import_react14.default.createElement("div", {
+    className: "page-input-wrapper"
+  }, /* @__PURE__ */ import_react14.default.createElement("input", {
+    className: "page-input",
+    value: `${inputPageIndex}`,
+    onChange: onPageInputChange,
+    onKeyDown: onPageInputKeyDown,
+    type: "number",
+    title: "\u9875\u9762",
+    size: 4,
+    min: 1,
+    autoComplete: "off",
+    max: totalPage
+  }), " ", "/ ", totalPage)), /* @__PURE__ */ import_react14.default.createElement("div", {
+    className: "toolbar-center"
+  }, /* @__PURE__ */ import_react14.default.createElement("div", {
+    className: "zoom-button-wrapper"
+  }, /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before zoom-button zoom-out",
+    onClick: onZoomOut
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label zoom-label"
+  }, "\u7F29\u5C0F")), /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "divider"
+  }), /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before zoom-button zoom-in",
+    onClick: onZoomIn
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label zoom-label"
+  }, "\u653E\u5927"))), /* @__PURE__ */ import_react14.default.createElement(scale_selector_default, null)), /* @__PURE__ */ import_react14.default.createElement("div", {
+    className: "toolbar-right"
+  }, /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before open",
+    onClick: onFileInputButtonClicked
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u6253\u5F00")), /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before print",
+    onClick: onPrintButtonClick
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u6253\u5370")), /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before  download",
+    onClick: downloadButtonClick
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u4FDD\u5B58")), /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before draw"
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u7ED8\u56FE")), /* @__PURE__ */ import_react14.default.createElement(tool_default, {
+    onItemClick: onToolClick
+  }, /* @__PURE__ */ import_react14.default.createElement("button", {
+    className: "common-button has-before tools"
+  }, /* @__PURE__ */ import_react14.default.createElement("span", {
+    className: "button-label"
+  }, "\u5DE5\u5177")))), /* @__PURE__ */ import_react14.default.createElement("input", {
+    type: "file",
+    accept: ".pdf",
+    id: "fileInput",
+    className: "hidden",
+    onChange: onFileInputChanged,
+    ref: fileInputRef
+  }));
 };
 var toolbar_default = Toolbar;
 
 // packages/viewer/index.tsx
 var import_lodash3 = require("lodash");
-var import_react18 = require("react");
+var import_react24 = __toESM(require("react"), 1);
 
 // packages/hooks/usePageResize.ts
-var import_react12 = require("react");
+var import_react16 = require("react");
 
 // packages/hooks/useRectObserver.ts
-var import_react11 = require("react");
+var import_react15 = require("react");
 function useRectObserver({ elRef }) {
-  const [width, setWidth] = (0, import_react11.useState)(0);
-  const [height, setHeight] = (0, import_react11.useState)(0);
-  const observer = (0, import_react11.useRef)(null);
+  const [width, setWidth] = (0, import_react15.useState)(0);
+  const [height, setHeight] = (0, import_react15.useState)(0);
+  const observer = (0, import_react15.useRef)(null);
   function resizeObserver(entries) {
     for (const entry of entries) {
       const { width: width2, height: height2 } = entry.contentRect;
@@ -991,7 +952,7 @@ function useRectObserver({ elRef }) {
       setHeight(height2);
     }
   }
-  (0, import_react11.useEffect)(() => {
+  (0, import_react15.useEffect)(() => {
     if (elRef.current) {
       observer.current = new ResizeObserver(resizeObserver);
       observer.current.observe(elRef.current);
@@ -1011,7 +972,7 @@ function useRectObserver({ elRef }) {
 
 // packages/hooks/usePageResize.ts
 function usePageResizes({ resizesRef, doc, scale }) {
-  const [pageSize, setPageSize] = (0, import_react12.useState)({
+  const [pageSize, setPageSize] = (0, import_react16.useState)({
     vWidth: 0,
     vHeight: 0,
     width: 0,
@@ -1021,7 +982,7 @@ function usePageResizes({ resizesRef, doc, scale }) {
   const { width, height } = useRectObserver({
     elRef: resizesRef
   });
-  (0, import_react12.useEffect)(() => {
+  (0, import_react16.useEffect)(() => {
     if (!doc) {
       return;
     }
@@ -1080,17 +1041,16 @@ function usePageResizes({ resizesRef, doc, scale }) {
 }
 
 // packages/layers/loading-layer.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
+var import_react17 = __toESM(require("react"), 1);
 var LoadingLayer = (props) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+  return /* @__PURE__ */ import_react17.default.createElement("div", {
     className: "loading-layer"
   });
 };
 var loading_layer_default = LoadingLayer;
 
 // packages/layers/page-layer.tsx
-var import_react13 = require("react");
-var import_jsx_runtime = require("react/jsx-runtime");
+var import_react18 = __toESM(require("react"), 1);
 var PageLayer = ({
   doc,
   pageIndex,
@@ -1099,50 +1059,46 @@ var PageLayer = ({
   children,
   scrollMode
 }) => {
-  const [pageDoc, setPageDoc] = (0, import_react13.useState)();
-  (0, import_react13.useEffect)(() => {
+  const [pageDoc, setPageDoc] = (0, import_react18.useState)();
+  (0, import_react18.useEffect)(() => {
     doc.getPage(pageIndex).then((pageDoc2) => {
       setPageDoc(pageDoc2);
     });
   }, [pageIndex, doc]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {
-    children: pageDoc ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-      className: `page-layer ${scrollMode}-scroll`,
-      id: `__page_${pageIndex}__`,
-      style: {
-        height,
-        width
-      },
-      children: children(pageDoc)
-    }) : null
-  });
+  return /* @__PURE__ */ import_react18.default.createElement(import_react18.default.Fragment, null, pageDoc ? /* @__PURE__ */ import_react18.default.createElement("div", {
+    className: `page-layer ${scrollMode}-scroll`,
+    id: `__page_${pageIndex}__`,
+    style: {
+      height,
+      width
+    }
+  }, children(pageDoc)) : null);
 };
 var page_layer_default = PageLayer;
 
 // packages/print/index.tsx
 var import_lodash2 = require("lodash");
-var import_react15 = __toESM(require("react"), 1);
+var import_react20 = __toESM(require("react"), 1);
 var import_react_dom = require("react-dom");
 
 // packages/print/item.tsx
-var import_react14 = require("react");
-var import_jsx_runtime = require("react/jsx-runtime");
+var import_react19 = __toESM(require("react"), 1);
 var ThumbnailItem2 = ({
   pdfDoc,
   pageIndex,
   width,
   height
 }) => {
-  const [pageDoc, setPageDoc] = (0, import_react14.useState)();
-  const rootRef = (0, import_react14.useRef)(null);
-  const renderTask = (0, import_react14.useRef)(null);
-  const [imgURI, setImgURI] = (0, import_react14.useState)();
-  (0, import_react14.useEffect)(() => {
+  const [pageDoc, setPageDoc] = (0, import_react19.useState)();
+  const rootRef = (0, import_react19.useRef)(null);
+  const renderTask = (0, import_react19.useRef)(null);
+  const [imgURI, setImgURI] = (0, import_react19.useState)();
+  (0, import_react19.useEffect)(() => {
     pdfDoc.getPage(pageIndex).then((pageDoc2) => {
       setPageDoc(pageDoc2);
     });
   }, [pageIndex, pdfDoc]);
-  (0, import_react14.useEffect)(() => {
+  (0, import_react19.useEffect)(() => {
     if (!pageDoc)
       return;
     const viewport = pageDoc.getViewport({ scale: 1 });
@@ -1184,21 +1140,19 @@ var ThumbnailItem2 = ({
       }
     };
   }, [pageDoc]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+  return /* @__PURE__ */ import_react19.default.createElement("div", {
     ref: rootRef,
     id: `print_page_${pageIndex}`,
-    className: `print-item`,
-    children: imgURI ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-      src: imgURI
-    }) : null
-  });
+    className: `print-item`
+  }, imgURI ? /* @__PURE__ */ import_react19.default.createElement("img", {
+    src: imgURI
+  }) : null);
 };
 var item_default2 = ThumbnailItem2;
 
 // packages/print/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
 var Print = ({ pdfDoc, width, height }) => {
-  const container = import_react15.default.useMemo(() => {
+  const container = import_react20.default.useMemo(() => {
     const id = "__print_container__";
     let containerEl = document.getElementById(`${id}`);
     if (containerEl) {
@@ -1210,34 +1164,224 @@ var Print = ({ pdfDoc, width, height }) => {
     return containerEl;
   }, []);
   return (0, import_react_dom.createPortal)(
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, {
-      children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-          id: "__print_view__",
-          children: !pdfDoc ? null : (0, import_lodash2.range)(0, pdfDoc.numPages).map((index) => {
-            const pageIndex = index + 1;
-            return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(item_default2, {
-              pdfDoc,
-              pageIndex,
-              width,
-              height
-            }, pageIndex);
-          })
-        }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("style", {
-          dangerouslySetInnerHTML: {
-            __html: `@page { size: ${width}pt ${height}pt }`
-          }
-        })
-      ]
-    }),
+    /* @__PURE__ */ import_react20.default.createElement(import_react20.default.Fragment, null, /* @__PURE__ */ import_react20.default.createElement("div", {
+      id: "__print_view__"
+    }, !pdfDoc ? null : (0, import_lodash2.range)(0, pdfDoc.numPages).map((index) => {
+      const pageIndex = index + 1;
+      return /* @__PURE__ */ import_react20.default.createElement(item_default2, {
+        key: pageIndex,
+        pdfDoc,
+        pageIndex,
+        width,
+        height
+      });
+    })), /* @__PURE__ */ import_react20.default.createElement("style", {
+      dangerouslySetInnerHTML: {
+        __html: `@page { size: ${width}pt ${height}pt }`
+      }
+    })),
     container
   );
 };
 var print_default = Print;
 
+// packages/property/index.tsx
+var import_react22 = __toESM(require("react"), 1);
+
+// packages/utils/properties.ts
+var import_pdfjs_dist2 = require("pdfjs-dist");
+function parseFileSize(fileSize = 0) {
+  const kb = fileSize / 1024, mb = kb / 1024;
+  if (!kb) {
+    return void 0;
+  }
+  return mb > 1 ? `${+mb.toPrecision(3)}mb` : `${mb < 1 && +kb.toPrecision(3)}kb`;
+}
+function parseDate(inputDate) {
+  const dateObject = import_pdfjs_dist2.PDFDateString.toDateObject(inputDate);
+  if (!dateObject) {
+    return void 0;
+  }
+  return dateObject.toLocaleDateString();
+}
+function getPageSizeInches({ view, userUnit, rotate }) {
+  const [x1, y1, x2, y2] = view;
+  const changeOrientation = rotate % 180 !== 0;
+  const width = (x2 - x1) / 72 * userUnit;
+  const height = (y2 - y1) / 72 * userUnit;
+  return {
+    width: changeOrientation ? height : width,
+    height: changeOrientation ? width : height
+  };
+}
+
+// packages/property/index.tsx
+var import_pdfjs_dist3 = require("pdfjs-dist");
+
+// packages/share/modal/index.tsx
+var import_react21 = __toESM(require("react"), 1);
+var Modal = ({
+  visible,
+  wrapperClassName,
+  className,
+  mask = true,
+  children
+}) => {
+  return /* @__PURE__ */ import_react21.default.createElement("div", {
+    className: `share-modal-container ${wrapperClassName != null ? wrapperClassName : ""}`,
+    style: { display: visible ? "flex" : "none" }
+  }, mask && /* @__PURE__ */ import_react21.default.createElement("div", {
+    className: "share-modal-mask"
+  }), /* @__PURE__ */ import_react21.default.createElement("div", {
+    className: `share-modal ${className != null ? className : ""}`
+  }, children));
+};
+var modal_default = Modal;
+
+// packages/property/index.tsx
+var PropertyModal = ({ visible, onClose }) => {
+  const { pdfURI, pdfDoc, currentPage } = usePDFViewer();
+  const [properties, setProperties] = (0, import_react22.useState)();
+  (0, import_react22.useLayoutEffect)(() => {
+    if (pdfDoc) {
+      Promise.all([pdfDoc.getMetadata(), pdfDoc.getPage(currentPage)]).then(
+        ([pdfInfo, pageDoc]) => {
+          const infoObj = pdfInfo.info;
+          const fileName = pdfInfo["contentDispositionFilename"] || (0, import_pdfjs_dist3.getFilenameFromUrl)(pdfURI);
+          const pageSize = getPageSizeInches(pageDoc);
+          setProperties({
+            pageSize: `${pageSize.width * 2.54}cm*${pageSize.height * 2.54}cm`,
+            fileSize: parseFileSize(
+              pdfInfo["contentLength"]
+            ),
+            creationDate: parseDate(infoObj["CreationDate"]),
+            modificationDate: parseDate(infoObj.ModDate),
+            fileName,
+            title: infoObj.Title,
+            author: infoObj.Author,
+            subject: infoObj.Subject,
+            keywords: infoObj.Keywords,
+            creator: infoObj.Creator,
+            producer: infoObj.Producer,
+            version: infoObj.PDFFormatVersion,
+            pageCount: pdfDoc.numPages
+          });
+        },
+        (err) => {
+        }
+      ).catch((reason) => {
+      });
+    }
+  }, [currentPage, pdfDoc, pdfURI]);
+  (0, import_react22.useEffect)(() => {
+    console.log("property", properties);
+  }, [properties]);
+  return /* @__PURE__ */ import_react22.default.createElement(modal_default, {
+    className: "property-modal",
+    visible
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "session"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u6587\u4EF6\u540D\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.fileName)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u6587\u4EF6\u5927\u5C0F\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.fileSize))), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "session"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u6807\u9898\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.title)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u4F5C\u8005\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.author)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u4E3B\u9898\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.subject)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u5173\u952E\u8BCD\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.keywords)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u521B\u5EFA\u65E5\u671F\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.creationDate)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u4FEE\u6539\u65E5\u671F\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.modificationDate)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u521B\u5EFA\u8005\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.creator))), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "session"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "PDF \u751F\u6210\u5668\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.producer)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "PDF \u7248\u672C\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.version)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u9875\u6570\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.pageCount)), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u9875\u9762\u5927\u5C0F\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.pageSize))), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "session"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "label"
+  }, "\u5FEB\u901F Web \u89C6\u56FE\uFF1A"), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.isWebView))), /* @__PURE__ */ import_react22.default.createElement("div", {
+    className: "btn-wrapper"
+  }, /* @__PURE__ */ import_react22.default.createElement(button_default, {
+    className: "close-btn",
+    onClick: onClose
+  }, "\u5173\u95ED")));
+};
+var property_default = PropertyModal;
+
 // packages/sidebar/index.tsx
-var import_react16 = require("react");
+var import_react23 = __toESM(require("react"), 1);
 
 // packages/types/types.ts
 var isBrowser = !!(typeof window !== "undefined" && window.document && window.document.createElement);
@@ -1429,14 +1573,13 @@ var SidebarResizer = class extends DragService {
 };
 
 // packages/sidebar/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
 var Sidebar = ({ children }) => {
   const { sidebarVisible } = usePDFViewer();
-  const resizerRef = (0, import_react16.useRef)(null);
-  const dragService = (0, import_react16.useMemo)(() => {
+  const resizerRef = (0, import_react23.useRef)(null);
+  const dragService = (0, import_react23.useMemo)(() => {
     return new SidebarResizer({});
   }, []);
-  (0, import_react16.useEffect)(() => {
+  (0, import_react23.useEffect)(() => {
     console.log("dragService", dragService);
     dragService == null ? void 0 : dragService.addDragSource({
       element: resizerRef
@@ -1447,350 +1590,19 @@ var Sidebar = ({ children }) => {
       });
     };
   }, [dragService, resizerRef]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+  return /* @__PURE__ */ import_react23.default.createElement("div", {
     id: "__sidebar__",
-    className: `${sidebarVisible ? "" : "hidden"}`,
-    children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-        id: "__sidebar_content__",
-        children
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-        id: "__sidebar_resizer__",
-        ref: resizerRef
-      })
-    ]
-  });
+    className: `${sidebarVisible ? "" : "hidden"}`
+  }, /* @__PURE__ */ import_react23.default.createElement("div", {
+    id: "__sidebar_content__"
+  }, children), /* @__PURE__ */ import_react23.default.createElement("div", {
+    id: "__sidebar_resizer__",
+    ref: resizerRef
+  }));
 };
 var sidebar_default = Sidebar;
 
-// packages/property/index.tsx
-var import_react17 = require("react");
-
-// packages/utils/properties.ts
-var import_pdfjs_dist2 = require("pdfjs-dist");
-function parseFileSize(fileSize = 0) {
-  const kb = fileSize / 1024, mb = kb / 1024;
-  if (!kb) {
-    return void 0;
-  }
-  return mb > 1 ? `${+mb.toPrecision(3)}mb` : `${mb < 1 && +kb.toPrecision(3)}kb`;
-}
-function parseDate(inputDate) {
-  const dateObject = import_pdfjs_dist2.PDFDateString.toDateObject(inputDate);
-  if (!dateObject) {
-    return void 0;
-  }
-  return dateObject.toLocaleDateString();
-}
-function getPageSizeInches({ view, userUnit, rotate }) {
-  const [x1, y1, x2, y2] = view;
-  const changeOrientation = rotate % 180 !== 0;
-  const width = (x2 - x1) / 72 * userUnit;
-  const height = (y2 - y1) / 72 * userUnit;
-  return {
-    width: changeOrientation ? height : width,
-    height: changeOrientation ? width : height
-  };
-}
-
-// packages/property/index.tsx
-var import_pdfjs_dist3 = require("pdfjs-dist");
-
-// packages/share/modal/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
-var Modal = ({
-  visible,
-  wrapperClassName,
-  className,
-  mask = true,
-  children
-}) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-    className: `share-modal-container ${wrapperClassName != null ? wrapperClassName : ""}`,
-    style: { display: visible ? "flex" : "none" },
-    children: [
-      mask && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-        className: "share-modal-mask"
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-        className: `share-modal ${className != null ? className : ""}`,
-        children
-      })
-    ]
-  });
-};
-var modal_default = Modal;
-
-// packages/share/button/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
-var Button = (_a) => {
-  var _b = _a, { className } = _b, restProps = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", __spreadProps(__spreadValues({}, restProps), {
-    className: `share-button ${className != null ? className : ""}`
-  }));
-};
-var button_default = Button;
-
-// packages/property/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
-var PropertyModal = ({ visible, onClose }) => {
-  const { pdfURI, pdfDoc, currentPage } = usePDFViewer();
-  const [properties, setProperties] = (0, import_react17.useState)();
-  (0, import_react17.useLayoutEffect)(() => {
-    if (pdfDoc) {
-      Promise.all([pdfDoc.getMetadata(), pdfDoc.getPage(currentPage)]).then(
-        ([pdfInfo, pageDoc]) => {
-          const infoObj = pdfInfo.info;
-          const fileName = pdfInfo["contentDispositionFilename"] || (0, import_pdfjs_dist3.getFilenameFromUrl)(pdfURI);
-          const pageSize = getPageSizeInches(pageDoc);
-          setProperties({
-            pageSize: `${pageSize.width * 2.54}cm*${pageSize.height * 2.54}cm`,
-            fileSize: parseFileSize(
-              pdfInfo["contentLength"]
-            ),
-            creationDate: parseDate(infoObj["CreationDate"]),
-            modificationDate: parseDate(infoObj.ModDate),
-            fileName,
-            title: infoObj.Title,
-            author: infoObj.Author,
-            subject: infoObj.Subject,
-            keywords: infoObj.Keywords,
-            creator: infoObj.Creator,
-            producer: infoObj.Producer,
-            version: infoObj.PDFFormatVersion,
-            pageCount: pdfDoc.numPages
-          });
-        },
-        (err) => {
-        }
-      ).catch((reason) => {
-      });
-    }
-  }, [currentPage, pdfDoc, pdfURI]);
-  (0, import_react17.useEffect)(() => {
-    console.log("property", properties);
-  }, [properties]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(modal_default, {
-    className: "property-modal",
-    visible,
-    children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-        className: "session",
-        children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u6587\u4EF6\u540D\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.fileName
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u6587\u4EF6\u5927\u5C0F\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.fileSize
-              })
-            ]
-          })
-        ]
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-        className: "session",
-        children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u6807\u9898\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.title
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u4F5C\u8005\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.author
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u4E3B\u9898\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.subject
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u5173\u952E\u8BCD\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.keywords
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u521B\u5EFA\u65E5\u671F\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.creationDate
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u4FEE\u6539\u65E5\u671F\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.modificationDate
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u521B\u5EFA\u8005\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.creator
-              })
-            ]
-          })
-        ]
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-        className: "session",
-        children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "PDF \u751F\u6210\u5668\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.producer
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "PDF \u7248\u672C\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.version
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u9875\u6570\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.pageCount
-              })
-            ]
-          }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "label",
-                children: "\u9875\u9762\u5927\u5C0F\uFF1A"
-              }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.pageSize
-              })
-            ]
-          })
-        ]
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-        className: "session",
-        children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-          className: "row",
-          children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-              className: "label",
-              children: "\u5FEB\u901F Web \u89C6\u56FE\uFF1A"
-            }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-              className: "value",
-              children: properties == null ? void 0 : properties.isWebView
-            })
-          ]
-        })
-      }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-        className: "btn-wrapper",
-        children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(button_default, {
-          className: "close-btn",
-          onClick: onClose,
-          children: "\u5173\u95ED"
-        })
-      })
-    ]
-  });
-};
-var property_default = PropertyModal;
-
 // packages/viewer/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
-var import_react = require("react");
 var PDFViewer = ({
   loadingComponent,
   errorComponent,
@@ -1813,26 +1625,26 @@ var PDFViewer = ({
     setPropertyModalVisible
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
-  const [loading, setLoading] = (0, import_react18.useState)(false);
-  const [loadingProgress, setLoadingProgress] = (0, import_react18.useState)(-1);
-  const [errorReason, setErrorReason] = (0, import_react18.useState)();
-  const loadingTask = (0, import_react18.useRef)(null);
-  const viewerRef = (0, import_react18.useRef)(null);
-  const scrollElRef = (0, import_react18.useRef)(null);
-  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react18.useState)(1);
-  const [renderMap, setRenderMap] = (0, import_react18.useState)({});
+  const [loading, setLoading] = (0, import_react24.useState)(false);
+  const [loadingProgress, setLoadingProgress] = (0, import_react24.useState)(-1);
+  const [errorReason, setErrorReason] = (0, import_react24.useState)();
+  const loadingTask = (0, import_react24.useRef)(null);
+  const viewerRef = (0, import_react24.useRef)(null);
+  const scrollElRef = (0, import_react24.useRef)(null);
+  const [renderingPageIndex, setRenderingPageIndex] = (0, import_react24.useState)(1);
+  const [renderMap, setRenderMap] = (0, import_react24.useState)({});
   const pageSize = usePageResizes({
     resizesRef: viewerRef,
     doc: pdfDoc,
     scale
   });
-  (0, import_react18.useEffect)(() => {
+  (0, import_react24.useEffect)(() => {
     scaleNumberRef.current = pageSize.scale;
   }, [pageSize, scaleNumberRef]);
-  (0, import_react18.useEffect)(() => {
+  (0, import_react24.useEffect)(() => {
     setRenderingPageIndex(1);
   }, [pageSize]);
-  (0, import_react18.useEffect)(() => {
+  (0, import_react24.useEffect)(() => {
     if (pdfURI) {
       setErrorReason(void 0);
       loadingTask.current = PDFLib.getDocument(pdfURI);
@@ -1853,7 +1665,7 @@ var PDFViewer = ({
       loadingTask.current && loadingTask.current.destroy();
     };
   }, [pdfURI]);
-  const scrollHandler = (0, import_react18.useCallback)(
+  const scrollHandler = (0, import_react24.useCallback)(
     (state) => {
       if (scrollMode == "vertical") {
         if (pageSize.height == 0) {
@@ -1885,7 +1697,7 @@ var PDFViewer = ({
     },
     [pageSize.height, pageSize.width, scrollMode, setCurrentPage, totalPage]
   );
-  (0, import_react18.useEffect)(() => {
+  (0, import_react24.useEffect)(() => {
     let scrollState = null;
     if (scrollElRef.current) {
       scrollState = watchScroll(scrollElRef.current, scrollHandler);
@@ -1907,82 +1719,71 @@ var PDFViewer = ({
       }
       return "Waiting...";
     }
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+    return /* @__PURE__ */ import_react24.default.createElement("div", {
       id: "__pdf_viewer_container__",
       className: "viewer",
-      ref: scrollElRef,
-      children: [
-        pageSize.width == 0 ? null : (0, import_lodash3.range)(0, pdfDoc.numPages).map((index) => {
-          const pageIndex = index + 1;
-          return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(page_layer_default, __spreadProps(__spreadValues({
-            pageIndex,
-            doc: pdfDoc
-          }, pageSize), {
-            scrollMode,
-            children: (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(loading_layer_default, {}) : [
-              /* @__PURE__ */ (0, import_react.createElement)(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
-                pageDoc: doc,
-                pageIndex,
-                renderingIndex: renderingPageIndex,
-                key: `canvas_layer_${pageIndex}`,
-                onCompleted: () => {
-                  setRenderingPageIndex((pre) => pre + 1);
-                  setRenderMap((pre) => {
-                    if (pre[pageIndex]) {
-                      return pre;
-                    }
-                    return __spreadProps(__spreadValues({}, pre), {
-                      pageIndex: true
-                    });
-                  });
-                }
-              })),
-              /* @__PURE__ */ (0, import_react.createElement)(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
-                pageDoc: doc,
-                pageIndex,
-                key: `text_layer_${pageIndex}`
-              })),
-              renderingPageIndex <= pageIndex ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(loading_layer_default, {}, `loading_layer_${pageIndex}`) : null
-            ]
-          }), index);
-        }),
-        pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(print_default, {
-          height: pageSize.vHeight,
-          width: pageSize.vWidth,
-          pdfDoc
-        })
-      ]
-    });
+      ref: scrollElRef
+    }, pageSize.width == 0 ? null : (0, import_lodash3.range)(0, pdfDoc.numPages).map((index) => {
+      const pageIndex = index + 1;
+      return /* @__PURE__ */ import_react24.default.createElement(page_layer_default, __spreadProps(__spreadValues({
+        key: index,
+        pageIndex,
+        doc: pdfDoc
+      }, pageSize), {
+        scrollMode
+      }), (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ import_react24.default.createElement(loading_layer_default, null) : [
+        /* @__PURE__ */ import_react24.default.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+          pageDoc: doc,
+          pageIndex,
+          renderingIndex: renderingPageIndex,
+          key: `canvas_layer_${pageIndex}`,
+          onCompleted: () => {
+            setRenderingPageIndex((pre) => pre + 1);
+            setRenderMap((pre) => {
+              if (pre[pageIndex]) {
+                return pre;
+              }
+              return __spreadProps(__spreadValues({}, pre), {
+                pageIndex: true
+              });
+            });
+          }
+        })),
+        /* @__PURE__ */ import_react24.default.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+          pageDoc: doc,
+          pageIndex,
+          key: `text_layer_${pageIndex}`
+        })),
+        renderingPageIndex <= pageIndex ? /* @__PURE__ */ import_react24.default.createElement(loading_layer_default, {
+          key: `loading_layer_${pageIndex}`
+        }) : null
+      ]);
+    }), pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ import_react24.default.createElement(print_default, {
+      height: pageSize.vHeight,
+      width: pageSize.vWidth,
+      pdfDoc
+    }));
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+  return /* @__PURE__ */ import_react24.default.createElement("div", {
     id: "__outer_container__",
     style: { height, width },
     ref: viewerRef,
-    className: sidebarVisible ? "sidebar-visible" : "",
-    children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(sidebar_default, {
-        children: thumbnail && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(thumbnail_default, {
-          currentPage,
-          pdfDoc
-        })
-      }),
-      contentComponent(),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(property_default, {
-        visible: propertyModalVisible,
-        onClose: () => setPropertyModalVisible(false)
-      })
-    ]
-  });
+    className: sidebarVisible ? "sidebar-visible" : ""
+  }, /* @__PURE__ */ import_react24.default.createElement(sidebar_default, null, thumbnail && /* @__PURE__ */ import_react24.default.createElement(thumbnail_default, {
+    currentPage,
+    pdfDoc
+  })), contentComponent(), /* @__PURE__ */ import_react24.default.createElement(property_default, {
+    visible: propertyModalVisible,
+    onClose: () => setPropertyModalVisible(false)
+  }));
 };
 var viewer_default = PDFViewer;
 
 // packages/worker/index.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
+var import_react25 = __toESM(require("react"), 1);
 var PDFWorker = ({ workerDir, children }) => {
   PDFLib.GlobalWorkerOptions.workerSrc = workerDir;
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {
-    children
-  });
+  return /* @__PURE__ */ import_react25.default.createElement(import_react25.default.Fragment, null, children);
 };
 var worker_default = PDFWorker;
 //# sourceMappingURL=index.cjs.map

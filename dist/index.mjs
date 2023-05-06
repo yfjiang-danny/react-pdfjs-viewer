@@ -49,8 +49,7 @@ var __privateSet = (obj, member, value, setter) => {
 };
 
 // packages/layers/canvas-layer.tsx
-import { useEffect, useRef } from "react";
-import { jsx } from "react/jsx-runtime";
+import React, { useEffect, useRef } from "react";
 var CanvasLayer = (props) => {
   const {
     pageDoc,
@@ -121,7 +120,7 @@ var CanvasLayer = (props) => {
       );
     }
   }, [pageDoc, scale, width, height, renderingIndex]);
-  return /* @__PURE__ */ jsx("div", {
+  return /* @__PURE__ */ React.createElement("div", {
     className: "canvas-layer",
     style: { width, height },
     ref: wrapperRef
@@ -130,22 +129,19 @@ var CanvasLayer = (props) => {
 var canvas_layer_default = CanvasLayer;
 
 // packages/layers/svg-layer.tsx
-import { Fragment, jsx as jsx2 } from "react/jsx-runtime";
+import React2 from "react";
 var SvgLayer = (props) => {
-  return /* @__PURE__ */ jsx2(Fragment, {
-    children: "SvgLayer Component"
-  });
+  return /* @__PURE__ */ React2.createElement(React2.Fragment, null, "SvgLayer Component");
 };
 var svg_layer_default = SvgLayer;
 
 // packages/layers/text-layer.tsx
-import { useEffect as useEffect2, useRef as useRef2 } from "react";
+import React3, { useEffect as useEffect2, useRef as useRef2 } from "react";
 
 // packages/vendors/lib.ts
 import * as PDFLib from "pdfjs-dist";
 
 // packages/layers/text-layer.tsx
-import { jsx as jsx3 } from "react/jsx-runtime";
 var TextLayer = (props) => {
   const { pageDoc, pageIndex, width, height, scale } = props;
   const textContainerRef = useRef2(null);
@@ -178,7 +174,7 @@ var TextLayer = (props) => {
       }
     };
   }, [pageDoc, scale, width, height]);
-  return /* @__PURE__ */ jsx3("div", {
+  return /* @__PURE__ */ React3.createElement("div", {
     ref: textContainerRef,
     style: {
       width,
@@ -190,19 +186,19 @@ var TextLayer = (props) => {
 var text_layer_default = TextLayer;
 
 // packages/provider/index.tsx
-import React4, { useState } from "react";
+import React5, { useState } from "react";
 
 // packages/provider/internal.ts
-import React3, { useRef as useRef3 } from "react";
+import React4, { useRef as useRef3 } from "react";
 function useInternalStateHook() {
   const scaleNumberRef = useRef3(1);
   return {
     scaleNumberRef
   };
 }
-var InternalStateContext = React3.createContext(null);
+var InternalStateContext = React4.createContext(null);
 function useInternalState() {
-  const state = React3.useContext(InternalStateContext);
+  const state = React4.useContext(InternalStateContext);
   if (!state) {
     throw new Error("Component must be wrapped with <PDFViewerProvider>");
   }
@@ -210,7 +206,6 @@ function useInternalState() {
 }
 
 // packages/provider/index.tsx
-import { jsx as jsx4 } from "react/jsx-runtime";
 function usePDFViewerHook(initialState = {
   scale: "auto",
   page: 0,
@@ -242,9 +237,9 @@ function usePDFViewerHook(initialState = {
     setPropertyModalVisible
   };
 }
-var PDFViewerContext = React4.createContext(null);
+var PDFViewerContext = React5.createContext(null);
 function usePDFViewer() {
-  const state = React4.useContext(PDFViewerContext);
+  const state = React5.useContext(PDFViewerContext);
   if (!state) {
     throw new Error("Component must be wrapped with <PDFViewerProvider>");
   }
@@ -253,18 +248,16 @@ function usePDFViewer() {
 var PDFViewerProvider = (props) => {
   const value = usePDFViewerHook(props.initialState);
   const internalState = useInternalStateHook();
-  return /* @__PURE__ */ jsx4(PDFViewerContext.Provider, {
-    value,
-    children: /* @__PURE__ */ jsx4(InternalStateContext.Provider, {
-      value: internalState,
-      children: props.children
-    })
-  });
+  return /* @__PURE__ */ React5.createElement(PDFViewerContext.Provider, {
+    value
+  }, /* @__PURE__ */ React5.createElement(InternalStateContext.Provider, {
+    value: internalState
+  }, props.children));
 };
 
 // packages/thumbnail/index.tsx
 import { range } from "lodash";
-import { useEffect as useEffect4 } from "react";
+import React7, { useEffect as useEffect4 } from "react";
 
 // packages/utils/index.ts
 function isInViewport(el) {
@@ -354,7 +347,7 @@ function scrollToPageIndex(index) {
 }
 
 // packages/thumbnail/item.tsx
-import { useEffect as useEffect3, useRef as useRef4, useState as useState2 } from "react";
+import React6, { useEffect as useEffect3, useRef as useRef4, useState as useState2 } from "react";
 
 // packages/types/constant.ts
 var MIN_SCALE = 0.1;
@@ -396,7 +389,6 @@ _tempCanvas = new WeakMap();
 __privateAdd(TempImageFactory, _tempCanvas, null);
 
 // packages/thumbnail/item.tsx
-import { jsx as jsx5, jsxs } from "react/jsx-runtime";
 var ThumbnailItem = ({ pdfDoc, pageIndex }) => {
   const { currentPage, setCurrentPage } = usePDFViewer();
   const [pageDoc, setPageDoc] = useState2();
@@ -471,52 +463,47 @@ var ThumbnailItem = ({ pdfDoc, pageIndex }) => {
       }
     }
   }, [currentPage, pageIndex]);
-  return /* @__PURE__ */ jsxs("div", {
+  return /* @__PURE__ */ React6.createElement("div", {
     ref: rootRef,
     id: `thumbnail_page_${pageIndex}`,
     className: `thumbnail-item`,
     onClick: () => {
       setCurrentPage(pageIndex);
       scrollToPageIndex(pageIndex);
-    },
-    children: [
-      imgURI ? /* @__PURE__ */ jsx5("img", {
-        src: imgURI
-      }) : null,
-      /* @__PURE__ */ jsx5("div", {
-        className: "thumbnail-item-page-mask",
-        title: `\u7B2C${pageIndex}\u9875`,
-        "data-num": pageIndex
-      })
-    ]
-  });
+    }
+  }, imgURI ? /* @__PURE__ */ React6.createElement("img", {
+    src: imgURI
+  }) : null, /* @__PURE__ */ React6.createElement("div", {
+    className: "thumbnail-item-page-mask",
+    title: `\u7B2C${pageIndex}\u9875`,
+    "data-num": pageIndex
+  }));
 };
 var item_default = ThumbnailItem;
 
 // packages/thumbnail/index.tsx
-import { jsx as jsx6 } from "react/jsx-runtime";
 var Thumbnail = ({ pdfDoc, currentPage }) => {
   const { sidebarVisible } = usePDFViewer();
   useEffect4(() => {
     sidebarVisible && scrollIntoViewByID(`thumbnail_page_${currentPage}`);
   }, [currentPage, sidebarVisible]);
-  return /* @__PURE__ */ jsx6("div", {
-    id: "__thumbnail__",
-    children: !pdfDoc ? null : range(0, pdfDoc.numPages).map((index) => {
-      const pageIndex = index + 1;
-      return /* @__PURE__ */ jsx6(item_default, {
-        pdfDoc,
-        pageIndex,
-        currentPage
-      }, pageIndex);
-    })
-  });
+  return /* @__PURE__ */ React7.createElement("div", {
+    id: "__thumbnail__"
+  }, !pdfDoc ? null : range(0, pdfDoc.numPages).map((index) => {
+    const pageIndex = index + 1;
+    return /* @__PURE__ */ React7.createElement(item_default, {
+      key: pageIndex,
+      pdfDoc,
+      pageIndex,
+      currentPage
+    });
+  }));
 };
 var thumbnail_default = Thumbnail;
 
 // packages/toolbar/index.tsx
 import { getPdfFilenameFromUrl } from "pdfjs-dist";
-import {
+import React12, {
   useEffect as useEffect5,
   useRef as useRef6,
   useState as useState3
@@ -540,26 +527,23 @@ function downloadBlob(blobUrl, filename) {
 
 // packages/toolbar/scale-selector/index.tsx
 import Tippy from "@tippyjs/react";
-import { useMemo, useRef as useRef5 } from "react";
+import React9, { useMemo, useRef as useRef5 } from "react";
 
 // packages/assets/svg/arrow-drop-down.tsx
-import React7 from "react";
-import { jsx as jsx7 } from "react/jsx-runtime";
+import React8 from "react";
 function SvgArrowDropDown(props, svgRef) {
-  return /* @__PURE__ */ jsx7("svg", __spreadProps(__spreadValues({
+  return /* @__PURE__ */ React8.createElement("svg", __spreadProps(__spreadValues({
     viewBox: "0 0 24 24"
   }, props), {
-    ref: svgRef,
-    children: /* @__PURE__ */ jsx7("path", {
-      d: "M7 10l5 5 5-5z"
-    })
+    ref: svgRef
+  }), /* @__PURE__ */ React8.createElement("path", {
+    d: "M7 10l5 5 5-5z"
   }));
 }
-var ForwardRef = React7.forwardRef(SvgArrowDropDown);
+var ForwardRef = React8.forwardRef(SvgArrowDropDown);
 var arrow_drop_down_default = ForwardRef;
 
 // packages/toolbar/scale-selector/index.tsx
-import { jsx as jsx8, jsxs as jsxs2 } from "react/jsx-runtime";
 var ScaleSelector = () => {
   const options = useMemo(() => {
     return [
@@ -630,35 +614,34 @@ var ScaleSelector = () => {
       return v.value;
     });
   }
-  return /* @__PURE__ */ jsx8(Tippy, {
+  return /* @__PURE__ */ React9.createElement(Tippy, {
     interactive: true,
     trigger: "click",
     onCreate: (instance) => instanceRef.current = instance,
     placement: "bottom-start",
-    content: /* @__PURE__ */ jsx8("div", {
-      className: "scale-wrapper",
-      children: options.map((v) => {
-        let valid = true;
-        if (typeof v.value == "number") {
-          if (v.value > MAX_SCALE) {
-            valid = false;
-            console.warn(`MAX_SCALE is ${MAX_SCALE}, you have ${v.value}`);
-          } else if (v.value < MIN_SCALE) {
-            valid = false;
-            console.warn(`MIN_SCALE is ${MIN_SCALE}, you have ${v.value}`);
-          }
+    content: /* @__PURE__ */ React9.createElement("div", {
+      className: "scale-wrapper"
+    }, options.map((v) => {
+      let valid = true;
+      if (typeof v.value == "number") {
+        if (v.value > MAX_SCALE) {
+          valid = false;
+          console.warn(`MAX_SCALE is ${MAX_SCALE}, you have ${v.value}`);
+        } else if (v.value < MIN_SCALE) {
+          valid = false;
+          console.warn(`MIN_SCALE is ${MIN_SCALE}, you have ${v.value}`);
         }
-        return /* @__PURE__ */ jsx8("div", {
-          onClick: valid ? () => {
-            var _a;
-            onChanged(v);
-            (_a = instanceRef.current) == null ? void 0 : _a.hide();
-          } : void 0,
-          className: "scale-option",
-          children: v.label
-        }, v.value);
-      })
-    }),
+      }
+      return /* @__PURE__ */ React9.createElement("div", {
+        key: v.value,
+        onClick: valid ? () => {
+          var _a;
+          onChanged(v);
+          (_a = instanceRef.current) == null ? void 0 : _a.hide();
+        } : void 0,
+        className: "scale-option"
+      }, v.label);
+    })),
     popperOptions: {
       modifiers: [
         {
@@ -678,23 +661,47 @@ var ScaleSelector = () => {
         }
       ]
     },
-    hideOnClick: true,
-    children: /* @__PURE__ */ jsxs2("div", {
-      className: "scale-reference",
-      ref: rootRef,
-      children: [
-        displayName,
-        /* @__PURE__ */ jsx8(arrow_drop_down_default, {
-          className: "select-icon"
-        })
-      ]
-    })
-  });
+    hideOnClick: true
+  }, /* @__PURE__ */ React9.createElement("div", {
+    className: "scale-reference",
+    ref: rootRef
+  }, displayName, /* @__PURE__ */ React9.createElement(arrow_drop_down_default, {
+    className: "select-icon"
+  })));
 };
 var scale_selector_default = ScaleSelector;
 
+// packages/toolbar/tool/index.tsx
+import Tippy2 from "@tippyjs/react";
+import React11 from "react";
+
+// packages/share/button/index.tsx
+import React10 from "react";
+var Button = (_a) => {
+  var _b = _a, { className } = _b, restProps = __objRest(_b, ["className"]);
+  return /* @__PURE__ */ React10.createElement("button", __spreadProps(__spreadValues({}, restProps), {
+    className: `share-button ${className != null ? className : ""}`
+  }));
+};
+var button_default = Button;
+
+// packages/toolbar/tool/index.tsx
+var Tool = ({ className, children, onItemClick }) => {
+  return /* @__PURE__ */ React11.createElement(Tippy2, {
+    content: /* @__PURE__ */ React11.createElement("div", {
+      className: "tool-modal"
+    }, /* @__PURE__ */ React11.createElement(button_default, {
+      className: "tool-button",
+      onClick: () => onItemClick == null ? void 0 : onItemClick("property")
+    }, /* @__PURE__ */ React11.createElement("span", null, "\u6587\u6863\u5C5E\u6027"))),
+    interactive: true,
+    trigger: "click",
+    className: "tool-tippy"
+  }, children);
+};
+var tool_default = Tool;
+
 // packages/toolbar/index.tsx
-import { jsx as jsx9, jsxs as jsxs3 } from "react/jsx-runtime";
 var Toolbar = (props) => {
   const {
     pdfDoc,
@@ -793,154 +800,108 @@ var Toolbar = (props) => {
       }
     );
   }
-  return /* @__PURE__ */ jsxs3("div", {
-    className: "toolbar",
-    children: [
-      /* @__PURE__ */ jsxs3("div", {
-        className: "toolbar-left",
-        children: [
-          /* @__PURE__ */ jsx9("button", {
-            className: `common-button has-before sidebar ${sidebarVisible ? "active" : ""}`,
-            onClick: onSidebarButtonClick,
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u5207\u6362\u4FA7\u8FB9\u680F"
-            })
-          }),
-          /* @__PURE__ */ jsx9("button", {
-            className: "common-button has-before search",
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u67E5\u627E"
-            })
-          }),
-          /* @__PURE__ */ jsx9("button", {
-            className: "common-button has-before previous",
-            onClick: onPreviousButtonClick,
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u4E0A\u4E00\u9875"
-            })
-          }),
-          /* @__PURE__ */ jsx9("button", {
-            className: "common-button has-before next",
-            onClick: onNextButtonClick,
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u4E0B\u4E00\u9875"
-            })
-          }),
-          /* @__PURE__ */ jsxs3("div", {
-            className: "page-input-wrapper",
-            children: [
-              /* @__PURE__ */ jsx9("input", {
-                className: "page-input",
-                value: `${inputPageIndex}`,
-                onChange: onPageInputChange,
-                onKeyDown: onPageInputKeyDown,
-                type: "number",
-                title: "\u9875\u9762",
-                size: 4,
-                min: 1,
-                autoComplete: "off",
-                max: totalPage
-              }),
-              " ",
-              "/ ",
-              totalPage
-            ]
-          })
-        ]
-      }),
-      /* @__PURE__ */ jsxs3("div", {
-        className: "toolbar-center",
-        children: [
-          /* @__PURE__ */ jsxs3("div", {
-            className: "zoom-button-wrapper",
-            children: [
-              /* @__PURE__ */ jsx9("button", {
-                className: "common-button has-before zoom-button zoom-out",
-                onClick: onZoomOut,
-                children: /* @__PURE__ */ jsx9("span", {
-                  className: "button-label zoom-label",
-                  children: "\u7F29\u5C0F"
-                })
-              }),
-              /* @__PURE__ */ jsx9("span", {
-                className: "divider"
-              }),
-              /* @__PURE__ */ jsx9("button", {
-                className: "common-button has-before zoom-button zoom-in",
-                onClick: onZoomIn,
-                children: /* @__PURE__ */ jsx9("span", {
-                  className: "button-label zoom-label",
-                  children: "\u653E\u5927"
-                })
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsx9(scale_selector_default, {})
-        ]
-      }),
-      /* @__PURE__ */ jsxs3("div", {
-        className: "toolbar-right",
-        children: [
-          /* @__PURE__ */ jsx9("button", {
-            className: "common-button has-before open",
-            onClick: onFileInputButtonClicked,
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u6253\u5F00"
-            })
-          }),
-          /* @__PURE__ */ jsx9("button", {
-            className: "common-button has-before print",
-            onClick: onPrintButtonClick,
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u6253\u5370"
-            })
-          }),
-          /* @__PURE__ */ jsx9("button", {
-            className: "common-button has-before  download",
-            onClick: downloadButtonClick,
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u4FDD\u5B58"
-            })
-          }),
-          /* @__PURE__ */ jsx9("button", {
-            className: "common-button has-before draw",
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u7ED8\u56FE"
-            })
-          }),
-          /* @__PURE__ */ jsx9("button", {
-            className: "common-button has-before tools",
-            children: /* @__PURE__ */ jsx9("span", {
-              className: "button-label",
-              children: "\u5DE5\u5177"
-            })
-          })
-        ]
-      }),
-      /* @__PURE__ */ jsx9("input", {
-        type: "file",
-        accept: ".pdf",
-        id: "fileInput",
-        className: "hidden",
-        onChange: onFileInputChanged,
-        ref: fileInputRef
-      })
-    ]
-  });
+  function onToolClick(type) {
+    switch (type) {
+      case "property":
+        setPropertyModalVisible(true);
+        break;
+      default:
+        break;
+    }
+  }
+  return /* @__PURE__ */ React12.createElement("div", {
+    className: "toolbar"
+  }, /* @__PURE__ */ React12.createElement("div", {
+    className: "toolbar-left"
+  }, /* @__PURE__ */ React12.createElement("button", {
+    className: `common-button has-before sidebar ${sidebarVisible ? "active" : ""}`,
+    onClick: onSidebarButtonClick
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u5207\u6362\u4FA7\u8FB9\u680F")), /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before search"
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u67E5\u627E")), /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before previous",
+    onClick: onPreviousButtonClick
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u4E0A\u4E00\u9875")), /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before next",
+    onClick: onNextButtonClick
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u4E0B\u4E00\u9875")), /* @__PURE__ */ React12.createElement("div", {
+    className: "page-input-wrapper"
+  }, /* @__PURE__ */ React12.createElement("input", {
+    className: "page-input",
+    value: `${inputPageIndex}`,
+    onChange: onPageInputChange,
+    onKeyDown: onPageInputKeyDown,
+    type: "number",
+    title: "\u9875\u9762",
+    size: 4,
+    min: 1,
+    autoComplete: "off",
+    max: totalPage
+  }), " ", "/ ", totalPage)), /* @__PURE__ */ React12.createElement("div", {
+    className: "toolbar-center"
+  }, /* @__PURE__ */ React12.createElement("div", {
+    className: "zoom-button-wrapper"
+  }, /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before zoom-button zoom-out",
+    onClick: onZoomOut
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label zoom-label"
+  }, "\u7F29\u5C0F")), /* @__PURE__ */ React12.createElement("span", {
+    className: "divider"
+  }), /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before zoom-button zoom-in",
+    onClick: onZoomIn
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label zoom-label"
+  }, "\u653E\u5927"))), /* @__PURE__ */ React12.createElement(scale_selector_default, null)), /* @__PURE__ */ React12.createElement("div", {
+    className: "toolbar-right"
+  }, /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before open",
+    onClick: onFileInputButtonClicked
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u6253\u5F00")), /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before print",
+    onClick: onPrintButtonClick
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u6253\u5370")), /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before  download",
+    onClick: downloadButtonClick
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u4FDD\u5B58")), /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before draw"
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u7ED8\u56FE")), /* @__PURE__ */ React12.createElement(tool_default, {
+    onItemClick: onToolClick
+  }, /* @__PURE__ */ React12.createElement("button", {
+    className: "common-button has-before tools"
+  }, /* @__PURE__ */ React12.createElement("span", {
+    className: "button-label"
+  }, "\u5DE5\u5177")))), /* @__PURE__ */ React12.createElement("input", {
+    type: "file",
+    accept: ".pdf",
+    id: "fileInput",
+    className: "hidden",
+    onChange: onFileInputChanged,
+    ref: fileInputRef
+  }));
 };
 var toolbar_default = Toolbar;
 
 // packages/viewer/index.tsx
 import { range as range3 } from "lodash";
-import {
+import React20, {
   useCallback,
   useEffect as useEffect12,
   useRef as useRef10,
@@ -1052,20 +1013,19 @@ function usePageResizes({ resizesRef, doc, scale }) {
 }
 
 // packages/layers/loading-layer.tsx
-import { jsx as jsx10 } from "react/jsx-runtime";
+import React13 from "react";
 var LoadingLayer = (props) => {
-  return /* @__PURE__ */ jsx10("div", {
+  return /* @__PURE__ */ React13.createElement("div", {
     className: "loading-layer"
   });
 };
 var loading_layer_default = LoadingLayer;
 
 // packages/layers/page-layer.tsx
-import {
+import React14, {
   useEffect as useEffect8,
   useState as useState6
 } from "react";
-import { Fragment as Fragment2, jsx as jsx11 } from "react/jsx-runtime";
 var PageLayer = ({
   doc,
   pageIndex,
@@ -1080,28 +1040,24 @@ var PageLayer = ({
       setPageDoc(pageDoc2);
     });
   }, [pageIndex, doc]);
-  return /* @__PURE__ */ jsx11(Fragment2, {
-    children: pageDoc ? /* @__PURE__ */ jsx11("div", {
-      className: `page-layer ${scrollMode}-scroll`,
-      id: `__page_${pageIndex}__`,
-      style: {
-        height,
-        width
-      },
-      children: children(pageDoc)
-    }) : null
-  });
+  return /* @__PURE__ */ React14.createElement(React14.Fragment, null, pageDoc ? /* @__PURE__ */ React14.createElement("div", {
+    className: `page-layer ${scrollMode}-scroll`,
+    id: `__page_${pageIndex}__`,
+    style: {
+      height,
+      width
+    }
+  }, children(pageDoc)) : null);
 };
 var page_layer_default = PageLayer;
 
 // packages/print/index.tsx
 import { range as range2 } from "lodash";
-import React12 from "react";
+import React16 from "react";
 import { createPortal } from "react-dom";
 
 // packages/print/item.tsx
-import { useEffect as useEffect9, useRef as useRef8, useState as useState7 } from "react";
-import { jsx as jsx12 } from "react/jsx-runtime";
+import React15, { useEffect as useEffect9, useRef as useRef8, useState as useState7 } from "react";
 var ThumbnailItem2 = ({
   pdfDoc,
   pageIndex,
@@ -1159,21 +1115,19 @@ var ThumbnailItem2 = ({
       }
     };
   }, [pageDoc]);
-  return /* @__PURE__ */ jsx12("div", {
+  return /* @__PURE__ */ React15.createElement("div", {
     ref: rootRef,
     id: `print_page_${pageIndex}`,
-    className: `print-item`,
-    children: imgURI ? /* @__PURE__ */ jsx12("img", {
-      src: imgURI
-    }) : null
-  });
+    className: `print-item`
+  }, imgURI ? /* @__PURE__ */ React15.createElement("img", {
+    src: imgURI
+  }) : null);
 };
 var item_default2 = ThumbnailItem2;
 
 // packages/print/index.tsx
-import { Fragment as Fragment3, jsx as jsx13, jsxs as jsxs4 } from "react/jsx-runtime";
 var Print = ({ pdfDoc, width, height }) => {
-  const container = React12.useMemo(() => {
+  const container = React16.useMemo(() => {
     const id = "__print_container__";
     let containerEl = document.getElementById(`${id}`);
     if (containerEl) {
@@ -1185,34 +1139,224 @@ var Print = ({ pdfDoc, width, height }) => {
     return containerEl;
   }, []);
   return createPortal(
-    /* @__PURE__ */ jsxs4(Fragment3, {
-      children: [
-        /* @__PURE__ */ jsx13("div", {
-          id: "__print_view__",
-          children: !pdfDoc ? null : range2(0, pdfDoc.numPages).map((index) => {
-            const pageIndex = index + 1;
-            return /* @__PURE__ */ jsx13(item_default2, {
-              pdfDoc,
-              pageIndex,
-              width,
-              height
-            }, pageIndex);
-          })
-        }),
-        /* @__PURE__ */ jsx13("style", {
-          dangerouslySetInnerHTML: {
-            __html: `@page { size: ${width}pt ${height}pt }`
-          }
-        })
-      ]
-    }),
+    /* @__PURE__ */ React16.createElement(React16.Fragment, null, /* @__PURE__ */ React16.createElement("div", {
+      id: "__print_view__"
+    }, !pdfDoc ? null : range2(0, pdfDoc.numPages).map((index) => {
+      const pageIndex = index + 1;
+      return /* @__PURE__ */ React16.createElement(item_default2, {
+        key: pageIndex,
+        pdfDoc,
+        pageIndex,
+        width,
+        height
+      });
+    })), /* @__PURE__ */ React16.createElement("style", {
+      dangerouslySetInnerHTML: {
+        __html: `@page { size: ${width}pt ${height}pt }`
+      }
+    })),
     container
   );
 };
 var print_default = Print;
 
+// packages/property/index.tsx
+import React18, { useEffect as useEffect10, useLayoutEffect, useState as useState8 } from "react";
+
+// packages/utils/properties.ts
+import { PDFDateString } from "pdfjs-dist";
+function parseFileSize(fileSize = 0) {
+  const kb = fileSize / 1024, mb = kb / 1024;
+  if (!kb) {
+    return void 0;
+  }
+  return mb > 1 ? `${+mb.toPrecision(3)}mb` : `${mb < 1 && +kb.toPrecision(3)}kb`;
+}
+function parseDate(inputDate) {
+  const dateObject = PDFDateString.toDateObject(inputDate);
+  if (!dateObject) {
+    return void 0;
+  }
+  return dateObject.toLocaleDateString();
+}
+function getPageSizeInches({ view, userUnit, rotate }) {
+  const [x1, y1, x2, y2] = view;
+  const changeOrientation = rotate % 180 !== 0;
+  const width = (x2 - x1) / 72 * userUnit;
+  const height = (y2 - y1) / 72 * userUnit;
+  return {
+    width: changeOrientation ? height : width,
+    height: changeOrientation ? width : height
+  };
+}
+
+// packages/property/index.tsx
+import { getFilenameFromUrl } from "pdfjs-dist";
+
+// packages/share/modal/index.tsx
+import React17 from "react";
+var Modal = ({
+  visible,
+  wrapperClassName,
+  className,
+  mask = true,
+  children
+}) => {
+  return /* @__PURE__ */ React17.createElement("div", {
+    className: `share-modal-container ${wrapperClassName != null ? wrapperClassName : ""}`,
+    style: { display: visible ? "flex" : "none" }
+  }, mask && /* @__PURE__ */ React17.createElement("div", {
+    className: "share-modal-mask"
+  }), /* @__PURE__ */ React17.createElement("div", {
+    className: `share-modal ${className != null ? className : ""}`
+  }, children));
+};
+var modal_default = Modal;
+
+// packages/property/index.tsx
+var PropertyModal = ({ visible, onClose }) => {
+  const { pdfURI, pdfDoc, currentPage } = usePDFViewer();
+  const [properties, setProperties] = useState8();
+  useLayoutEffect(() => {
+    if (pdfDoc) {
+      Promise.all([pdfDoc.getMetadata(), pdfDoc.getPage(currentPage)]).then(
+        ([pdfInfo, pageDoc]) => {
+          const infoObj = pdfInfo.info;
+          const fileName = pdfInfo["contentDispositionFilename"] || getFilenameFromUrl(pdfURI);
+          const pageSize = getPageSizeInches(pageDoc);
+          setProperties({
+            pageSize: `${pageSize.width * 2.54}cm*${pageSize.height * 2.54}cm`,
+            fileSize: parseFileSize(
+              pdfInfo["contentLength"]
+            ),
+            creationDate: parseDate(infoObj["CreationDate"]),
+            modificationDate: parseDate(infoObj.ModDate),
+            fileName,
+            title: infoObj.Title,
+            author: infoObj.Author,
+            subject: infoObj.Subject,
+            keywords: infoObj.Keywords,
+            creator: infoObj.Creator,
+            producer: infoObj.Producer,
+            version: infoObj.PDFFormatVersion,
+            pageCount: pdfDoc.numPages
+          });
+        },
+        (err) => {
+        }
+      ).catch((reason) => {
+      });
+    }
+  }, [currentPage, pdfDoc, pdfURI]);
+  useEffect10(() => {
+    console.log("property", properties);
+  }, [properties]);
+  return /* @__PURE__ */ React18.createElement(modal_default, {
+    className: "property-modal",
+    visible
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "session"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u6587\u4EF6\u540D\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.fileName)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u6587\u4EF6\u5927\u5C0F\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.fileSize))), /* @__PURE__ */ React18.createElement("div", {
+    className: "session"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u6807\u9898\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.title)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u4F5C\u8005\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.author)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u4E3B\u9898\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.subject)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u5173\u952E\u8BCD\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.keywords)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u521B\u5EFA\u65E5\u671F\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.creationDate)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u4FEE\u6539\u65E5\u671F\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.modificationDate)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u521B\u5EFA\u8005\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.creator))), /* @__PURE__ */ React18.createElement("div", {
+    className: "session"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "PDF \u751F\u6210\u5668\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.producer)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "PDF \u7248\u672C\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.version)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u9875\u6570\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.pageCount)), /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u9875\u9762\u5927\u5C0F\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.pageSize))), /* @__PURE__ */ React18.createElement("div", {
+    className: "session"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ React18.createElement("div", {
+    className: "label"
+  }, "\u5FEB\u901F Web \u89C6\u56FE\uFF1A"), /* @__PURE__ */ React18.createElement("div", {
+    className: "value"
+  }, properties == null ? void 0 : properties.isWebView))), /* @__PURE__ */ React18.createElement("div", {
+    className: "btn-wrapper"
+  }, /* @__PURE__ */ React18.createElement(button_default, {
+    className: "close-btn",
+    onClick: onClose
+  }, "\u5173\u95ED")));
+};
+var property_default = PropertyModal;
+
 // packages/sidebar/index.tsx
-import { useEffect as useEffect10, useMemo as useMemo2, useRef as useRef9 } from "react";
+import React19, { useEffect as useEffect11, useMemo as useMemo2, useRef as useRef9 } from "react";
 
 // packages/types/types.ts
 var isBrowser = !!(typeof window !== "undefined" && window.document && window.document.createElement);
@@ -1404,14 +1548,13 @@ var SidebarResizer = class extends DragService {
 };
 
 // packages/sidebar/index.tsx
-import { jsx as jsx14, jsxs as jsxs5 } from "react/jsx-runtime";
 var Sidebar = ({ children }) => {
   const { sidebarVisible } = usePDFViewer();
   const resizerRef = useRef9(null);
   const dragService = useMemo2(() => {
     return new SidebarResizer({});
   }, []);
-  useEffect10(() => {
+  useEffect11(() => {
     console.log("dragService", dragService);
     dragService == null ? void 0 : dragService.addDragSource({
       element: resizerRef
@@ -1422,350 +1565,19 @@ var Sidebar = ({ children }) => {
       });
     };
   }, [dragService, resizerRef]);
-  return /* @__PURE__ */ jsxs5("div", {
+  return /* @__PURE__ */ React19.createElement("div", {
     id: "__sidebar__",
-    className: `${sidebarVisible ? "" : "hidden"}`,
-    children: [
-      /* @__PURE__ */ jsx14("div", {
-        id: "__sidebar_content__",
-        children
-      }),
-      /* @__PURE__ */ jsx14("div", {
-        id: "__sidebar_resizer__",
-        ref: resizerRef
-      })
-    ]
-  });
+    className: `${sidebarVisible ? "" : "hidden"}`
+  }, /* @__PURE__ */ React19.createElement("div", {
+    id: "__sidebar_content__"
+  }, children), /* @__PURE__ */ React19.createElement("div", {
+    id: "__sidebar_resizer__",
+    ref: resizerRef
+  }));
 };
 var sidebar_default = Sidebar;
 
-// packages/property/index.tsx
-import { useEffect as useEffect11, useLayoutEffect, useState as useState8 } from "react";
-
-// packages/utils/properties.ts
-import { PDFDateString } from "pdfjs-dist";
-function parseFileSize(fileSize = 0) {
-  const kb = fileSize / 1024, mb = kb / 1024;
-  if (!kb) {
-    return void 0;
-  }
-  return mb > 1 ? `${+mb.toPrecision(3)}mb` : `${mb < 1 && +kb.toPrecision(3)}kb`;
-}
-function parseDate(inputDate) {
-  const dateObject = PDFDateString.toDateObject(inputDate);
-  if (!dateObject) {
-    return void 0;
-  }
-  return dateObject.toLocaleDateString();
-}
-function getPageSizeInches({ view, userUnit, rotate }) {
-  const [x1, y1, x2, y2] = view;
-  const changeOrientation = rotate % 180 !== 0;
-  const width = (x2 - x1) / 72 * userUnit;
-  const height = (y2 - y1) / 72 * userUnit;
-  return {
-    width: changeOrientation ? height : width,
-    height: changeOrientation ? width : height
-  };
-}
-
-// packages/property/index.tsx
-import { getFilenameFromUrl as getFilenameFromUrl2 } from "pdfjs-dist";
-
-// packages/share/modal/index.tsx
-import { jsx as jsx15, jsxs as jsxs6 } from "react/jsx-runtime";
-var Modal = ({
-  visible,
-  wrapperClassName,
-  className,
-  mask = true,
-  children
-}) => {
-  return /* @__PURE__ */ jsxs6("div", {
-    className: `share-modal-container ${wrapperClassName != null ? wrapperClassName : ""}`,
-    style: { display: visible ? "flex" : "none" },
-    children: [
-      mask && /* @__PURE__ */ jsx15("div", {
-        className: "share-modal-mask"
-      }),
-      /* @__PURE__ */ jsx15("div", {
-        className: `share-modal ${className != null ? className : ""}`,
-        children
-      })
-    ]
-  });
-};
-var modal_default = Modal;
-
-// packages/share/button/index.tsx
-import { jsx as jsx16 } from "react/jsx-runtime";
-var Button = (_a) => {
-  var _b = _a, { className } = _b, restProps = __objRest(_b, ["className"]);
-  return /* @__PURE__ */ jsx16("button", __spreadProps(__spreadValues({}, restProps), {
-    className: `share-button ${className != null ? className : ""}`
-  }));
-};
-var button_default = Button;
-
-// packages/property/index.tsx
-import { jsx as jsx17, jsxs as jsxs7 } from "react/jsx-runtime";
-var PropertyModal = ({ visible, onClose }) => {
-  const { pdfURI, pdfDoc, currentPage } = usePDFViewer();
-  const [properties, setProperties] = useState8();
-  useLayoutEffect(() => {
-    if (pdfDoc) {
-      Promise.all([pdfDoc.getMetadata(), pdfDoc.getPage(currentPage)]).then(
-        ([pdfInfo, pageDoc]) => {
-          const infoObj = pdfInfo.info;
-          const fileName = pdfInfo["contentDispositionFilename"] || getFilenameFromUrl2(pdfURI);
-          const pageSize = getPageSizeInches(pageDoc);
-          setProperties({
-            pageSize: `${pageSize.width * 2.54}cm*${pageSize.height * 2.54}cm`,
-            fileSize: parseFileSize(
-              pdfInfo["contentLength"]
-            ),
-            creationDate: parseDate(infoObj["CreationDate"]),
-            modificationDate: parseDate(infoObj.ModDate),
-            fileName,
-            title: infoObj.Title,
-            author: infoObj.Author,
-            subject: infoObj.Subject,
-            keywords: infoObj.Keywords,
-            creator: infoObj.Creator,
-            producer: infoObj.Producer,
-            version: infoObj.PDFFormatVersion,
-            pageCount: pdfDoc.numPages
-          });
-        },
-        (err) => {
-        }
-      ).catch((reason) => {
-      });
-    }
-  }, [currentPage, pdfDoc, pdfURI]);
-  useEffect11(() => {
-    console.log("property", properties);
-  }, [properties]);
-  return /* @__PURE__ */ jsxs7(modal_default, {
-    className: "property-modal",
-    visible,
-    children: [
-      /* @__PURE__ */ jsxs7("div", {
-        className: "session",
-        children: [
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u6587\u4EF6\u540D\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.fileName
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u6587\u4EF6\u5927\u5C0F\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.fileSize
-              })
-            ]
-          })
-        ]
-      }),
-      /* @__PURE__ */ jsxs7("div", {
-        className: "session",
-        children: [
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u6807\u9898\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.title
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u4F5C\u8005\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.author
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u4E3B\u9898\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.subject
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u5173\u952E\u8BCD\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.keywords
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u521B\u5EFA\u65E5\u671F\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.creationDate
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u4FEE\u6539\u65E5\u671F\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.modificationDate
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u521B\u5EFA\u8005\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.creator
-              })
-            ]
-          })
-        ]
-      }),
-      /* @__PURE__ */ jsxs7("div", {
-        className: "session",
-        children: [
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "PDF \u751F\u6210\u5668\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.producer
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "PDF \u7248\u672C\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.version
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u9875\u6570\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.pageCount
-              })
-            ]
-          }),
-          /* @__PURE__ */ jsxs7("div", {
-            className: "row",
-            children: [
-              /* @__PURE__ */ jsx17("div", {
-                className: "label",
-                children: "\u9875\u9762\u5927\u5C0F\uFF1A"
-              }),
-              /* @__PURE__ */ jsx17("div", {
-                className: "value",
-                children: properties == null ? void 0 : properties.pageSize
-              })
-            ]
-          })
-        ]
-      }),
-      /* @__PURE__ */ jsx17("div", {
-        className: "session",
-        children: /* @__PURE__ */ jsxs7("div", {
-          className: "row",
-          children: [
-            /* @__PURE__ */ jsx17("div", {
-              className: "label",
-              children: "\u5FEB\u901F Web \u89C6\u56FE\uFF1A"
-            }),
-            /* @__PURE__ */ jsx17("div", {
-              className: "value",
-              children: properties == null ? void 0 : properties.isWebView
-            })
-          ]
-        })
-      }),
-      /* @__PURE__ */ jsx17("div", {
-        className: "btn-wrapper",
-        children: /* @__PURE__ */ jsx17(button_default, {
-          className: "close-btn",
-          onClick: onClose,
-          children: "\u5173\u95ED"
-        })
-      })
-    ]
-  });
-};
-var property_default = PropertyModal;
-
 // packages/viewer/index.tsx
-import { jsx as jsx18, jsxs as jsxs8 } from "react/jsx-runtime";
-import { createElement } from "react";
 var PDFViewer = ({
   loadingComponent,
   errorComponent,
@@ -1882,82 +1694,71 @@ var PDFViewer = ({
       }
       return "Waiting...";
     }
-    return /* @__PURE__ */ jsxs8("div", {
+    return /* @__PURE__ */ React20.createElement("div", {
       id: "__pdf_viewer_container__",
       className: "viewer",
-      ref: scrollElRef,
-      children: [
-        pageSize.width == 0 ? null : range3(0, pdfDoc.numPages).map((index) => {
-          const pageIndex = index + 1;
-          return /* @__PURE__ */ jsx18(page_layer_default, __spreadProps(__spreadValues({
-            pageIndex,
-            doc: pdfDoc
-          }, pageSize), {
-            scrollMode,
-            children: (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ jsx18(loading_layer_default, {}) : [
-              /* @__PURE__ */ createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
-                pageDoc: doc,
-                pageIndex,
-                renderingIndex: renderingPageIndex,
-                key: `canvas_layer_${pageIndex}`,
-                onCompleted: () => {
-                  setRenderingPageIndex((pre) => pre + 1);
-                  setRenderMap((pre) => {
-                    if (pre[pageIndex]) {
-                      return pre;
-                    }
-                    return __spreadProps(__spreadValues({}, pre), {
-                      pageIndex: true
-                    });
-                  });
-                }
-              })),
-              /* @__PURE__ */ createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
-                pageDoc: doc,
-                pageIndex,
-                key: `text_layer_${pageIndex}`
-              })),
-              renderingPageIndex <= pageIndex ? /* @__PURE__ */ jsx18(loading_layer_default, {}, `loading_layer_${pageIndex}`) : null
-            ]
-          }), index);
-        }),
-        pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ jsx18(print_default, {
-          height: pageSize.vHeight,
-          width: pageSize.vWidth,
-          pdfDoc
-        })
-      ]
-    });
+      ref: scrollElRef
+    }, pageSize.width == 0 ? null : range3(0, pdfDoc.numPages).map((index) => {
+      const pageIndex = index + 1;
+      return /* @__PURE__ */ React20.createElement(page_layer_default, __spreadProps(__spreadValues({
+        key: index,
+        pageIndex,
+        doc: pdfDoc
+      }, pageSize), {
+        scrollMode
+      }), (doc) => renderingPageIndex < pageIndex && !renderMap[pageIndex] ? /* @__PURE__ */ React20.createElement(loading_layer_default, null) : [
+        /* @__PURE__ */ React20.createElement(canvas_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+          pageDoc: doc,
+          pageIndex,
+          renderingIndex: renderingPageIndex,
+          key: `canvas_layer_${pageIndex}`,
+          onCompleted: () => {
+            setRenderingPageIndex((pre) => pre + 1);
+            setRenderMap((pre) => {
+              if (pre[pageIndex]) {
+                return pre;
+              }
+              return __spreadProps(__spreadValues({}, pre), {
+                pageIndex: true
+              });
+            });
+          }
+        })),
+        /* @__PURE__ */ React20.createElement(text_layer_default, __spreadProps(__spreadValues({}, pageSize), {
+          pageDoc: doc,
+          pageIndex,
+          key: `text_layer_${pageIndex}`
+        })),
+        renderingPageIndex <= pageIndex ? /* @__PURE__ */ React20.createElement(loading_layer_default, {
+          key: `loading_layer_${pageIndex}`
+        }) : null
+      ]);
+    }), pageSize.width != 0 && pageSize.height != 0 && /* @__PURE__ */ React20.createElement(print_default, {
+      height: pageSize.vHeight,
+      width: pageSize.vWidth,
+      pdfDoc
+    }));
   }
-  return /* @__PURE__ */ jsxs8("div", {
+  return /* @__PURE__ */ React20.createElement("div", {
     id: "__outer_container__",
     style: { height, width },
     ref: viewerRef,
-    className: sidebarVisible ? "sidebar-visible" : "",
-    children: [
-      /* @__PURE__ */ jsx18(sidebar_default, {
-        children: thumbnail && /* @__PURE__ */ jsx18(thumbnail_default, {
-          currentPage,
-          pdfDoc
-        })
-      }),
-      contentComponent(),
-      /* @__PURE__ */ jsx18(property_default, {
-        visible: propertyModalVisible,
-        onClose: () => setPropertyModalVisible(false)
-      })
-    ]
-  });
+    className: sidebarVisible ? "sidebar-visible" : ""
+  }, /* @__PURE__ */ React20.createElement(sidebar_default, null, thumbnail && /* @__PURE__ */ React20.createElement(thumbnail_default, {
+    currentPage,
+    pdfDoc
+  })), contentComponent(), /* @__PURE__ */ React20.createElement(property_default, {
+    visible: propertyModalVisible,
+    onClose: () => setPropertyModalVisible(false)
+  }));
 };
 var viewer_default = PDFViewer;
 
 // packages/worker/index.tsx
-import { Fragment as Fragment4, jsx as jsx19 } from "react/jsx-runtime";
+import React21 from "react";
 var PDFWorker = ({ workerDir, children }) => {
   PDFLib.GlobalWorkerOptions.workerSrc = workerDir;
-  return /* @__PURE__ */ jsx19(Fragment4, {
-    children
-  });
+  return /* @__PURE__ */ React21.createElement(React21.Fragment, null, children);
 };
 var worker_default = PDFWorker;
 export {

@@ -18,6 +18,7 @@ import LoadingLayer from "../layers/loading-layer";
 import PageLayer from "../layers/page-layer";
 import TextLayer from "../layers/text-layer";
 import Print from "../print";
+import PropertyModal from "../property";
 import { usePDFViewer } from "../provider";
 import { useInternalState } from "../provider/internal";
 import Sidebar from "../sidebar";
@@ -27,7 +28,6 @@ import Thumbnail from "../thumbnail";
 import { ScrollMode } from "../types";
 import { ScrollState, watchScroll } from "../utils";
 import { PDFLib } from "../vendors/lib";
-import PropertyModal from "../property";
 
 interface PDFViewerProps {
   errorComponent?: ((reason: any) => ReactNode) | ReactNode;
@@ -185,54 +185,54 @@ const PDFViewer: FC<PDFViewerProps> = ({
         {pageSize.width == 0
           ? null
           : range(0, pdfDoc.numPages).map((index) => {
-              const pageIndex = index + 1;
-              return (
-                <PageLayer
-                  key={index}
-                  pageIndex={pageIndex}
-                  doc={pdfDoc}
-                  {...pageSize}
-                  scrollMode={scrollMode}
-                >
-                  {(doc: PDFPageProxy) =>
-                    renderingPageIndex < pageIndex && !renderMap[pageIndex] ? (
-                      <LoadingLayer />
-                    ) : (
-                      [
-                        <CanvasLayer
-                          {...pageSize}
-                          pageDoc={doc}
-                          pageIndex={pageIndex}
-                          renderingIndex={renderingPageIndex}
-                          key={`canvas_layer_${pageIndex}`}
-                          onCompleted={() => {
-                            setRenderingPageIndex((pre) => pre + 1);
-                            setRenderMap((pre) => {
-                              if (pre[pageIndex]) {
-                                return pre;
-                              }
-                              return {
-                                ...pre,
-                                pageIndex: true,
-                              };
-                            });
-                          }}
-                        />,
-                        <TextLayer
-                          {...pageSize}
-                          pageDoc={doc}
-                          pageIndex={pageIndex}
-                          key={`text_layer_${pageIndex}`}
-                        />,
-                        renderingPageIndex <= pageIndex ? (
-                          <LoadingLayer key={`loading_layer_${pageIndex}`} />
-                        ) : null,
-                      ]
-                    )
-                  }
-                </PageLayer>
-              );
-            })}
+            const pageIndex = index + 1;
+            return (
+              <PageLayer
+                key={index}
+                pageIndex={pageIndex}
+                doc={pdfDoc}
+                {...pageSize}
+                scrollMode={scrollMode}
+              >
+                {(doc: PDFPageProxy) =>
+                  renderingPageIndex < pageIndex && !renderMap[pageIndex] ? (
+                    <LoadingLayer />
+                  ) : (
+                    [
+                      <CanvasLayer
+                        {...pageSize}
+                        pageDoc={doc}
+                        pageIndex={pageIndex}
+                        renderingIndex={renderingPageIndex}
+                        key={`canvas_layer_${pageIndex}`}
+                        onCompleted={() => {
+                          setRenderingPageIndex((pre) => pre + 1);
+                          setRenderMap((pre) => {
+                            if (pre[pageIndex]) {
+                              return pre;
+                            }
+                            return {
+                              ...pre,
+                              pageIndex: true,
+                            };
+                          });
+                        }}
+                      />,
+                      <TextLayer
+                        {...pageSize}
+                        pageDoc={doc}
+                        pageIndex={pageIndex}
+                        key={`text_layer_${pageIndex}`}
+                      />,
+                      renderingPageIndex <= pageIndex ? (
+                        <LoadingLayer key={`loading_layer_${pageIndex}`} />
+                      ) : null,
+                    ]
+                  )
+                }
+              </PageLayer>
+            );
+          })}
         {pageSize.width != 0 && pageSize.height != 0 && (
           <Print
             height={pageSize.vHeight}
