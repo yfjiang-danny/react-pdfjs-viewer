@@ -206,6 +206,10 @@
   -webkit-mask-image: var(--toolbarButton-editorInk-icon);
   mask-image: var(--toolbarButton-editorInk-icon);
 }
+.toolbar .toolbar-right .tools::before {
+  -webkit-mask-image: var(--toolbarButton-secondaryToolbarToggle-icon);
+  mask-image: var(--toolbarButton-secondaryToolbarToggle-icon);
+}
 .toolbar .common-button {
   display: inline-block;
   user-select: none;

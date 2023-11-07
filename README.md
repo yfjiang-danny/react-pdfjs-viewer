@@ -7,7 +7,7 @@ A React component to view PDF document. It is base on [mozilla/pdf.js](https://g
 - [x] Zoom
 - [x] Pagination
 - [x] Text selection
-- [ ] Document properties
+- [x] Document properties
 - [x] Thumbnails
 - [ ] Attachments
 - [ ] Search for text
@@ -18,6 +18,7 @@ A React component to view PDF document. It is base on [mozilla/pdf.js](https://g
 - [x] Print
 - [ ] Customize theme
 - [x] Customize toolbar
+- [ ] Virtual scroll
 
 ## 🖥 Environment Support
 

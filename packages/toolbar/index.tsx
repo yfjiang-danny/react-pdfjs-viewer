@@ -17,7 +17,7 @@ import Tool, { ToolTypes } from "./tool";
 
 export const TOOLBAR_HEIGHT = 48;
 
-interface ToolbarProps { }
+interface ToolbarProps {}
 
 const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
   const {
@@ -156,8 +156,9 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
     <div className="toolbar">
       <div className="toolbar-left">
         <button
-          className={`common-button has-before sidebar ${sidebarVisible ? "active" : ""
-            }`}
+          className={`common-button has-before sidebar ${
+            sidebarVisible ? "active" : ""
+          }`}
           onClick={onSidebarButtonClick}
         >
           <span className="button-label">切换侧边栏</span>
@@ -215,26 +216,29 @@ const Toolbar: FunctionComponent<ToolbarProps> = (props) => {
         <button
           className="common-button has-before open"
           onClick={onFileInputButtonClicked}
+          title="打开"
         >
           <span className="button-label">打开</span>
         </button>
         <button
           className="common-button has-before print"
           onClick={onPrintButtonClick}
+          title="打印"
         >
           <span className="button-label">打印</span>
         </button>
         <button
           className="common-button has-before  download"
           onClick={downloadButtonClick}
+          title="保存"
         >
           <span className="button-label">保存</span>
         </button>
-        <button className="common-button has-before draw">
+        <button className="common-button has-before draw" title="绘图">
           <span className="button-label">绘图</span>
         </button>
-        <Tool onItemClick={onToolClick} >
-          <button className="common-button has-before tools">
+        <Tool onItemClick={onToolClick}>
+          <button className="common-button has-before tools" title="工具">
             <span className="button-label">工具</span>
           </button>
         </Tool>

@@ -720,12 +720,21 @@ var button_default = Button;
 
 // packages/toolbar/tool/index.tsx
 var Tool = ({ className, children, onItemClick }) => {
+  const instanceRef = (0, import_react13.useRef)(null);
   return /* @__PURE__ */ import_react13.default.createElement(import_react12.default, {
+    onMount: (instance) => {
+      instanceRef.current = instance;
+    },
     content: /* @__PURE__ */ import_react13.default.createElement("div", {
       className: "tool-modal"
     }, /* @__PURE__ */ import_react13.default.createElement(button_default, {
       className: "tool-button",
-      onClick: () => onItemClick == null ? void 0 : onItemClick("property")
+      onClick: () => {
+        instanceRef.current && instanceRef.current.hide();
+        setTimeout(() => {
+          onItemClick == null ? void 0 : onItemClick("property");
+        }, 0);
+      }
     }, /* @__PURE__ */ import_react13.default.createElement("span", null, "\u6587\u6863\u5C5E\u6027"))),
     interactive: true,
     trigger: "click",
@@ -898,27 +907,32 @@ var Toolbar = (props) => {
     className: "toolbar-right"
   }, /* @__PURE__ */ import_react14.default.createElement("button", {
     className: "common-button has-before open",
-    onClick: onFileInputButtonClicked
+    onClick: onFileInputButtonClicked,
+    title: "\u6253\u5F00"
   }, /* @__PURE__ */ import_react14.default.createElement("span", {
     className: "button-label"
   }, "\u6253\u5F00")), /* @__PURE__ */ import_react14.default.createElement("button", {
     className: "common-button has-before print",
-    onClick: onPrintButtonClick
+    onClick: onPrintButtonClick,
+    title: "\u6253\u5370"
   }, /* @__PURE__ */ import_react14.default.createElement("span", {
     className: "button-label"
   }, "\u6253\u5370")), /* @__PURE__ */ import_react14.default.createElement("button", {
     className: "common-button has-before  download",
-    onClick: downloadButtonClick
+    onClick: downloadButtonClick,
+    title: "\u4FDD\u5B58"
   }, /* @__PURE__ */ import_react14.default.createElement("span", {
     className: "button-label"
   }, "\u4FDD\u5B58")), /* @__PURE__ */ import_react14.default.createElement("button", {
-    className: "common-button has-before draw"
+    className: "common-button has-before draw",
+    title: "\u7ED8\u56FE"
   }, /* @__PURE__ */ import_react14.default.createElement("span", {
     className: "button-label"
   }, "\u7ED8\u56FE")), /* @__PURE__ */ import_react14.default.createElement(tool_default, {
     onItemClick: onToolClick
   }, /* @__PURE__ */ import_react14.default.createElement("button", {
-    className: "common-button has-before tools"
+    className: "common-button has-before tools",
+    title: "\u5DE5\u5177"
   }, /* @__PURE__ */ import_react14.default.createElement("span", {
     className: "button-label"
   }, "\u5DE5\u5177")))), /* @__PURE__ */ import_react14.default.createElement("input", {

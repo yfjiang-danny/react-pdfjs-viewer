@@ -505,7 +505,7 @@ var thumbnail_default = Thumbnail;
 import { getPdfFilenameFromUrl } from "pdfjs-dist";
 import React12, {
   useEffect as useEffect5,
-  useRef as useRef6,
+  useRef as useRef7,
   useState as useState3
 } from "react";
 
@@ -673,7 +673,7 @@ var scale_selector_default = ScaleSelector;
 
 // packages/toolbar/tool/index.tsx
 import Tippy2 from "@tippyjs/react";
-import React11 from "react";
+import React11, { useRef as useRef6 } from "react";
 
 // packages/share/button/index.tsx
 import React10 from "react";
@@ -687,12 +687,21 @@ var button_default = Button;
 
 // packages/toolbar/tool/index.tsx
 var Tool = ({ className, children, onItemClick }) => {
+  const instanceRef = useRef6(null);
   return /* @__PURE__ */ React11.createElement(Tippy2, {
+    onMount: (instance) => {
+      instanceRef.current = instance;
+    },
     content: /* @__PURE__ */ React11.createElement("div", {
       className: "tool-modal"
     }, /* @__PURE__ */ React11.createElement(button_default, {
       className: "tool-button",
-      onClick: () => onItemClick == null ? void 0 : onItemClick("property")
+      onClick: () => {
+        instanceRef.current && instanceRef.current.hide();
+        setTimeout(() => {
+          onItemClick == null ? void 0 : onItemClick("property");
+        }, 0);
+      }
     }, /* @__PURE__ */ React11.createElement("span", null, "\u6587\u6863\u5C5E\u6027"))),
     interactive: true,
     trigger: "click",
@@ -717,7 +726,7 @@ var Toolbar = (props) => {
   } = usePDFViewer();
   const { scaleNumberRef } = useInternalState();
   const [inputPageIndex, setInputPageIndex] = useState3(currentPage);
-  const fileInputRef = useRef6(null);
+  const fileInputRef = useRef7(null);
   useEffect5(() => {
     setInputPageIndex(currentPage);
   }, [currentPage]);
@@ -865,27 +874,32 @@ var Toolbar = (props) => {
     className: "toolbar-right"
   }, /* @__PURE__ */ React12.createElement("button", {
     className: "common-button has-before open",
-    onClick: onFileInputButtonClicked
+    onClick: onFileInputButtonClicked,
+    title: "\u6253\u5F00"
   }, /* @__PURE__ */ React12.createElement("span", {
     className: "button-label"
   }, "\u6253\u5F00")), /* @__PURE__ */ React12.createElement("button", {
     className: "common-button has-before print",
-    onClick: onPrintButtonClick
+    onClick: onPrintButtonClick,
+    title: "\u6253\u5370"
   }, /* @__PURE__ */ React12.createElement("span", {
     className: "button-label"
   }, "\u6253\u5370")), /* @__PURE__ */ React12.createElement("button", {
     className: "common-button has-before  download",
-    onClick: downloadButtonClick
+    onClick: downloadButtonClick,
+    title: "\u4FDD\u5B58"
   }, /* @__PURE__ */ React12.createElement("span", {
     className: "button-label"
   }, "\u4FDD\u5B58")), /* @__PURE__ */ React12.createElement("button", {
-    className: "common-button has-before draw"
+    className: "common-button has-before draw",
+    title: "\u7ED8\u56FE"
   }, /* @__PURE__ */ React12.createElement("span", {
     className: "button-label"
   }, "\u7ED8\u56FE")), /* @__PURE__ */ React12.createElement(tool_default, {
     onItemClick: onToolClick
   }, /* @__PURE__ */ React12.createElement("button", {
-    className: "common-button has-before tools"
+    className: "common-button has-before tools",
+    title: "\u5DE5\u5177"
   }, /* @__PURE__ */ React12.createElement("span", {
     className: "button-label"
   }, "\u5DE5\u5177")))), /* @__PURE__ */ React12.createElement("input", {
@@ -904,7 +918,7 @@ import { range as range3 } from "lodash";
 import React20, {
   useCallback,
   useEffect as useEffect12,
-  useRef as useRef10,
+  useRef as useRef11,
   useState as useState9
 } from "react";
 
@@ -912,11 +926,11 @@ import React20, {
 import { useEffect as useEffect7, useState as useState5 } from "react";
 
 // packages/hooks/useRectObserver.ts
-import { useEffect as useEffect6, useRef as useRef7, useState as useState4 } from "react";
+import { useEffect as useEffect6, useRef as useRef8, useState as useState4 } from "react";
 function useRectObserver({ elRef }) {
   const [width, setWidth] = useState4(0);
   const [height, setHeight] = useState4(0);
-  const observer = useRef7(null);
+  const observer = useRef8(null);
   function resizeObserver(entries) {
     for (const entry of entries) {
       const { width: width2, height: height2 } = entry.contentRect;
@@ -1057,7 +1071,7 @@ import React16 from "react";
 import { createPortal } from "react-dom";
 
 // packages/print/item.tsx
-import React15, { useEffect as useEffect9, useRef as useRef8, useState as useState7 } from "react";
+import React15, { useEffect as useEffect9, useRef as useRef9, useState as useState7 } from "react";
 var ThumbnailItem2 = ({
   pdfDoc,
   pageIndex,
@@ -1065,8 +1079,8 @@ var ThumbnailItem2 = ({
   height
 }) => {
   const [pageDoc, setPageDoc] = useState7();
-  const rootRef = useRef8(null);
-  const renderTask = useRef8(null);
+  const rootRef = useRef9(null);
+  const renderTask = useRef9(null);
   const [imgURI, setImgURI] = useState7();
   useEffect9(() => {
     pdfDoc.getPage(pageIndex).then((pageDoc2) => {
@@ -1356,7 +1370,7 @@ var PropertyModal = ({ visible, onClose }) => {
 var property_default = PropertyModal;
 
 // packages/sidebar/index.tsx
-import React19, { useEffect as useEffect11, useMemo as useMemo2, useRef as useRef9 } from "react";
+import React19, { useEffect as useEffect11, useMemo as useMemo2, useRef as useRef10 } from "react";
 
 // packages/types/types.ts
 var isBrowser = !!(typeof window !== "undefined" && window.document && window.document.createElement);
@@ -1550,7 +1564,7 @@ var SidebarResizer = class extends DragService {
 // packages/sidebar/index.tsx
 var Sidebar = ({ children }) => {
   const { sidebarVisible } = usePDFViewer();
-  const resizerRef = useRef9(null);
+  const resizerRef = useRef10(null);
   const dragService = useMemo2(() => {
     return new SidebarResizer({});
   }, []);
@@ -1603,9 +1617,9 @@ var PDFViewer = ({
   const [loading, setLoading] = useState9(false);
   const [loadingProgress, setLoadingProgress] = useState9(-1);
   const [errorReason, setErrorReason] = useState9();
-  const loadingTask = useRef10(null);
-  const viewerRef = useRef10(null);
-  const scrollElRef = useRef10(null);
+  const loadingTask = useRef11(null);
+  const viewerRef = useRef11(null);
+  const scrollElRef = useRef11(null);
   const [renderingPageIndex, setRenderingPageIndex] = useState9(1);
   const [renderMap, setRenderMap] = useState9({});
   const pageSize = usePageResizes({
